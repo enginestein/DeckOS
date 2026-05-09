@@ -1,24 +1,36 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "hardware/adc.h"
 #include "kernel.h"
 #include "shell.h"
+#include "drivers.h"
+#include "scheduler.h"
+#include "bootloader.h"
 
-void kernel_init() {
+
+#include "hardware/gpio.h"
+
+static void task_heartbeat(void) {
+    static bool state = false;
+    gpio_init(25);
+    gpio_set_dir(25, GPIO_OUT);
+    state = !state;
+    gpio_put(25, state);
+}
+
+
+void kernel_init(void) {
     stdio_init_all();
     while (!stdio_usb_connected()) sleep_ms(100);
-    adc_init();
-    adc_set_temp_sensor_enabled(true);
-    sleep_ms(200);
 
-    printf("\n");
-    printf("  ================================\n");
-    printf("    DeckOS v1.0.0  -  Pico Control Shell    \n");
-    printf("  ================================\n");
-    printf("[KERNEL] initialized\n");
+    bootloader_run();
+    drivers_init_all();
+    sched_init();
+    sched_register("heartbeat", task_heartbeat, 1000); 
+
+    printf("[kernel] initialized\n");
     shell_init();
 }
 
-void kernel_run() {
+void kernel_run(void) {
     shell_run();
 }

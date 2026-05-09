@@ -11,8 +11,15 @@
 #include "kernel.h"
 #include "pico/unique_id.h"
 #include "hardware/clocks.h"
+#include "hardware/i2c.h"
+#include "pico/bootrom.h"
+#include "drivers.h"
+#include "scheduler.h"
+#include "config.h"
 
 #define LED_PIN 25
+
+extern flash_config_t g_config;
 
 static void print_uptime() {
     uint64_t us = time_us_64();
@@ -89,6 +96,129 @@ static void cmd_pin(int argc, char* argv[]) {
         printf(" %-3d  %-4s  %d\n", i,
             dir ? "OUT" : "IN", val);
     }
+}
+
+static void cmd_i2c(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage:\n");
+        printf("  i2c scan              - scan bus for devices\n");
+        printf("  i2c read  <addr> <reg>       - read one byte\n");
+        printf("  i2c write <addr> <reg> <val> - write one byte\n");
+        return;
+    }
+
+    if (strcmp(argv[1], "scan") == 0) {
+        printf("I2C0 scan (SDA=GP4 SCL=GP5):\n");
+        printf("     0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
+        int found = 0;
+        for (int addr = 0; addr < 128; addr++) {
+            if (addr % 16 == 0) printf("%02X: ", addr);
+            // Probe: send address, check ACK
+            uint8_t rxdata;
+            int ret = i2c_read_timeout_us(i2c0, (uint8_t)addr,
+                                          &rxdata, 1, false, 2000);
+            if (ret >= 0) {
+                printf("%02X ", addr);
+                found++;
+            } else {
+                printf("-- ");
+            }
+            if ((addr + 1) % 16 == 0) printf("\n");
+        }
+        printf("%d device(s) found\n", found);
+
+    } else if (strcmp(argv[1], "read") == 0) {
+        if (argc < 4) { printf("usage: i2c read <addr_hex> <reg_hex>\n"); return; }
+        uint8_t addr = (uint8_t)strtol(argv[2], NULL, 16);
+        uint8_t reg  = (uint8_t)strtol(argv[3], NULL, 16);
+        uint8_t val  = 0;
+        i2c_write_timeout_us(i2c0, addr, &reg, 1, true, 2000);
+        int ret = i2c_read_timeout_us(i2c0, addr, &val, 1, false, 2000);
+        if (ret < 0) { printf("I2C error (no ACK?)\n"); return; }
+        printf("0x%02X reg[0x%02X] = 0x%02X (%d)\n", addr, reg, val, val);
+
+    } else if (strcmp(argv[1], "write") == 0) {
+        if (argc < 5) { printf("usage: i2c write <addr_hex> <reg_hex> <val_hex>\n"); return; }
+        uint8_t addr = (uint8_t)strtol(argv[2], NULL, 16);
+        uint8_t reg  = (uint8_t)strtol(argv[3], NULL, 16);
+        uint8_t val  = (uint8_t)strtol(argv[4], NULL, 16);
+        uint8_t buf[2] = { reg, val };
+        int ret = i2c_write_timeout_us(i2c0, addr, buf, 2, false, 2000);
+        if (ret < 0) { printf("I2C write failed\n"); return; }
+        printf("wrote 0x%02X -> 0x%02X[0x%02X]\n", val, addr, reg);
+
+    } else {
+        printf("unknown i2c subcommand: %s\n", argv[1]);
+    }
+}
+
+static void cmd_drivers(int argc, char* argv[]) {
+    drivers_list();
+}
+
+
+static void cmd_tasks(int argc, char* argv[]) {
+    if (argc >= 3 && strcmp(argv[1], "enable") == 0) {
+        sched_enable(atoi(argv[2]), true);
+        printf("task %d enabled\n", atoi(argv[2]));
+        return;
+    }
+    if (argc >= 3 && strcmp(argv[1], "disable") == 0) {
+        sched_enable(atoi(argv[2]), false);
+        printf("task %d disabled\n", atoi(argv[2]));
+        return;
+    }
+    sched_list();
+}
+
+static void cmd_config(int argc, char* argv[]) {
+    if (argc < 2 || strcmp(argv[1], "show") == 0) {
+        config_print(&g_config);
+        return;
+    }
+    if (strcmp(argv[1], "save") == 0) {
+        config_save(&g_config);
+        return;
+    }
+    if (strcmp(argv[1], "reset") == 0) {
+        config_defaults(&g_config);
+        config_save(&g_config);
+        printf("config reset to defaults and saved\n");
+        return;
+    }
+    if (strcmp(argv[1], "set") == 0 && argc >= 4) {
+        if (strcmp(argv[2], "hostname") == 0) {
+            strncpy(g_config.hostname, argv[3], sizeof(g_config.hostname) - 1);
+            printf("hostname = %s  (run 'config save' to persist)\n", g_config.hostname);
+        } else if (strcmp(argv[2], "cpu_mhz") == 0) {
+            int mhz = atoi(argv[3]);
+            if (mhz != 0 && (mhz < 48 || mhz > 200)) {
+                printf("safe range: 48-200 MHz, or 0 for default\n");
+                return;
+            }
+            g_config.boot_cpu_mhz = (uint32_t)mhz;
+            printf("boot_cpu_mhz = %d  (run 'config save' to persist)\n", mhz);
+        } else if (strcmp(argv[2], "boot_led") == 0) {
+            g_config.boot_led = (uint8_t)(atoi(argv[3]) ? 1 : 0);
+            printf("boot_led = %d\n", g_config.boot_led);
+        } else {
+            printf("unknown key: %s\n", argv[2]);
+            printf("valid keys: hostname, cpu_mhz, boot_led\n");
+        }
+        return;
+    }
+    printf("usage:\n");
+    printf("  config show\n");
+    printf("  config set <key> <value>\n");
+    printf("  config save\n");
+    printf("  config reset\n");
+}
+
+
+static void cmd_dfu(int argc, char* argv[]) {
+    printf("entering USB DFU (BOOTSEL) mode...\n");
+    sleep_ms(200);
+    reset_usb_boot(0, 0);   // never returns
 }
 
 static void cmd_sysinfo(int argc, char* argv[]) {
@@ -311,6 +441,11 @@ static command_t command_table[] = {
     {"uid",     cmd_uid,    "show unique board ID"},
     {"wdog",    cmd_wdog,   "show watchdog status"},
     {"pin",     cmd_pin,    "dump state of all GPIO pins"},
+    {"i2c",     cmd_i2c,     "i2c scan|read|write  - I2C bus operations"},
+    {"drivers", cmd_drivers, "list loaded drivers and their status"},
+    {"tasks",   cmd_tasks,   "list background tasks on core 1"},
+    {"config",  cmd_config,  "config show|set|save|reset  - flash config"},
+    {"dfu",     cmd_dfu,     "reboot into USB DFU / BOOTSEL mode"},
 };
 
 static const int command_count =
