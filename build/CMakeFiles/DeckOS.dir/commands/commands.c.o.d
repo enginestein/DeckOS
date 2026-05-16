@@ -19,7 +19,7 @@ CMakeFiles/DeckOS.dir/commands/commands.c.o: \
  /usr/include/newlib/string.h /usr/include/newlib/sys/_locale.h \
  /usr/include/newlib/strings.h /usr/include/newlib/sys/string.h \
  /usr/include/newlib/stdlib.h /usr/include/newlib/machine/stdlib.h \
- /usr/include/newlib/alloca.h \
+ /usr/include/newlib/alloca.h /usr/include/newlib/ctype.h \
  /home/indresh/embedded/pico-sdk/src/common/pico_stdlib_headers/include/pico/stdlib.h \
  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico.h \
  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/types.h \
@@ -79,9 +79,6 @@ CMakeFiles/DeckOS.dir/commands/commands.c.o: \
  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pwm/include/hardware/pwm.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pwm.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pwm.h \
- /home/indresh/embedded/DeckOS/include/commands.h \
- /home/indresh/embedded/DeckOS/include/kernel.h \
- /home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/include/pico/unique_id.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/include/hardware/clocks.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/clocks.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/clocks.h \
@@ -94,6 +91,13 @@ CMakeFiles/DeckOS.dir/commands/commands.c.o: \
  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom/lock.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/include/hardware/boot_lock.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/include/pico/flash.h \
+ /home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/include/pico/unique_id.h \
+ /home/indresh/embedded/DeckOS/include/commands.h \
+ /home/indresh/embedded/DeckOS/include/kernel.h \
  /home/indresh/embedded/DeckOS/include/drivers.h \
  /home/indresh/embedded/DeckOS/include/scheduler.h \
- /home/indresh/embedded/DeckOS/include/config.h
+ /home/indresh/embedded/DeckOS/include/config.h \
+ /home/indresh/embedded/DeckOS/include/syslog.h \
+ /home/indresh/embedded/DeckOS/include/gpio_mon.h \
+ /home/indresh/embedded/DeckOS/include/morse.h \
+ /home/indresh/embedded/DeckOS/include/tone.h

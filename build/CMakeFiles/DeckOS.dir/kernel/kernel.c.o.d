@@ -70,4 +70,5 @@ CMakeFiles/DeckOS.dir/kernel/kernel.c.o: \
  /home/indresh/embedded/DeckOS/include/shell.h \
  /home/indresh/embedded/DeckOS/include/drivers.h \
  /home/indresh/embedded/DeckOS/include/scheduler.h \
- /home/indresh/embedded/DeckOS/include/bootloader.h
+ /home/indresh/embedded/DeckOS/include/bootloader.h \
+ /home/indresh/embedded/DeckOS/include/syslog.h

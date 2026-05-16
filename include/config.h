@@ -2,8 +2,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-// Persisted system configuration, stored in the last 4 KB of flash.
-// Layout: [magic 4B][version 2B][config struct][crc32 4B]
 
 #define CONFIG_MAGIC   0xDEC0CAFE
 #define CONFIG_VERSION 1
@@ -12,12 +10,11 @@ typedef struct __attribute__((packed)) {
     uint32_t magic;
     uint16_t version;
 
-    // -- add your own fields below this line --
-    uint32_t boot_cpu_mhz;       // 0 = use default (125)
-    uint8_t  boot_led;           // 1 = LED on at boot
-    uint8_t  shell_echo;         // 1 = echo input (default)
-    char     hostname[16];       // board name shown in prompt
-    uint8_t  _reserved[32];      // room to grow without bumping version
+    uint32_t boot_cpu_mhz;    
+    uint8_t  boot_led; 
+    uint8_t  shell_echo;        
+    char     hostname[16]; 
+    uint8_t  _reserved[32];   
 
     uint32_t crc32;
 } flash_config_t;

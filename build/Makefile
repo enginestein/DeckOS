@@ -2143,6 +2143,30 @@ kernel/config.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/config.c.s
 .PHONY : kernel/config.c.s
 
+kernel/gpio_mon.o: kernel/gpio_mon.c.o
+.PHONY : kernel/gpio_mon.o
+
+# target to build an object file
+kernel/gpio_mon.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/gpio_mon.c.o
+.PHONY : kernel/gpio_mon.c.o
+
+kernel/gpio_mon.i: kernel/gpio_mon.c.i
+.PHONY : kernel/gpio_mon.i
+
+# target to preprocess a source file
+kernel/gpio_mon.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/gpio_mon.c.i
+.PHONY : kernel/gpio_mon.c.i
+
+kernel/gpio_mon.s: kernel/gpio_mon.c.s
+.PHONY : kernel/gpio_mon.s
+
+# target to generate assembly for a file
+kernel/gpio_mon.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/gpio_mon.c.s
+.PHONY : kernel/gpio_mon.c.s
+
 kernel/kernel.o: kernel/kernel.c.o
 .PHONY : kernel/kernel.o
 
@@ -2167,6 +2191,30 @@ kernel/kernel.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/kernel.c.s
 .PHONY : kernel/kernel.c.s
 
+kernel/morse.o: kernel/morse.c.o
+.PHONY : kernel/morse.o
+
+# target to build an object file
+kernel/morse.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/morse.c.o
+.PHONY : kernel/morse.c.o
+
+kernel/morse.i: kernel/morse.c.i
+.PHONY : kernel/morse.i
+
+# target to preprocess a source file
+kernel/morse.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/morse.c.i
+.PHONY : kernel/morse.c.i
+
+kernel/morse.s: kernel/morse.c.s
+.PHONY : kernel/morse.s
+
+# target to generate assembly for a file
+kernel/morse.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/morse.c.s
+.PHONY : kernel/morse.c.s
+
 kernel/scheduler.o: kernel/scheduler.c.o
 .PHONY : kernel/scheduler.o
 
@@ -2190,6 +2238,54 @@ kernel/scheduler.s: kernel/scheduler.c.s
 kernel/scheduler.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/scheduler.c.s
 .PHONY : kernel/scheduler.c.s
+
+kernel/syslog.o: kernel/syslog.c.o
+.PHONY : kernel/syslog.o
+
+# target to build an object file
+kernel/syslog.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/syslog.c.o
+.PHONY : kernel/syslog.c.o
+
+kernel/syslog.i: kernel/syslog.c.i
+.PHONY : kernel/syslog.i
+
+# target to preprocess a source file
+kernel/syslog.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/syslog.c.i
+.PHONY : kernel/syslog.c.i
+
+kernel/syslog.s: kernel/syslog.c.s
+.PHONY : kernel/syslog.s
+
+# target to generate assembly for a file
+kernel/syslog.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/syslog.c.s
+.PHONY : kernel/syslog.c.s
+
+kernel/tone.o: kernel/tone.c.o
+.PHONY : kernel/tone.o
+
+# target to build an object file
+kernel/tone.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/tone.c.o
+.PHONY : kernel/tone.c.o
+
+kernel/tone.i: kernel/tone.c.i
+.PHONY : kernel/tone.i
+
+# target to preprocess a source file
+kernel/tone.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/tone.c.i
+.PHONY : kernel/tone.c.i
+
+kernel/tone.s: kernel/tone.c.s
+.PHONY : kernel/tone.s
+
+# target to generate assembly for a file
+kernel/tone.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/kernel/tone.c.s
+.PHONY : kernel/tone.c.s
 
 main.o: main.c.o
 .PHONY : main.o
@@ -2496,12 +2592,24 @@ help:
 	@echo "... kernel/config.o"
 	@echo "... kernel/config.i"
 	@echo "... kernel/config.s"
+	@echo "... kernel/gpio_mon.o"
+	@echo "... kernel/gpio_mon.i"
+	@echo "... kernel/gpio_mon.s"
 	@echo "... kernel/kernel.o"
 	@echo "... kernel/kernel.i"
 	@echo "... kernel/kernel.s"
+	@echo "... kernel/morse.o"
+	@echo "... kernel/morse.i"
+	@echo "... kernel/morse.s"
 	@echo "... kernel/scheduler.o"
 	@echo "... kernel/scheduler.i"
 	@echo "... kernel/scheduler.s"
+	@echo "... kernel/syslog.o"
+	@echo "... kernel/syslog.i"
+	@echo "... kernel/syslog.s"
+	@echo "... kernel/tone.o"
+	@echo "... kernel/tone.i"
+	@echo "... kernel/tone.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

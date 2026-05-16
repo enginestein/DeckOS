@@ -44,8 +44,8 @@ static void apply_config(void) {
 static void print_banner(boot_mode_t mode) {
     printf("\n");
     printf("  ╔══════════════════════════════════╗\n");
-    printf("  ║   DeckOS v1.0.0  —  RP2040       ║\n");
-    printf("  ║   Built: %s          ║\n", __DATE__);
+    printf("  ║           DeckOS v1.0.0          ║\n");
+    printf("  ║           Built: %s              ║\n", __DATE__);
     printf("  ╚══════════════════════════════════╝\n");
     printf("  mode   : %s\n", bootloader_mode_str(mode));
     printf("  host   : %s\n", g_config.hostname);
