@@ -59,7 +59,7 @@ static void cmd_help(int argc, char* argv[]) {
 }
 
 static void cmd_version(int argc, char* argv[]) {
-    printf("DeckOS v1.1.0  |  Raspberry Pi Pico\n");
+    printf("DeckOS v1.2.0  |  Raspberry Pi Pico\n");
     printf("Build: %s %s\n", __DATE__, __TIME__);
 }
 
@@ -258,7 +258,7 @@ static void cmd_dfu(int argc, char* argv[]) {
 
 static void cmd_sysinfo(int argc, char* argv[]) {
     printf("=================================\n");
-    printf("  DeckOS v1.1.0  —  system info  \n");
+    printf("  DeckOS v1.2.0  —  system info  \n");
     printf("=================================\n");
     printf("board   : Raspberry Pi Pico\n");
     printf("cpu     : RP2040  dual-core Cortex-M0+  125 MHz\n");

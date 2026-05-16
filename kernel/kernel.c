@@ -20,7 +20,7 @@ void kernel_init(void) {
     stdio_init_all();
     while (!stdio_usb_connected()) sleep_ms(100);
     syslog_init();
-    LOG_I("kernel", "booting DeckOS v1.1.0");
+    LOG_I("kernel", "booting DeckOS v1.2.0");
 
     bootloader_run();
 
