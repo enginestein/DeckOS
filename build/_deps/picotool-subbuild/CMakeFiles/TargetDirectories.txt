@@ -1,3 +1,0 @@
-/home/indresh/embedded/DeckOS/build/_deps/picotool-subbuild/CMakeFiles/picotool-populate.dir
-/home/indresh/embedded/DeckOS/build/_deps/picotool-subbuild/CMakeFiles/edit_cache.dir
-/home/indresh/embedded/DeckOS/build/_deps/picotool-subbuild/CMakeFiles/rebuild_cache.dir

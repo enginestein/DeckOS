@@ -1,7 +1,0 @@
-/home/indresh/embedded/DeckOS/build/_deps/picotool/picotool
-/home/indresh/embedded/DeckOS/build/_deps/picotool/picotoolTargets.cmake
-/home/indresh/embedded/DeckOS/build/_deps/picotool/picotoolTargets-release.cmake
-/home/indresh/embedded/DeckOS/build/_deps/picotool/picotoolConfig.cmake
-/home/indresh/embedded/DeckOS/build/_deps/picotool/picotoolConfigVersion.cmake
-/home/indresh/embedded/DeckOS/build/_deps/picotool/enc_bootloader.elf
-/home/indresh/embedded/DeckOS/build/_deps/picotool/enc_bootloader_mbedtls.elf
