@@ -71,4 +71,10 @@ CMakeFiles/DeckOS.dir/kernel/config.c.o: \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+ /home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/include/pico/multicore.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sync.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
  /home/indresh/embedded/DeckOS/include/config.h

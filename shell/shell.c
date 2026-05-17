@@ -5,10 +5,11 @@
 #include "shell.h"
 #include "commands.h"
 
-#define INPUT_SIZE   128
-#define HISTORY_SIZE 16   
+#define INPUT_SIZE      2048 
+#define HISTORY_SIZE    8 
+#define HISTORY_LINE    128
 
-static char history[HISTORY_SIZE][INPUT_SIZE];
+static char history[HISTORY_SIZE][HISTORY_LINE];
 static int  hist_count  = 0;  
 static int  hist_cursor = 0;  
 
@@ -18,11 +19,10 @@ static void history_push(const char* line) {
         int prev = (hist_count - 1) % HISTORY_SIZE;
         if (strcmp(history[prev], line) == 0) return;
     }
-    strncpy(history[hist_count % HISTORY_SIZE], line, INPUT_SIZE - 1);
-    history[hist_count % HISTORY_SIZE][INPUT_SIZE - 1] = '\0';
+    strncpy(history[hist_count % HISTORY_SIZE], line, HISTORY_LINE - 1); 
+    history[hist_count % HISTORY_SIZE][HISTORY_LINE - 1] = '\0';
     hist_count++;
 }
-
 static const char* history_get(int back) {
     if (back <= 0 || back > hist_count) return NULL;
     int idx = (hist_count - back) % HISTORY_SIZE;

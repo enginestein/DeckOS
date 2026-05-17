@@ -4,15 +4,21 @@
 CMakeFiles/DeckOS.dir/commands/commands.c.o: /home/indresh/embedded/DeckOS/commands/commands.c \
   generated/pico_base/pico/config_autogen.h \
   generated/pico_base/pico/version.h \
+  /home/indresh/embedded/DeckOS/include/bench.h \
   /home/indresh/embedded/DeckOS/include/commands.h \
   /home/indresh/embedded/DeckOS/include/config.h \
+  /home/indresh/embedded/DeckOS/include/device_detect.h \
   /home/indresh/embedded/DeckOS/include/drivers.h \
   /home/indresh/embedded/DeckOS/include/gpio_mon.h \
+  /home/indresh/embedded/DeckOS/include/heap_track.h \
   /home/indresh/embedded/DeckOS/include/kernel.h \
   /home/indresh/embedded/DeckOS/include/morse.h \
   /home/indresh/embedded/DeckOS/include/scheduler.h \
+  /home/indresh/embedded/DeckOS/include/servo.h \
+  /home/indresh/embedded/DeckOS/include/spi_bus.h \
   /home/indresh/embedded/DeckOS/include/syslog.h \
   /home/indresh/embedded/DeckOS/include/tone.h \
+  /home/indresh/embedded/DeckOS/include/uart_pass.h \
   /home/indresh/embedded/pico-sdk/src/boards/include/boards/pico.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/assert.h \
@@ -20,6 +26,11 @@ CMakeFiles/DeckOS.dir/commands/commands.c.o: /home/indresh/embedded/DeckOS/comma
   /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/error.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/types.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_stdlib_headers/include/pico/stdlib.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sync.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_time/include/pico/time.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/adc.h \
@@ -34,6 +45,7 @@ CMakeFiles/DeckOS.dir/commands/commands.c.o: /home/indresh/embedded/DeckOS/comma
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pwm.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/spi.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/watchdog.h \
@@ -49,6 +61,7 @@ CMakeFiles/DeckOS.dir/commands/commands.c.o: /home/indresh/embedded/DeckOS/comma
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/scb.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/spi.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/watchdog.h \
@@ -60,11 +73,15 @@ CMakeFiles/DeckOS.dir/commands/commands.c.o: /home/indresh/embedded/DeckOS/comma
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/include/hardware/boot_lock.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/include/hardware/clocks.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/include/hardware/flash.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/include/hardware/i2c.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pwm/include/hardware/pwm.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/include/hardware/spi.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/include/hardware/sync/spin_lock.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/include/hardware/watchdog.h \
@@ -72,6 +89,7 @@ CMakeFiles/DeckOS.dir/commands/commands.c.o: /home/indresh/embedded/DeckOS/comma
   /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom/lock.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom_constants.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/include/pico/flash.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/include/pico/multicore.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/include/pico/platform/common.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_compiler/include/pico/platform/compiler.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/include/pico/platform/panic.h \
@@ -119,10 +137,91 @@ CMakeFiles/DeckOS.dir/commands/commands.c.o: /home/indresh/embedded/DeckOS/comma
   /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
   /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
 
+CMakeFiles/DeckOS.dir/communication/uart_pass.c.o: /home/indresh/embedded/DeckOS/communication/uart_pass.c \
+  generated/pico_base/pico/config_autogen.h \
+  generated/pico_base/pico/version.h \
+  /home/indresh/embedded/DeckOS/include/uart_pass.h \
+  /home/indresh/embedded/pico-sdk/src/boards/include/boards/pico.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/assert.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/config.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/error.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/types.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_stdlib_headers/include/pico/stdlib.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pads_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/interp.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/io_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/m0plus.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/nvic.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pads_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/scb.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform/cpu_regs.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/include/pico/platform/common.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_compiler/include/pico/platform/compiler.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/include/pico/platform/panic.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_sections/include/pico/platform/sections.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/stdio.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/stdio.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
+
 CMakeFiles/DeckOS.dir/drivers/drivers.c.o: /home/indresh/embedded/DeckOS/drivers/drivers.c \
   generated/pico_base/pico/config_autogen.h \
   generated/pico_base/pico/version.h \
   /home/indresh/embedded/DeckOS/include/drivers.h \
+  /home/indresh/embedded/DeckOS/include/spi_bus.h \
   /home/indresh/embedded/pico-sdk/src/boards/include/boards/pico.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/assert.h \
@@ -143,10 +242,191 @@ CMakeFiles/DeckOS.dir/drivers/drivers.c.o: /home/indresh/embedded/DeckOS/drivers
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pwm.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/spi.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/adc.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/i2c.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/interp.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/io_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/m0plus.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/nvic.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pads_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pwm.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/scb.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/spi.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform/cpu_regs.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/include/hardware/adc.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/include/hardware/i2c.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pwm/include/hardware/pwm.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/include/hardware/spi.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/include/pico/platform/common.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_compiler/include/pico/platform/compiler.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/include/pico/platform/panic.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_sections/include/pico/platform/sections.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/stdio.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/stdio.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
+
+CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o: /home/indresh/embedded/DeckOS/drivers/spi_bus.c \
+  generated/pico_base/pico/config_autogen.h \
+  generated/pico_base/pico/version.h \
+  /home/indresh/embedded/DeckOS/include/spi_bus.h \
+  /home/indresh/embedded/pico-sdk/src/boards/include/boards/pico.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/assert.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/config.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/error.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/types.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_stdlib_headers/include/pico/stdlib.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pads_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/spi.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/interp.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/io_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/m0plus.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/nvic.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pads_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/scb.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/spi.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform/cpu_regs.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/include/hardware/spi.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/include/pico/platform/common.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_compiler/include/pico/platform/compiler.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/include/pico/platform/panic.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_sections/include/pico/platform/sections.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/stdio.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/stdio.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
+
+CMakeFiles/DeckOS.dir/hardware/servo.c.o: /home/indresh/embedded/DeckOS/hardware/servo.c \
+  generated/pico_base/pico/config_autogen.h \
+  generated/pico_base/pico/version.h \
+  /home/indresh/embedded/DeckOS/include/servo.h \
+  /home/indresh/embedded/pico-sdk/src/boards/include/boards/pico.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/assert.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/config.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/error.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/types.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_stdlib_headers/include/pico/stdlib.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/clocks.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pads_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pwm.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/clocks.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/interp.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/io_bank0.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/m0plus.h \
@@ -161,10 +441,9 @@ CMakeFiles/DeckOS.dir/drivers/drivers.c.o: /home/indresh/embedded/DeckOS/drivers
   /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform/cpu_regs.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
-  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/include/hardware/adc.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/include/hardware/clocks.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h \
-  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/include/hardware/i2c.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pwm/include/hardware/pwm.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h \
@@ -2171,6 +2450,48 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll
   /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
   /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
 
+CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c \
+  generated/pico_base/pico/config_autogen.h \
+  generated/pico_base/pico/version.h \
+  /home/indresh/embedded/pico-sdk/src/boards/include/boards/pico.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/assert.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/config.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/error.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/types.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/clocks.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/spi.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/clocks.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/spi.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/include/hardware/clocks.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/include/hardware/spi.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/include/pico/platform/common.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_compiler/include/pico/platform/compiler.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/include/pico/platform/panic.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_sections/include/pico/platform/sections.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
+
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c \
   generated/pico_base/pico/config_autogen.h \
   generated/pico_base/pico/version.h \
@@ -4090,6 +4411,11 @@ CMakeFiles/DeckOS.dir/kernel/config.c.o: /home/indresh/embedded/DeckOS/kernel/co
   /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/error.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/types.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_stdlib_headers/include/pico/stdlib.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sync.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_time/include/pico/time.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
@@ -4124,6 +4450,7 @@ CMakeFiles/DeckOS.dir/kernel/config.c.o: /home/indresh/embedded/DeckOS/kernel/co
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/include/hardware/sync/spin_lock.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/include/pico/multicore.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/include/pico/platform/common.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_compiler/include/pico/platform/compiler.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/include/pico/platform/panic.h \
@@ -4256,6 +4583,7 @@ CMakeFiles/DeckOS.dir/kernel/kernel.c.o: /home/indresh/embedded/DeckOS/kernel/ke
   generated/pico_base/pico/version.h \
   /home/indresh/embedded/DeckOS/include/bootloader.h \
   /home/indresh/embedded/DeckOS/include/drivers.h \
+  /home/indresh/embedded/DeckOS/include/heap_track.h \
   /home/indresh/embedded/DeckOS/include/kernel.h \
   /home/indresh/embedded/DeckOS/include/scheduler.h \
   /home/indresh/embedded/DeckOS/include/shell.h \
@@ -4267,6 +4595,11 @@ CMakeFiles/DeckOS.dir/kernel/kernel.c.o: /home/indresh/embedded/DeckOS/kernel/ke
   /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/error.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/types.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_stdlib_headers/include/pico/stdlib.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sync.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_time/include/pico/time.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
   /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
@@ -4296,8 +4629,11 @@ CMakeFiles/DeckOS.dir/kernel/kernel.c.o: /home/indresh/embedded/DeckOS/kernel/ke
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/include/hardware/sync/spin_lock.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/include/pico/multicore.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/include/pico/platform/common.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_compiler/include/pico/platform/compiler.h \
   /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/include/pico/platform/panic.h \
@@ -4425,6 +4761,8 @@ CMakeFiles/DeckOS.dir/kernel/scheduler.c.o: /home/indresh/embedded/DeckOS/kernel
   generated/pico_base/pico/config_autogen.h \
   generated/pico_base/pico/version.h \
   /home/indresh/embedded/DeckOS/include/scheduler.h \
+  /home/indresh/embedded/DeckOS/include/servo.h \
+  /home/indresh/embedded/DeckOS/include/spinlock_util.h \
   /home/indresh/embedded/pico-sdk/src/boards/include/boards/pico.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico.h \
   /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/assert.h \
@@ -4781,6 +5119,232 @@ CMakeFiles/DeckOS.dir/shell/shell.c.o: /home/indresh/embedded/DeckOS/shell/shell
   /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
   /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
 
+CMakeFiles/DeckOS.dir/system/bench.c.o: /home/indresh/embedded/DeckOS/system/bench.c \
+  generated/pico_base/pico/config_autogen.h \
+  generated/pico_base/pico/version.h \
+  /home/indresh/embedded/DeckOS/include/bench.h \
+  /home/indresh/embedded/DeckOS/include/commands.h \
+  /home/indresh/embedded/pico-sdk/src/boards/include/boards/pico.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/assert.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/config.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/error.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/types.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_stdlib_headers/include/pico/stdlib.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/clocks.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pads_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/clocks.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/interp.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/io_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/m0plus.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/nvic.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pads_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/scb.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform/cpu_regs.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/include/hardware/clocks.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/include/pico/platform/common.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_compiler/include/pico/platform/compiler.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/include/pico/platform/panic.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_sections/include/pico/platform/sections.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/stdio.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/stdio.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
+
+CMakeFiles/DeckOS.dir/system/device_detect.c.o: /home/indresh/embedded/DeckOS/system/device_detect.c \
+  generated/pico_base/pico/config_autogen.h \
+  generated/pico_base/pico/version.h \
+  /home/indresh/embedded/DeckOS/include/device_detect.h \
+  /home/indresh/embedded/pico-sdk/src/boards/include/boards/pico.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/assert.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/config.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/error.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/types.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_stdlib_headers/include/pico/stdlib.h \
+  /home/indresh/embedded/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/adc.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/clocks.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/i2c.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pads_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pwm.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/adc.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/clocks.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/i2c.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/interp.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/io_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/m0plus.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/nvic.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pads_bank0.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pwm.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/scb.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform.h \
+  /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform/cpu_regs.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/include/hardware/adc.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/include/hardware/clocks.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/include/hardware/i2c.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pwm/include/hardware/pwm.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/include/pico/platform/common.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_compiler/include/pico/platform/compiler.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/include/pico/platform/panic.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_sections/include/pico/platform/sections.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/stdio.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/stdio.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
+
+CMakeFiles/DeckOS.dir/system/heap_track.c.o: /home/indresh/embedded/DeckOS/system/heap_track.c \
+  /home/indresh/embedded/DeckOS/include/heap_track.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/alloca.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/machine/stdlib.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/stdio.h \
+  /usr/include/newlib/stdlib.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/stdio.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
+
+
+/home/indresh/embedded/DeckOS/system/device_detect.c:
 
 /home/indresh/embedded/DeckOS/shell/shell.c:
 
@@ -4789,8 +5353,6 @@ CMakeFiles/DeckOS.dir/shell/shell.c.o: /home/indresh/embedded/DeckOS/shell/shell
 /home/indresh/embedded/DeckOS/kernel/syslog.c:
 
 /home/indresh/embedded/DeckOS/kernel/morse.c:
-
-/home/indresh/embedded/DeckOS/kernel/config.c:
 
 /home/indresh/embedded/DeckOS/include/bootloader.h:
 
@@ -4806,8 +5368,6 @@ CMakeFiles/DeckOS.dir/shell/shell.c.o: /home/indresh/embedded/DeckOS/shell/shell
 
 /home/indresh/embedded/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/code.h:
 
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c:
-
 /home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/runtime.c:
@@ -4817,8 +5377,6 @@ CMakeFiles/DeckOS.dir/shell/shell.c.o: /home/indresh/embedded/DeckOS/shell/shell
 /home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/include/pico/malloc.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/include/pico/multicore.h:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_math.c:
 
@@ -4882,8 +5440,6 @@ CMakeFiles/DeckOS.dir/shell/shell.c.o: /home/indresh/embedded/DeckOS/shell/shell
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip_cache/include/hardware/xip_cache.h:
 
-/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/include/hardware/flash.h:
-
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pads_qspi.h:
 
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/io_qspi.h:
@@ -4893,6 +5449,8 @@ CMakeFiles/DeckOS.dir/shell/shell.c.o: /home/indresh/embedded/DeckOS/shell/shell
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/ssi.h:
 
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pads_qspi.h:
+
+/home/indresh/embedded/DeckOS/system/heap_track.c:
 
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_qspi.h:
 
@@ -4909,10 +5467,6 @@ CMakeFiles/DeckOS.dir/shell/shell.c.o: /home/indresh/embedded/DeckOS/shell/shell
 /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_util/include/pico/util/queue.h:
 
 /home/indresh/embedded/pico-sdk/src/common/pico_util/include/pico/util/pheap.h:
 
@@ -4936,6 +5490,8 @@ CMakeFiles/DeckOS.dir/shell/shell.c.o: /home/indresh/embedded/DeckOS/shell/shell
 
 /home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.c:
 
+/home/indresh/embedded/DeckOS/system/bench.c:
+
 /home/indresh/embedded/pico-sdk/src/common/hardware_claim/include/hardware/claim.h:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/malloc.c:
@@ -4944,31 +5500,27 @@ CMakeFiles/DeckOS.dir/shell/shell.c.o: /home/indresh/embedded/DeckOS/shell/shell
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c:
 
-/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c:
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c:
 
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom.h:
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/usb_dpram.h:
 
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/include/pico/fix/rp2040_usb_device_enumeration.h:
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.h:
 
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_sections/include/pico/platform/sections.h:
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/dcd.h:
 
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/tbman.h:
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c:
 
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/include/pico/platform/panic.h:
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp:
 
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c:
+/usr/include/newlib/sys/stat.h:
 
-/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_compiler/include/pico/platform/compiler.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom/lock.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/ssi.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h:
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h:
+
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/include/hardware/i2c.h:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/flash.c:
 
@@ -4985,8 +5537,6 @@ CMakeFiles/DeckOS.dir/shell/shell.c.o: /home/indresh/embedded/DeckOS/shell/shell
 /usr/include/newlib/c++/10.3.1/arm-none-eabi/thumb/v6-m/nofp/bits/c++config.h:
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h:
 
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sysinfo.h:
 
@@ -5006,47 +5556,91 @@ CMakeFiles/DeckOS.dir/shell/shell.c.o: /home/indresh/embedded/DeckOS/shell/shell
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/osal/osal_pico.h:
 
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h:
-
-/usr/include/newlib/stdio.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_verify.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.h:
-
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform/cpu_regs.h:
-
-/usr/include/newlib/machine/_endian.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp:
-
-/usr/include/newlib/sys/stat.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c:
-
-/home/indresh/embedded/DeckOS/include/config.h:
-
-/usr/include/newlib/unistd.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/i2c.h:
 
 /home/indresh/embedded/DeckOS/main.c:
 
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/io_bank0.h:
-
-/usr/include/newlib/_ansi.h:
 
 /home/indresh/embedded/DeckOS/kernel/kernel.c:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h:
+
+/usr/include/newlib/_ansi.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h:
+
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/include/pico/double.h:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/usb.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/spi.h:
+
+/usr/include/newlib/sys/cdefs.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pwm.h:
+
+/usr/include/newlib/math.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pads_bank0.h:
+
+/home/indresh/embedded/DeckOS/include/bench.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/include/hardware/flash.h:
+
+/usr/include/newlib/machine/ieeefp.h:
+
+/usr/include/newlib/machine/endian.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/adc.h:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/structure.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom_constants.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h:
+
+/usr/include/newlib/unistd.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/i2c.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_bank0.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pwm.h:
+
+/home/indresh/embedded/DeckOS/include/config.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h:
+
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/include/pico/platform/cpu_regs.h:
+
+/usr/include/newlib/machine/_endian.h:
+
+/home/indresh/embedded/DeckOS/include/spi_bus.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h:
+
+/usr/include/newlib/stdio.h:
+
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_verify.h:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/error.h:
+
+/home/indresh/embedded/DeckOS/include/kernel.h:
 
 /home/indresh/embedded/DeckOS/include/drivers.h:
 
@@ -5056,117 +5650,7 @@ CMakeFiles/DeckOS.dir/shell/shell.c.o: /home/indresh/embedded/DeckOS/shell/shell
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h:
 
-/home/indresh/embedded/DeckOS/include/kernel.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/include/pico/runtime.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/include/pico/platform/common.h:
-
-/usr/lib/gcc/arm-none-eabi/10.3.1/include/float.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h:
-
-/home/indresh/embedded/DeckOS/include/tone.h:
-
-/usr/include/newlib/sys/times.h:
-
-/home/indresh/embedded/pico-sdk/src/boards/include/boards/pico.h:
-
-/home/indresh/embedded/DeckOS/include/scheduler.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/usb_dpram.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_usb_reset_interface_headers/include/pico/usb_reset_interface.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_private.h:
-
-generated/pico_base/pico/version.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/error.h:
-
-/usr/include/newlib/machine/endian.h:
-
-/usr/include/newlib/sys/_locale.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/boot_stage2/include/boot_stage2/config.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/boot_bootrom_headers/include/boot/bootrom_constants.h:
-
-/usr/include/newlib/sys/reent.h:
-
-/home/indresh/embedded/DeckOS/commands/commands.c:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/usb.h:
-
-/home/indresh/embedded/pico-sdk/src/common/boot_picoboot_headers/include/boot/picoboot_constants.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_time/time.c:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/watchdog.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_binary_info/include/pico/binary_info.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c:
-
-generated/pico_base/pico/config_autogen.h:
-
-/usr/include/newlib/string.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sync.h:
-
-/home/indresh/embedded/DeckOS/include/gpio_mon.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/adc.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/structure.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom_constants.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pwm.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_bank0.h:
-
-/usr/include/newlib/c++/10.3.1/stdlib.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_pvt.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_time_adapter/include/pico/time_adapter.h:
-
-/home/indresh/embedded/DeckOS/include/commands.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/types.h:
-
-/home/indresh/embedded/DeckOS/kernel/scheduler.c:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h:
-
-/home/indresh/embedded/DeckOS/include/syslog.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/assert.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/clocks.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sem.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h:
+/home/indresh/embedded/DeckOS/include/heap_track.h:
 
 /home/indresh/embedded/pico-sdk/src/common/pico_util/datetime.c:
 
@@ -5184,23 +5668,183 @@ generated/pico_base/pico/config_autogen.h:
 
 /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h:
 
+/home/indresh/embedded/pico-sdk/src/common/boot_picoboot_headers/include/boot/picoboot_constants.h:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_time/time.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/watchdog.h:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_binary_info/include/pico/binary_info.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c:
+
+generated/pico_base/pico/config_autogen.h:
+
+/usr/include/newlib/string.h:
+
+/home/indresh/embedded/DeckOS/include/scheduler.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/usb.h:
+
+/home/indresh/embedded/DeckOS/commands/commands.c:
+
+/home/indresh/embedded/DeckOS/include/servo.h:
+
+/usr/include/newlib/sys/times.h:
+
+/home/indresh/embedded/pico-sdk/src/boards/include/boards/pico.h:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sem.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/clocks.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h:
+
+/home/indresh/embedded/DeckOS/include/tone.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_compiler/include/pico/platform/compiler.h:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/types.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/ssi.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom/lock.h:
+
+/home/indresh/embedded/DeckOS/include/syslog.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c:
+
+/home/indresh/embedded/DeckOS/communication/uart_pass.c:
+
+/usr/include/newlib/c++/10.3.1/stdlib.h:
+
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_pvt.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_time_adapter/include/pico/time_adapter.h:
+
+/home/indresh/embedded/DeckOS/include/commands.h:
+
+/home/indresh/embedded/DeckOS/kernel/config.c:
+
+/home/indresh/embedded/DeckOS/include/uart_pass.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_util/include/pico/util/queue.h:
+
+/home/indresh/embedded/DeckOS/hardware/servo.c:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_usb_reset_interface_headers/include/pico/usb_reset_interface.h:
+
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_private.h:
+
+generated/pico_base/pico/version.h:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/assert.h:
+
+/usr/include/newlib/machine/_time.h:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/mutex.h:
+
+/usr/lib/gcc/arm-none-eabi/10.3.1/include/float.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h:
+
+/home/indresh/embedded/DeckOS/include/shell.h:
+
+/home/indresh/embedded/DeckOS/include/morse.h:
+
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pll.h:
+
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h:
+
+/home/indresh/embedded/DeckOS/include/gpio_mon.h:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sync.h:
+
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_stdlib_headers/include/pico/stdlib.h:
+
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/adc.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h:
+
+/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h:
+
+/usr/include/newlib/sys/stdio.h:
 
 /home/indresh/embedded/pico-sdk/src/common/pico_sync/critical_section.c:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/include/hardware/clocks.h:
 
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h:
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/include/hardware/spi.h:
 
-/usr/include/newlib/math.h:
+/usr/include/newlib/sys/_timeval.h:
 
-/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c:
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h:
 
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pads_bank0.h:
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h:
 
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c:
+/home/indresh/embedded/DeckOS/kernel/scheduler.c:
 
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pwm.h:
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom.h:
+
+/home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/lock_core.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/include/pico/unique_id.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/include/pico/multicore.h:
+
+/home/indresh/embedded/DeckOS/drivers/drivers.c:
+
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c:
+
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/include/pico/runtime.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/include/pico/platform/common.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/tbman.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/include/pico/platform/panic.h:
+
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/include/pico/fix/rp2040_usb_device_enumeration.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_sections/include/pico/platform/sections.h:
+
+/usr/include/newlib/sys/_locale.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/boot_stage2/include/boot_stage2/config.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/boot_bootrom_headers/include/boot/bootrom_constants.h:
+
+/usr/include/newlib/sys/reent.h:
 
 /usr/include/newlib/_newlib_version.h:
 
@@ -5214,6 +5858,12 @@ generated/pico_base/pico/config_autogen.h:
 
 /usr/include/newlib/ctype.h:
 
+/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb/reset_interface.h:
+
+/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/include/hardware/sync/spin_lock.h:
+
+/usr/include/newlib/machine/_default_types.h:
+
 /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c:
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c:
@@ -5222,15 +5872,11 @@ generated/pico_base/pico/config_autogen.h:
 
 /usr/include/newlib/machine/_types.h:
 
-/usr/include/newlib/machine/ieeefp.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_stdlib_headers/include/pico/stdlib.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c:
-
 /home/indresh/embedded/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/defs.h:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xosc/xosc.c:
+
+/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/spi.h:
 
 /usr/include/newlib/machine/stdlib.h:
 
@@ -5244,25 +5890,21 @@ generated/pico_base/pico/config_autogen.h:
 
 /usr/include/newlib/strings.h:
 
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.h:
+
+/usr/include/newlib/sys/_pthreadtypes.h:
+
+/usr/include/newlib/sys/_sigset.h:
+
 /usr/include/newlib/sys/_timespec.h:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio/driver.h:
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_debug.h:
 
-/usr/include/newlib/sys/_timeval.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb/reset_interface.h:
-
-/usr/include/newlib/machine/_default_types.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/include/hardware/sync/spin_lock.h:
-
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/interp.h:
 
 /usr/include/newlib/sys/_types.h:
-
-/usr/include/newlib/sys/cdefs.h:
 
 /usr/include/newlib/sys/config.h:
 
@@ -5288,43 +5930,19 @@ generated/pico_base/pico/config_autogen.h:
 
 /usr/include/newlib/sys/_intsup.h:
 
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h:
-
-/usr/include/newlib/sys/stdio.h:
-
-/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h:
-
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/i2c.h:
 
 /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h:
 
-/home/indresh/embedded/DeckOS/drivers/drivers.c:
+/home/indresh/embedded/DeckOS/drivers/spi_bus.c:
 
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c:
+/home/indresh/embedded/DeckOS/include/spinlock_util.h:
 
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/m0plus.h:
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h:
 
 /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h:
-
-/home/indresh/embedded/DeckOS/include/shell.h:
-
-/home/indresh/embedded/DeckOS/include/morse.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/include/pico/unique_id.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/lock_core.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pll.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c:
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c:
 
@@ -5346,15 +5964,13 @@ generated/pico_base/pico/config_autogen.h:
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_types.h:
 
+/home/indresh/embedded/DeckOS/include/device_detect.h:
+
 /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pads_bank0.h:
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.h:
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/osal/osal.h:
-
-/usr/include/newlib/machine/_time.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/mutex.h:
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c:
 
@@ -5364,32 +5980,12 @@ generated/pico_base/pico/config_autogen.h:
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c:
 
-/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/include/hardware/i2c.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/dcd.h:
-
 /home/indresh/embedded/pico-sdk/src/common/pico_util/queue.c:
 
 /usr/include/newlib/sys/time.h:
 
+/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c:
+
 /home/indresh/embedded/pico-sdk/src/common/pico_base_headers/include/pico/config.h:
 
 /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c:
-
-/usr/include/newlib/sys/_pthreadtypes.h:
-
-/usr/include/newlib/sys/_sigset.h:
-
-/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.h:
-
-/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/include/pico/double.h:
-
-/home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c:
-
-/home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/usb.h:

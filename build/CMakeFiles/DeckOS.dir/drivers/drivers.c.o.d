@@ -69,6 +69,9 @@ CMakeFiles/DeckOS.dir/drivers/drivers.c.o: \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/i2c.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/i2c.h \
+ /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/include/hardware/spi.h \
+ /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/spi.h \
+ /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/spi.h \
  /home/indresh/embedded/pico-sdk/src/common/pico_stdlib_headers/include/pico/stdlib.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h \
@@ -77,4 +80,5 @@ CMakeFiles/DeckOS.dir/drivers/drivers.c.o: \
  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
- /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h
+ /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+ /home/indresh/embedded/DeckOS/include/spi_bus.h

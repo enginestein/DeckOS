@@ -66,9 +66,18 @@ CMakeFiles/DeckOS.dir/kernel/kernel.c.o: \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+ /home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/include/pico/multicore.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sync.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+ /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+ /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/include/hardware/sync/spin_lock.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
  /home/indresh/embedded/DeckOS/include/kernel.h \
  /home/indresh/embedded/DeckOS/include/shell.h \
  /home/indresh/embedded/DeckOS/include/drivers.h \
  /home/indresh/embedded/DeckOS/include/scheduler.h \
  /home/indresh/embedded/DeckOS/include/bootloader.h \
- /home/indresh/embedded/DeckOS/include/syslog.h
+ /home/indresh/embedded/DeckOS/include/syslog.h \
+ /home/indresh/embedded/DeckOS/include/heap_track.h

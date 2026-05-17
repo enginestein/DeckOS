@@ -1,34 +1,21 @@
-/**
- * commands.c  —  DeckOS command table
- *
- * NEW commands added:
- *   watch   <ms> <cmd>      repeatedly run a command at an interval
- *   morse   <text>          blink LED in morse code
- *   memmap                  detailed memory layout
- *   gpio irq <pin>          monitor GPIO for IRQ edges
- *   syslog  [options]       in-memory ring log
- *   tone    <pin> <note> [ms]  play a tone on a buzzer
- *   melody  <pin> <seq>     play a melody (e.g. "C4:200 E4:200 G4:400")
- *   avg     <ch> [n]        ADC averaging (noise reduction)
- *   trigger <pin> <edge> <cmd> run cmd when GPIO edge fires (one-shot)
- *   cron    <ms> <cmd>      run cmd once after N ms
- *   stats                   runtime statistics
- */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "pico/stdlib.h"
 #include "pico/time.h"
+#include "pico/unique_id.h"
+#include "pico/multicore.h"
 #include "hardware/adc.h"
 #include "hardware/gpio.h"
 #include "hardware/watchdog.h"
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
 #include "hardware/i2c.h"
+#include "hardware/spi.h"
+#include "hardware/flash.h"
+#include "hardware/uart.h"
 #include "pico/bootrom.h"
-#include "pico/unique_id.h"
 #include "commands.h"
 #include "kernel.h"
 #include "drivers.h"
@@ -38,14 +25,20 @@
 #include "gpio_mon.h"
 #include "morse.h"
 #include "tone.h"
+#include "servo.h"
+#include "spi_bus.h"
+#include "uart_pass.h"
+#include "device_detect.h"
+#include "bench.h"
+#include "heap_track.h"
 
-#define LED_PIN 25
+#define LED_PIN    25
 
 extern flash_config_t g_config;
 
-static uint32_t s_cmd_count   = 0;
+static uint32_t s_cmd_count     = 0;
 static uint32_t s_unknown_count = 0;
-static uint64_t s_boot_us;    // set in commands_init
+static uint64_t s_boot_us;
 
 static void print_uptime(void) {
     uint64_t us = time_us_64();
@@ -53,19 +46,14 @@ static void print_uptime(void) {
     printf("%02uh %02um %02us", s / 3600, (s % 3600) / 60, s % 60);
 }
 
-
-static void cmd_help(int argc, char* argv[]) {
-    commands_list();
-}
+static void cmd_help(int argc, char* argv[])    { commands_list(); }
 
 static void cmd_version(int argc, char* argv[]) {
-    printf("DeckOS v1.2.0  |  Raspberry Pi Pico\n");
+    printf("DeckOS v1.3  |  Raspberry Pi Pico\n");
     printf("Build: %s %s\n", __DATE__, __TIME__);
 }
 
-static void cmd_clear(int argc, char* argv[]) {
-    printf("\033[2J\033[H");
-}
+static void cmd_clear(int argc, char* argv[])   { printf("\033[2J\033[H"); }
 
 static void cmd_echo(int argc, char* argv[]) {
     for (int i = 1; i < argc; i++)
@@ -74,9 +62,7 @@ static void cmd_echo(int argc, char* argv[]) {
 }
 
 static void cmd_uptime(int argc, char* argv[]) {
-    printf("uptime: ");
-    print_uptime();
-    printf("\n");
+    printf("uptime: "); print_uptime(); printf("\n");
 }
 
 static void cmd_temp(int argc, char* argv[]) {
@@ -101,7 +87,7 @@ static void cmd_memmap(int argc, char* argv[]) {
     extern char __data_start__, __data_end__;
     extern char __bss_start__, __bss_end__;
     extern char __StackLimit, __StackTop;
-    extern char __end__;   // end of heap region (heap starts here)
+    extern char __end__;
 
     printf("=== RP2040 Memory Map ===\n");
     printf("\n[ FLASH  0x10000000 - 0x10200000  (2 MB) ]\n");
@@ -154,9 +140,9 @@ static void cmd_uid(int argc, char* argv[]) {
 
 static void cmd_wdog(int argc, char* argv[]) {
     printf("last reboot by watchdog: %s\n",
-        watchdog_caused_reboot() ? "YES" : "no");
+           watchdog_caused_reboot() ? "YES" : "no");
     printf("watchdog hw scratch[0] : 0x%08lX\n",
-        watchdog_hw->scratch[0]);
+           watchdog_hw->scratch[0]);
 }
 
 static void cmd_pin(int argc, char* argv[]) {
@@ -170,95 +156,9 @@ static void cmd_pin(int argc, char* argv[]) {
     }
 }
 
-static void cmd_i2c(int argc, char* argv[]) {
-    if (argc < 2) {
-        printf("usage:\n");
-        printf("  i2c scan              - scan bus for devices\n");
-        printf("  i2c read  <addr> <reg>       - read one byte\n");
-        printf("  i2c write <addr> <reg> <val> - write one byte\n");
-        return;
-    }
-
-    if (strcmp(argv[1], "scan") == 0) {
-        printf("I2C0 scan (SDA=GP4 SCL=GP5):\n");
-        printf("     0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
-        int found = 0;
-        for (int addr = 0; addr < 128; addr++) {
-            if (addr % 16 == 0) printf("%02X: ", addr);
-            uint8_t rxdata;
-            int ret = i2c_read_timeout_us(i2c0, (uint8_t)addr,
-                                          &rxdata, 1, false, 2000);
-            if (ret >= 0) { printf("%02X ", addr); found++; }
-            else          { printf("-- "); }
-            if ((addr + 1) % 16 == 0) printf("\n");
-        }
-        printf("%d device(s) found\n", found);
-
-    } else if (strcmp(argv[1], "read") == 0) {
-        if (argc < 4) { printf("usage: i2c read <addr_hex> <reg_hex>\n"); return; }
-        uint8_t addr = (uint8_t)strtol(argv[2], NULL, 16);
-        uint8_t reg  = (uint8_t)strtol(argv[3], NULL, 16);
-        uint8_t val  = 0;
-        i2c_write_timeout_us(i2c0, addr, &reg, 1, true, 2000);
-        int ret = i2c_read_timeout_us(i2c0, addr, &val, 1, false, 2000);
-        if (ret < 0) { printf("I2C error (no ACK?)\n"); return; }
-        printf("0x%02X reg[0x%02X] = 0x%02X (%d)\n", addr, reg, val, val);
-
-    } else if (strcmp(argv[1], "write") == 0) {
-        if (argc < 5) { printf("usage: i2c write <addr_hex> <reg_hex> <val_hex>\n"); return; }
-        uint8_t addr = (uint8_t)strtol(argv[2], NULL, 16);
-        uint8_t reg  = (uint8_t)strtol(argv[3], NULL, 16);
-        uint8_t val  = (uint8_t)strtol(argv[4], NULL, 16);
-        uint8_t buf[2] = { reg, val };
-        int ret = i2c_write_timeout_us(i2c0, addr, buf, 2, false, 2000);
-        if (ret < 0) { printf("I2C write failed\n"); return; }
-        printf("wrote 0x%02X -> 0x%02X[0x%02X]\n", val, addr, reg);
-
-    } else {
-        printf("unknown i2c subcommand: %s\n", argv[1]);
-    }
-}
-
-static void cmd_drivers(int argc, char* argv[]) { drivers_list(); }
-static void cmd_tasks(int argc, char* argv[]) {
-    if (argc >= 3 && strcmp(argv[1], "enable") == 0)  { sched_enable(atoi(argv[2]), true);  printf("task %d enabled\n",  atoi(argv[2])); return; }
-    if (argc >= 3 && strcmp(argv[1], "disable") == 0) { sched_enable(atoi(argv[2]), false); printf("task %d disabled\n", atoi(argv[2])); return; }
-    sched_list();
-}
-
-static void cmd_config(int argc, char* argv[]) {
-    if (argc < 2 || strcmp(argv[1], "show") == 0) { config_print(&g_config); return; }
-    if (strcmp(argv[1], "save") == 0)  { config_save(&g_config); return; }
-    if (strcmp(argv[1], "reset") == 0) { config_defaults(&g_config); config_save(&g_config); printf("config reset to defaults\n"); return; }
-    if (strcmp(argv[1], "set") == 0 && argc >= 4) {
-        if (strcmp(argv[2], "hostname") == 0) {
-            strncpy(g_config.hostname, argv[3], sizeof(g_config.hostname) - 1);
-            printf("hostname = %s\n", g_config.hostname);
-        } else if (strcmp(argv[2], "cpu_mhz") == 0) {
-            int mhz = atoi(argv[3]);
-            if (mhz != 0 && (mhz < 48 || mhz > 200)) { printf("safe range: 48-200 MHz\n"); return; }
-            g_config.boot_cpu_mhz = (uint32_t)mhz;
-            printf("boot_cpu_mhz = %d\n", mhz);
-        } else if (strcmp(argv[2], "boot_led") == 0) {
-            g_config.boot_led = (uint8_t)(atoi(argv[3]) ? 1 : 0);
-            printf("boot_led = %d\n", g_config.boot_led);
-        } else {
-            printf("unknown key: %s  (valid: hostname cpu_mhz boot_led)\n", argv[2]);
-        }
-        return;
-    }
-    printf("usage: config show|set <key> <val>|save|reset\n");
-}
-
-static void cmd_dfu(int argc, char* argv[]) {
-    printf("entering USB DFU (BOOTSEL) mode...\n");
-    sleep_ms(200);
-    reset_usb_boot(0, 0);
-}
-
 static void cmd_sysinfo(int argc, char* argv[]) {
     printf("=================================\n");
-    printf("  DeckOS v1.2.0  —  system info  \n");
+    printf("  DeckOS v1.3  —  system info  \n");
     printf("=================================\n");
     printf("board   : Raspberry Pi Pico\n");
     printf("cpu     : RP2040  dual-core Cortex-M0+  125 MHz\n");
@@ -273,6 +173,24 @@ static void cmd_sysinfo(int argc, char* argv[]) {
     printf("cmds    : %lu executed, %lu unknown\n", s_cmd_count, s_unknown_count);
     printf("log     : %lu total entries\n", syslog_total());
     printf("=================================\n");
+}
+
+static void cmd_stats(int argc, char* argv[]) {
+    uint64_t up_us = time_us_64();
+    uint32_t up_s  = (uint32_t)(up_us / 1000000);
+    printf("=== DeckOS Runtime Stats ===\n");
+    printf("uptime          : %02uh %02um %02us\n",
+           up_s / 3600, (up_s % 3600) / 60, up_s % 60);
+    printf("commands run    : %lu\n", s_cmd_count);
+    printf("unknown cmds    : %lu\n", s_unknown_count);
+    printf("log entries     : %lu\n", syslog_total());
+    printf("watchdog reboot : %s\n", watchdog_caused_reboot() ? "yes" : "no");
+    printf("cpu freq        : %lu MHz\n", clock_get_hz(clk_sys) / 1000000);
+    adc_select_input(4);
+    float v  = adc_read() * 3.3f / (1 << 12);
+    float tc = 27.0f - (v - 0.706f) / 0.001721f;
+    printf("core temp       : %.1f C\n", tc);
+    printf("============================\n");
 }
 
 static void cmd_pwm(int argc, char* argv[]) {
@@ -302,9 +220,9 @@ static void cmd_pull(int argc, char* argv[]) {
     int pin = atoi(argv[1]);
     if (pin < 0 || pin > 28) { printf("invalid pin\n"); return; }
     gpio_init(pin);
-    if      (strcmp(argv[2], "up")   == 0) { gpio_pull_up(pin);       printf("GPIO%d pull-up\n", pin); }
-    else if (strcmp(argv[2], "down") == 0) { gpio_pull_down(pin);     printf("GPIO%d pull-down\n", pin); }
-    else if (strcmp(argv[2], "none") == 0) { gpio_disable_pulls(pin); printf("GPIO%d pulls disabled\n", pin); }
+    if      (strcmp(argv[2], "up")   == 0) { gpio_pull_up(pin);       printf("GPIO%d pull-up\n",          pin); }
+    else if (strcmp(argv[2], "down") == 0) { gpio_pull_down(pin);     printf("GPIO%d pull-down\n",        pin); }
+    else if (strcmp(argv[2], "none") == 0) { gpio_disable_pulls(pin); printf("GPIO%d pulls disabled\n",   pin); }
     else printf("unknown: %s\n", argv[2]);
 }
 
@@ -312,7 +230,7 @@ static void cmd_led(int argc, char* argv[]) {
     static bool led_state = false;
     gpio_init(LED_PIN); gpio_set_dir(LED_PIN, GPIO_OUT);
     if (argc < 2) { printf("usage: led <on|off|toggle|blink [n]>\n"); return; }
-    if (strcmp(argv[1], "on")     == 0) { led_state = true;  gpio_put(LED_PIN, 1); printf("LED on\n"); }
+    if      (strcmp(argv[1], "on")     == 0) { led_state = true;  gpio_put(LED_PIN, 1); printf("LED on\n"); }
     else if (strcmp(argv[1], "off")    == 0) { led_state = false; gpio_put(LED_PIN, 0); printf("LED off\n"); }
     else if (strcmp(argv[1], "toggle") == 0) { led_state = !led_state; gpio_put(LED_PIN, led_state); printf("LED %s\n", led_state ? "on" : "off"); }
     else if (strcmp(argv[1], "blink")  == 0) {
@@ -326,7 +244,6 @@ static void cmd_led(int argc, char* argv[]) {
 static void cmd_gpio(int argc, char* argv[]) {
     if (argc < 3) { printf("usage: gpio <read|write|mode|irq> <pin> [val]\n"); return; }
 
-    // gpio irq <pin> [stop|dump] — delegate to gpio_mon
     if (strcmp(argv[1], "irq") == 0) {
         int pin = atoi(argv[2]);
         if (pin < 0 || pin > 28) { printf("invalid pin\n"); return; }
@@ -336,7 +253,6 @@ static void cmd_gpio(int argc, char* argv[]) {
         } else if (argc >= 4 && strcmp(argv[3], "dump") == 0) {
             gpio_mon_dump((uint8_t)pin);
         } else {
-            // default: live watch with 30 s timeout
             uint32_t timeout = (argc >= 4) ? (uint32_t)atoi(argv[3]) * 1000 : 30000;
             gpio_mon_watch((uint8_t)pin, timeout);
         }
@@ -374,6 +290,567 @@ static void cmd_adc(int argc, char* argv[]) {
     float voltage = raw * 3.3f / (1 << 12);
     printf("ADC%d  raw=%4d  voltage=%.3f V\n", ch, raw, voltage);
 }
+
+static void cmd_avg(int argc, char* argv[]) {
+    if (argc < 2) { printf("usage: avg <adc_ch 0-2> [samples 1-256]\n"); return; }
+    int ch = atoi(argv[1]);
+    if (ch < 0 || ch > 2) { printf("channel must be 0-2\n"); return; }
+    int samples = (argc >= 3) ? atoi(argv[2]) : 64;
+    if (samples < 1 || samples > 256) { printf("samples: 1-256\n"); return; }
+
+    adc_select_input((uint)ch);
+    uint32_t sum = 0;
+    uint16_t mn  = 0xFFFF, mx = 0;
+    for (int i = 0; i < samples; i++) {
+        uint16_t r = adc_read();
+        sum += r;
+        if (r < mn) mn = r;
+        if (r > mx) mx = r;
+    }
+    uint16_t avg_raw = (uint16_t)(sum / samples);
+    float voltage    = avg_raw * 3.3f / (1 << 12);
+    printf("ADC%d  samples=%d\n", ch, samples);
+    printf("  avg  : %4d  /  %.3f V\n", avg_raw, voltage);
+    printf("  min  : %4d  /  %.3f V\n", mn, mn * 3.3f / (1 << 12));
+    printf("  max  : %4d  /  %.3f V\n", mx, mx * 3.3f / (1 << 12));
+    printf("  noise: %4d  counts p-p\n", mx - mn);
+}
+
+static void cmd_i2c(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage:\n");
+        printf("  i2c scan              - scan bus for devices\n");
+        printf("  i2c read  <addr> <reg>       - read one byte\n");
+        printf("  i2c write <addr> <reg> <val> - write one byte\n");
+        return;
+    }
+    if (strcmp(argv[1], "scan") == 0) {
+        printf("I2C0 scan (SDA=GP4 SCL=GP5):\n");
+        printf("     0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
+        int found = 0;
+        for (int addr = 0; addr < 128; addr++) {
+            if (addr % 16 == 0) printf("%02X: ", addr);
+            uint8_t rxdata;
+            int ret = i2c_read_timeout_us(i2c0, (uint8_t)addr, &rxdata, 1, false, 2000);
+            if (ret >= 0) { printf("%02X ", addr); found++; }
+            else          { printf("-- "); }
+            if ((addr + 1) % 16 == 0) printf("\n");
+        }
+        printf("%d device(s) found\n", found);
+    } else if (strcmp(argv[1], "read") == 0) {
+        if (argc < 4) { printf("usage: i2c read <addr_hex> <reg_hex>\n"); return; }
+        uint8_t addr = (uint8_t)strtol(argv[2], NULL, 16);
+        uint8_t reg  = (uint8_t)strtol(argv[3], NULL, 16);
+        uint8_t val  = 0;
+        i2c_write_timeout_us(i2c0, addr, &reg, 1, true, 2000);
+        int ret = i2c_read_timeout_us(i2c0, addr, &val, 1, false, 2000);
+        if (ret < 0) { printf("I2C error (no ACK?)\n"); return; }
+        printf("0x%02X reg[0x%02X] = 0x%02X (%d)\n", addr, reg, val, val);
+    } else if (strcmp(argv[1], "write") == 0) {
+        if (argc < 5) { printf("usage: i2c write <addr_hex> <reg_hex> <val_hex>\n"); return; }
+        uint8_t addr = (uint8_t)strtol(argv[2], NULL, 16);
+        uint8_t reg  = (uint8_t)strtol(argv[3], NULL, 16);
+        uint8_t val  = (uint8_t)strtol(argv[4], NULL, 16);
+        uint8_t buf[2] = { reg, val };
+        int ret = i2c_write_timeout_us(i2c0, addr, buf, 2, false, 2000);
+        if (ret < 0) { printf("I2C write failed\n"); return; }
+        printf("wrote 0x%02X -> 0x%02X[0x%02X]\n", val, addr, reg);
+    } else {
+        printf("unknown i2c subcommand: %s\n", argv[1]);
+    }
+}
+
+static void cmd_servo(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage:\n");
+        printf("  servo <pin> <angle 0-180>             - set position\n");
+        printf("  servo sweep <pin> [from to step_ms]   - blocking sweep\n");
+        printf("  servo bg <pin> sweep [min max step step_ms] - background sweep\n");
+        printf("  servo bg <pin> goto <angle> [step_ms] - background move to angle\n");
+        printf("  servo bg <pin> stop                   - stop background servo\n");
+        printf("  servo bg list                         - list background servos\n");
+        return;
+    }
+
+    if (strcmp(argv[1], "bg") == 0) {
+        if (argc < 3) { printf("servo bg: need subcommand\n"); return; }
+
+        if (strcmp(argv[2], "list") == 0) {
+            servo_bg_list();
+            return;
+        }
+
+        int pin = atoi(argv[2]);
+        if (pin < 0 || pin > 28) { printf("invalid pin\n"); return; }
+        if (argc < 4) { printf("servo bg <pin> sweep|goto|stop\n"); return; }
+
+        if (strcmp(argv[3], "sweep") == 0) {
+            int min_deg  = (argc >= 5) ? atoi(argv[4]) : 0;
+            int max_deg  = (argc >= 6) ? atoi(argv[5]) : 180;
+            int step_deg = (argc >= 7) ? atoi(argv[6]) : 1;
+            uint32_t step_ms = (argc >= 8) ? (uint32_t)atoi(argv[7]) : 20;
+            int slot = servo_bg_add((uint8_t)pin, "bg-servo");
+            if (slot < 0) return;
+            servo_bg_set_sweep(slot, min_deg, max_deg, step_deg, step_ms);
+
+        } else if (strcmp(argv[3], "goto") == 0) {
+            if (argc < 5) { printf("servo bg <pin> goto <angle> [step_ms]\n"); return; }
+            int target   = atoi(argv[4]);
+            uint32_t sms = (argc >= 6) ? (uint32_t)atoi(argv[5]) : 10;
+            int slot = servo_bg_add((uint8_t)pin, "bg-servo");
+            if (slot < 0) return;
+            servo_bg_set_goto(slot, target, sms);
+            printf("servo bg: GPIO%d going to %d°\n", pin, target);
+
+        } else if (strcmp(argv[3], "stop") == 0) {
+            int slot = servo_bg_find((uint8_t)pin);
+            if (slot < 0) { printf("no background servo on GPIO%d\n", pin); return; }
+            servo_bg_stop(slot);
+
+        } else {
+            printf("unknown servo bg subcommand: %s\n", argv[3]);
+        }
+        return;
+    }
+
+    if (strcmp(argv[1], "sweep") == 0) {
+        if (argc < 3) { printf("servo sweep <pin> [from to step_ms]\n"); return; }
+        int pin     = atoi(argv[2]);
+        int from    = (argc >= 4) ? atoi(argv[3]) : 0;
+        int to      = (argc >= 5) ? atoi(argv[4]) : 180;
+        int step_ms = (argc >= 6) ? atoi(argv[5]) : 20;
+        if (pin < 0 || pin > 28) { printf("invalid pin\n"); return; }
+        servo_sweep_blocking((uint8_t)pin, from, to, step_ms);
+        return;
+    }
+
+    if (argc < 3) { printf("usage: servo <pin> <angle 0-180>\n"); return; }
+    int pin   = atoi(argv[1]);
+    int angle = atoi(argv[2]);
+    if (pin < 0 || pin > 28)      { printf("invalid pin\n"); return; }
+    if (angle < 0 || angle > 180) { printf("angle must be 0-180\n"); return; }
+    servo_write_angle((uint8_t)pin, angle);
+    printf("servo GPIO%d -> %d°\n", pin, angle);
+}
+
+static bool s_spi_inited = false;
+
+static void cmd_spi(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage:\n");
+        printf("  spi init [sck mosi miso baud]       - init SPI0 (default GP2/3/4 1MHz)\n");
+        printf("  spi write <cs_pin> <hex bytes...>   - write bytes\n");
+        printf("  spi read  <cs_pin> <reg_hex> [len]  - read register\n");
+        printf("  spi xfer  <cs_pin> <hex bytes...>   - full-duplex transfer + print rx\n");
+        return;
+    }
+
+    if (strcmp(argv[1], "init") == 0) {
+        uint sck  = (argc >= 3) ? (uint)atoi(argv[2]) : SPI_DEFAULT_SCK;
+        uint mosi = (argc >= 4) ? (uint)atoi(argv[3]) : SPI_DEFAULT_MOSI;
+        uint miso = (argc >= 5) ? (uint)atoi(argv[4]) : SPI_DEFAULT_MISO;
+        uint baud = (argc >= 6) ? (uint)atoi(argv[5]) : SPI_DEFAULT_BAUD;
+        spi_bus_init(spi0, sck, mosi, miso, baud);
+        s_spi_inited = true;
+        return;
+    }
+
+    if (!s_spi_inited) {
+        printf("SPI not initialised — run 'spi init' first\n");
+        return;
+    }
+
+    if (strcmp(argv[1], "write") == 0 || strcmp(argv[1], "xfer") == 0) {
+        if (argc < 4) { printf("spi %s <cs_pin> <hex bytes...>\n", argv[1]); return; }
+        uint cs = (uint)atoi(argv[2]);
+        bool do_rx = (strcmp(argv[1], "xfer") == 0);
+
+        uint8_t tx[32], rx[32];
+        int len = 0;
+        for (int i = 3; i < argc && len < 32; i++)
+            tx[len++] = (uint8_t)strtol(argv[i], NULL, 16);
+
+        spi_bus_transfer(spi0, cs, tx, do_rx ? rx : NULL, (size_t)len);
+
+        if (do_rx) {
+            printf("rx: ");
+            for (int i = 0; i < len; i++) printf("%02X ", rx[i]);
+            printf("\n");
+        } else {
+            printf("wrote %d byte(s) to CS=GP%d\n", len, cs);
+        }
+        return;
+    }
+
+    if (strcmp(argv[1], "read") == 0) {
+        if (argc < 4) { printf("spi read <cs_pin> <reg_hex> [len]\n"); return; }
+        uint    cs  = (uint)atoi(argv[2]);
+        uint8_t reg = (uint8_t)strtol(argv[3], NULL, 16);
+        int     len = (argc >= 5) ? atoi(argv[4]) : 1;
+        if (len < 1 || len > 31) len = 1;
+
+        uint8_t tx[32] = {0};
+        uint8_t rx[32] = {0};
+        tx[0] = reg | 0x80;   // read bit for most sensors
+        spi_bus_transfer(spi0, cs, tx, rx, (size_t)(len + 1));
+        printf("reg 0x%02X: ", reg);
+        for (int i = 1; i <= len; i++) printf("%02X ", rx[i]);
+        printf("\n");
+        return;
+    }
+
+    printf("unknown spi subcommand: %s\n", argv[1]);
+}
+
+static void cmd_uart(int argc, char* argv[]) {
+    if (argc < 4) {
+        printf("usage: uart <baud> <tx_pin> <rx_pin> [timeout_s]\n");
+        printf("       bridges USB-CDC to UART; Ctrl-X to exit\n");
+        printf("       UART0: TX=GP0/GP12/GP16, RX=GP1/GP13/GP17\n");
+        printf("       UART1: TX=GP4/GP8,       RX=GP5/GP9\n");
+        return;
+    }
+    uint baud    = (uint)atoi(argv[1]);
+    uint tx_pin  = (uint)atoi(argv[2]);
+    uint rx_pin  = (uint)atoi(argv[3]);
+    uint32_t timeout_ms = (argc >= 5) ? (uint32_t)(atoi(argv[4]) * 1000) : 0;
+
+    if (baud < 300 || baud > 921600) { printf("baud must be 300-921600\n"); return; }
+    if (tx_pin > 28 || rx_pin > 28)  { printf("invalid pin\n"); return; }
+
+    uart_inst_t* uart_port = uart0;
+    if (tx_pin == 4 || tx_pin == 8 || tx_pin == 20 || tx_pin == 24)
+        uart_port = uart1;
+
+    uart_passthrough(uart_port, tx_pin, rx_pin, baud, timeout_ms);
+}
+
+static void cmd_top(int argc, char* argv[]) {
+    printf("DeckOS top  (any key to exit)\n\n");
+
+    while (true) {
+        if (getchar_timeout_us(0) != PICO_ERROR_TIMEOUT) {
+            printf("\ntop: exiting\n");
+            break;
+        }
+
+        sched_task_t snap[SCHED_MAX_TASKS];
+        uint64_t     totals[SCHED_MAX_TASKS];
+        int          n        = sched_snapshot(snap, totals, SCHED_MAX_TASKS);
+        uint64_t     grand    = sched_core1_total_us();
+        if (grand == 0) grand = 1;
+
+        printf("\033[2J\033[H");   // clear screen
+        printf("=== DeckOS top ===  uptime: ");
+        print_uptime();
+        printf("\n\n");
+
+        adc_select_input(4);
+        float v  = adc_read() * 3.3f / (1 << 12);
+        float tc = 27.0f - (v - 0.706f) / 0.001721f;
+        printf("cpu: %lu MHz    temp: %.1f C    cmds: %lu\n\n",
+               clock_get_hz(clk_sys) / 1000000, tc, s_cmd_count);
+
+        printf("TASK            STATE    INTERVAL  CPU%%\n");
+        printf("--------------- -------- --------- ------\n");
+
+        // Shell (Core0) always shown first
+        printf("%-15s %-8s %5s ms   --\n", "shell", "running", "-");
+
+        for (int i = 0; i < n; i++) {
+            uint32_t pct_x10 = (uint32_t)((totals[i] * 1000) / grand);
+            printf("%-15s %-8s %5lu ms  %2lu.%lu%%\n",
+                   snap[i].name,
+                   snap[i].enabled ? "active" : "sleep",
+                   snap[i].interval_ms,
+                   pct_x10 / 10, pct_x10 % 10);
+        }
+        printf("\npress any key to stop\n");
+        sleep_ms(500);
+    }
+}
+
+static void cmd_bench(int argc, char* argv[]) {
+    if (argc < 3) {
+        printf("usage: bench <iterations> <command>\n");
+        printf("       bench 1000 echo hi\n");
+        return;
+    }
+    uint32_t iters = (uint32_t)atoi(argv[1]);
+    if (iters < 1 || iters > 100000) { printf("iterations: 1-100000\n"); return; }
+
+    char subcmd[INPUT_SIZE]; subcmd[0] = '\0';
+    for (int i = 2; i < argc; i++) {
+        if (i > 2) strncat(subcmd, " ", sizeof(subcmd) - strlen(subcmd) - 1);
+        strncat(subcmd, argv[i], sizeof(subcmd) - strlen(subcmd) - 1);
+    }
+
+    printf("bench: running '%s' x%lu  (output suppressed)\n", subcmd, iters);
+
+    bench_result_t r = bench_run(subcmd, iters);
+    bench_print(&r, subcmd);
+}
+
+static void cmd_free(int argc, char* argv[]) {
+    heap_track_print();
+}
+
+static void cmd_pinout(int argc, char* argv[]) {
+
+    static const struct { int gp; const char* lbl; } left[20] = {
+        {-1,"VBUS"},{0,""},{1,""},{-1,"GND"},{2,""},{3,""},{4,""},{5,""},{-1,"GND"},
+        {6,""},{7,""},{8,""},{9,""},{-1,"GND"},{10,""},{11,""},{12,""},{13,""},{-1,"GND"},{14,""}
+    };
+    static const struct { int gp; const char* lbl; } right[20] = {
+        {-1,"3V3"},{28,""},{27,""},{26,""},{-1,"VREF"},{22,""},{-1,"GND"},{21,""},{20,""},{19,""},
+        {18,""},{-1,"GND"},{17,""},{16,""},{15,""},{-1,"RUN"},{-1,"GND"},{-1,"GND"},{-1,"GND"},{-1,"GND"}
+    };
+
+    printf("\n");
+    printf("  .------------------------------------------------------.\n");
+    printf("  |          Raspberry Pi Pico  --  DeckOS               |\n");
+    printf("  |   .-----------.              .-----------.            |\n");
+    printf("  |   |  RP2040   | Cortex-M0+  | 264KB SRAM|            |\n");
+    printf("  |   '-----------'  125 MHz    '-----------'            |\n");
+    printf("  |________________[USB]_________________________________  |\n");
+    printf("  |                                                       |\n");
+    printf("  |  val fn dir  label [pin]       [pin] label  dir fn val|\n");
+    printf("  |  ---+--+---+-------+---+     +---+-------+---+--+---  |\n");
+
+    for (int r = 0; r < 20; r++) {
+        int lphy = r + 1;
+        int rphy = 40 - r;
+
+        char llabel[8] = "";
+        char ldir = ' ', lfc = '-', lval = ' ';
+        if (left[r].gp < 0) {
+            snprintf(llabel, sizeof(llabel), "%s", left[r].lbl);
+            lfc = ' ';
+        } else {
+            int g = left[r].gp;
+            uint32_t f = gpio_get_function((uint)g);
+            ldir = gpio_get_dir((uint)g) ? 'O' : 'I';
+            lfc  = (f == GPIO_FUNC_PWM)  ? 'P' :
+                   (f == GPIO_FUNC_I2C)  ? 'I' :
+                   (f == GPIO_FUNC_SPI)  ? 'S' :
+                   (f == GPIO_FUNC_UART) ? 'U' : '-';
+            lval = gpio_get((uint)g) ? '*' : '.';
+            snprintf(llabel, sizeof(llabel), "GP%-2d", g);
+        }
+
+        char rlabel[8] = "";
+        char rdir = ' ', rfc = '-', rval = ' ';
+        if (right[r].gp < 0) {
+            snprintf(rlabel, sizeof(rlabel), "%s", right[r].lbl);
+            rfc = ' ';
+        } else {
+            int g = right[r].gp;
+            uint32_t f = gpio_get_function((uint)g);
+            rdir = gpio_get_dir((uint)g) ? 'O' : 'I';
+            rfc  = (f == GPIO_FUNC_PWM)  ? 'P' :
+                   (f == GPIO_FUNC_I2C)  ? 'I' :
+                   (f == GPIO_FUNC_SPI)  ? 'S' :
+                   (f == GPIO_FUNC_UART) ? 'U' : '-';
+            rval = gpio_get((uint)g) ? '*' : '.';
+            snprintf(rlabel, sizeof(rlabel), "GP%-2d", g);
+        }
+
+        if (left[r].gp >= 0) {
+            printf("  |  %c  %c  %c   %-4s  [%02d] |===| [%02d]  %-4s   %c  %c  %c  |\n",
+                lval, lfc, ldir, llabel, lphy,
+                rphy, rlabel,
+                rdir, rfc, rval);
+        } else {
+            printf("  |            %-4s  [%02d] |===| [%02d]  %-4s             |\n",
+                llabel, lphy,
+                rphy, rlabel);
+        }
+    }
+
+    printf("  |                                                       |\n");
+    printf("  '-------------------------------------------------------'\n");
+    printf("\n");
+    printf("  val: * = HIGH   . = LOW\n");
+    printf("  fn : P=PWM  I=I2C  S=SPI  U=UART  - =GPIO\n");
+    printf("  dir: O=output  I=input\n\n");
+}
+
+static void cmd_piano(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage: piano <pin> [duration_ms]\n");
+        printf("  connect passive buzzer to pin + GND\n");
+        return;
+    }
+    int pin = atoi(argv[1]);
+    if (pin < 0 || pin > 28) { printf("invalid pin\n"); return; }
+    uint32_t dur = (argc >= 3) ? (uint32_t)atoi(argv[2]) : 150;
+    if (dur < 20 || dur > 2000) dur = 150;
+
+    static const uint32_t NOTE_TABLE[8][12] = {
+        /* C0 */  { 16,  17,  18,  19,  21,  22,  23,  24,  26,  27,  29,  31},
+        /* C1 */  { 33,  35,  37,  39,  41,  44,  46,  49,  52,  55,  58,  62},
+        /* C2 */  { 65,  69,  73,  78,  82,  87,  92,  98, 104, 110, 117, 123},
+        /* C3 */  {131, 139, 147, 156, 165, 175, 185, 196, 208, 220, 233, 247},
+        /* C4 */  {262, 277, 294, 311, 330, 349, 370, 392, 415, 440, 466, 494},
+        /* C5 */  {523, 554, 587, 622, 659, 698, 740, 784, 831, 880, 932, 988},
+        /* C6 */  {1047,1109,1175,1245,1319,1397,1480,1568,1661,1760,1865,1976},
+        /* C7 */  {2093,2217,2349,2489,2637,2794,2960,3136,3322,3520,3729,3951},
+    };
+
+    typedef struct { char key; int semi; int oct_offset; const char* name; } piano_key_t;
+
+    static const piano_key_t keys[] = {
+        /* White keys - bottom row */
+        {'a',  0,  0, "C "},
+        {'s',  2,  0, "D "},
+        {'d',  4,  0, "E "},
+        {'f',  5,  0, "F "},
+        {'g',  7,  0, "G "},
+        {'h',  9,  0, "A "},
+        {'j', 11,  0, "B "},
+        {'k',  0,  1, "C+"},
+        {'l',  2,  1, "D+"},
+        {';',  4,  1, "E+"},
+        /* Black keys - top row */
+        {'w',  1,  0, "C#"},
+        {'e',  3,  0, "D#"},
+        {'t',  6,  0, "F#"},
+        {'y',  8,  0, "G#"},
+        {'u', 10,  0, "A#"},
+        {'o',  1,  1, "C#+"},
+        {'p',  3,  1, "D#+"},
+    };
+    static const int num_keys = (int)(sizeof(keys) / sizeof(keys[0]));
+
+    int octave = 4; /* base octave, 0-7 */
+
+    printf("\n");
+    printf("  .----------------------------------------------------.\n");
+    printf("  |         DeckOS Piano   GPIO%02d   %lums/note         |\n", pin, dur);
+    printf("  |----------------------------------------------------|  \n");
+    printf("  |  Black:  W  E     T  Y  U     O  P  (sharps)      |\n");
+    printf("  |  White: A  S  D  F  G  H  J  K  L  ;              |\n");
+    printf("  |                                                    |\n");
+    printf("  |  Octave: [  = down    ]  = up    (current: %d)     |\n", octave);
+    printf("  |  Quit  : q                                        |\n");
+    printf("  '----------------------------------------------------'\n");
+    printf("\n  ready. base octave: %d\n\n", octave);
+
+    while (true) {
+        int c = getchar_timeout_us(10000);
+        if (c == PICO_ERROR_TIMEOUT) continue;
+
+        if (c == 'q' || c == 3) {
+            printf("\n  piano: bye!\n");
+            return;
+        }
+
+        if (c == '[') {
+            if (octave > 0) octave--;
+            printf("  octave: %d\n", octave);
+            continue;
+        }
+        if (c == ']') {
+            if (octave < 7) octave++;
+            printf("  octave: %d\n", octave);
+            continue;
+        }
+
+        int found = -1;
+        for (int i = 0; i < num_keys; i++) {
+            if ((char)c == keys[i].key) { found = i; break; }
+        }
+
+        if (found >= 0) {
+            int oct = octave + keys[found].oct_offset;
+            if (oct > 7) oct = 7;
+            uint32_t hz = NOTE_TABLE[oct][keys[found].semi];
+
+            /* Print visual keyboard */
+            printf("  | ");
+            static const char all_keys[] = "wsedtyhujokp";
+            for (int i = 0; i < (int)sizeof(all_keys)-1; i++)
+                printf("%c", (char)c == all_keys[i] ? '#' : '-');
+            printf(" |  %s%d  %4lu Hz\n", keys[found].name, oct, hz);
+
+            tone_play((uint8_t)pin, hz, dur);
+        }
+    }
+}
+
+static void cmd_flash(int argc, char* argv[]) {
+    if (argc < 3) {
+        printf("usage:\n");
+        printf("  flash read  <addr_hex> <len>        - dump bytes from flash\n");
+        printf("  flash write <addr_hex> <hex bytes>  - program bytes (addr must be page-aligned)\n");
+        printf("  flash erase <addr_hex>              - erase 4 KB sector\n");
+        printf("  note: addresses are XIP offsets (0x00000000 = start of flash)\n");
+        printf("  config sector is at 0x%05X — do not erase it manually\n",
+               (uint32_t)(2*1024*1024 - 4096));
+        return;
+    }
+
+    uint32_t addr = (uint32_t)strtol(argv[2], NULL, 16);
+
+    if (strcmp(argv[1], "read") == 0) {
+        if (argc < 4) { printf("flash read <addr_hex> <len>\n"); return; }
+        int len = atoi(argv[3]);
+        if (len < 1 || len > 256) { printf("len 1-256\n"); return; }
+        const uint8_t* ptr = (const uint8_t*)(XIP_BASE + addr);
+        printf("flash[0x%05lX] +%d bytes:\n", addr, len);
+        for (int i = 0; i < len; i++) {
+            if (i % 16 == 0) printf("  %05lX: ", addr + i);
+            printf("%02X ", ptr[i]);
+            if (i % 16 == 15 || i == len-1) printf("\n");
+        }
+        return;
+    }
+
+    if (strcmp(argv[1], "erase") == 0) {
+        // Align down to 4KB sector
+        uint32_t sector = addr & ~(FLASH_SECTOR_SIZE - 1);
+        printf("erasing sector at 0x%05lX ...\n", sector);
+        multicore_reset_core1();
+        uint32_t irq = save_and_disable_interrupts();
+        flash_range_erase(sector, FLASH_SECTOR_SIZE);
+        restore_interrupts(irq);
+        extern void core1_restart(void);
+        core1_restart();
+        printf("done.\n");
+        return;
+    }
+
+    if (strcmp(argv[1], "write") == 0) {
+        if (argc < 4) { printf("flash write <addr_hex> <hex bytes...>\n"); return; }
+        uint8_t buf[FLASH_PAGE_SIZE];
+        memset(buf, 0xFF, sizeof(buf));
+        int len = 0;
+        for (int i = 3; i < argc && len < FLASH_PAGE_SIZE; i++)
+            buf[len++] = (uint8_t)strtol(argv[i], NULL, 16);
+
+        // addr must be page-aligned
+        if (addr % FLASH_PAGE_SIZE != 0) {
+            printf("write addr must be %d-byte page-aligned\n", FLASH_PAGE_SIZE);
+            return;
+        }
+        printf("writing %d byte(s) to 0x%05lX ...\n", len, addr);
+        multicore_reset_core1();
+        uint32_t irq = save_and_disable_interrupts();
+        flash_range_program(addr, buf, FLASH_PAGE_SIZE);
+        restore_interrupts(irq);
+        extern void core1_restart(void);
+        core1_restart();
+        printf("done.\n");
+        return;
+    }
+
+    printf("unknown flash subcommand: %s\n", argv[1]);
+}
+
+static void cmd_detect(int argc, char* argv[]) {
+    device_detect_print();
+}
+
 
 static void cmd_sleep(int argc, char* argv[]) {
     if (argc < 2) { printf("usage: sleep <ms>\n"); return; }
@@ -416,7 +893,6 @@ static void cmd_watch(int argc, char* argv[]) {
     int ms = atoi(argv[1]);
     if (ms < 10 || ms > 60000) { printf("interval must be 10-60000 ms\n"); return; }
 
-    // Reconstruct sub-command string
     char subcmd[INPUT_SIZE]; subcmd[0] = '\0';
     for (int i = 2; i < argc; i++) {
         if (i > 2) strncat(subcmd, " ", sizeof(subcmd) - strlen(subcmd) - 1);
@@ -428,15 +904,12 @@ static void cmd_watch(int argc, char* argv[]) {
     while (true) {
         int c = getchar_timeout_us(0);
         if (c != PICO_ERROR_TIMEOUT) { printf("\nwatch stopped.\n"); break; }
-
-        printf("\033[2J\033[H");   // clear screen each iteration
+        printf("\033[2J\033[H");
         printf("--- watch [%lu] '%s' @ %d ms ---\n", ++iter, subcmd, ms);
         char tmp[INPUT_SIZE];
         strncpy(tmp, subcmd, sizeof(tmp) - 1);
         tmp[sizeof(tmp) - 1] = '\0';
         commands_execute(tmp);
-
-        // wait in small chunks so we catch keypresses quickly
         uint32_t waited = 0;
         while (waited < (uint32_t)ms) {
             if (getchar_timeout_us(0) != PICO_ERROR_TIMEOUT) { printf("\nwatch stopped.\n"); return; }
@@ -453,14 +926,11 @@ static void cmd_morse(int argc, char* argv[]) {
         return;
     }
     uint8_t wpm = (argc >= 3) ? (uint8_t)atoi(argv[2]) : 13;
-
-    // Reconstruct the text (supports spaces)
     char text[128]; text[0] = '\0';
     for (int i = 1; i < argc - (argc >= 3 ? 1 : 0); i++) {
         if (i > 1) strncat(text, " ", sizeof(text) - strlen(text) - 1);
         strncat(text, argv[i], sizeof(text) - strlen(text) - 1);
     }
-
     morse_send(text, LED_PIN, wpm);
     LOG_I("morse", text);
 }
@@ -471,11 +941,10 @@ static void cmd_syslog(int argc, char* argv[]) {
         syslog_dump(LOG_DEBUG, tail);
         return;
     }
-    if (strcmp(argv[1], "warn") == 0) { syslog_dump(LOG_WARN, 0); return; }
-    if (strcmp(argv[1], "err")  == 0) { syslog_dump(LOG_ERR,  0); return; }
+    if (strcmp(argv[1], "warn")  == 0) { syslog_dump(LOG_WARN, 0); return; }
+    if (strcmp(argv[1], "err")   == 0) { syslog_dump(LOG_ERR,  0); return; }
     if (strcmp(argv[1], "clear") == 0) { syslog_clear(); return; }
     if (strcmp(argv[1], "write") == 0 && argc >= 4) {
-        // syslog write <tag> <message>
         syslog_write(LOG_INFO, argv[2], argv[3]);
         printf("logged.\n");
         return;
@@ -485,12 +954,12 @@ static void cmd_syslog(int argc, char* argv[]) {
         return;
     }
     printf("usage:\n");
-    printf("  syslog show [n]        - show log (last n entries)\n");
-    printf("  syslog warn            - show WARN+ entries only\n");
-    printf("  syslog err             - show ERR entries only\n");
+    printf("  syslog show [n]          - show log (last n entries)\n");
+    printf("  syslog warn              - show WARN+ entries only\n");
+    printf("  syslog err               - show ERR entries only\n");
     printf("  syslog write <tag> <msg> - add manual entry\n");
-    printf("  syslog clear           - wipe the log\n");
-    printf("  syslog stats           - show total count\n");
+    printf("  syslog clear             - wipe the log\n");
+    printf("  syslog stats             - show total count\n");
 }
 
 static void cmd_tone(int argc, char* argv[]) {
@@ -498,73 +967,364 @@ static void cmd_tone(int argc, char* argv[]) {
         printf("usage: tone <pin> <note|hz> [duration_ms]\n");
         printf("       note examples: C4 G#3 A5 REST\n");
         printf("       hz   example : 440\n");
+        printf("  passive buzzer: connect + to a GPIO, - to GND\n");
         return;
     }
     int pin = atoi(argv[1]);
     if (pin < 0 || pin > 28) { printf("invalid pin\n"); return; }
-
     uint32_t duration = (argc >= 4) ? (uint32_t)atoi(argv[3]) : 500;
     if (duration < 10 || duration > 10000) { printf("duration 10-10000 ms\n"); return; }
-
-    // Determine if arg is a number (Hz) or note name
     uint32_t hz;
-    if (isdigit((unsigned char)argv[2][0])) {
-        hz = (uint32_t)atoi(argv[2]);
-    } else {
-        hz = tone_note_to_hz(argv[2]);
-    }
-
+    if (isdigit((unsigned char)argv[2][0])) hz = (uint32_t)atoi(argv[2]);
+    else                                    hz = tone_note_to_hz(argv[2]);
     printf("tone: GPIO%d  %lu Hz  %lu ms\n", pin, hz, duration);
     tone_play((uint8_t)pin, hz, duration);
+}
+
+static void cmd_la(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage:\n");
+        printf("  la <pin> [samples] [us_per_sample]\n");
+        printf("  la <pin> 256 10    - 256 samples, 10us each = 2.56ms window\n");
+        printf("  press any key to abort\n");
+        return;
+    }
+
+    int pin = atoi(argv[1]);
+    if (pin < 0 || pin > 28) { printf("invalid pin\n"); return; }
+
+    int samples       = (argc >= 3) ? atoi(argv[2]) : 128;
+    int us_per_sample = (argc >= 4) ? atoi(argv[3]) : 10;
+
+    if (samples < 8 || samples > 512)       { printf("samples: 8-512\n"); return; }
+    if (us_per_sample < 1 || us_per_sample > 100000) { printf("us_per_sample: 1-100000\n"); return; }
+
+    uint8_t* buf = (uint8_t*)malloc((size_t)samples);
+    if (!buf) { printf("out of memory\n"); return; }
+
+    gpio_init(pin);
+    gpio_set_dir(pin, GPIO_IN);
+
+    printf("LA: GPIO%d  %d samples @ %d us each  (%.2f ms window)\n",
+           pin, samples, us_per_sample,
+           (float)(samples * us_per_sample) / 1000.0f);
+    printf("sampling");
+
+    for (int i = 0; i < samples; i++) {
+        if (getchar_timeout_us(0) != PICO_ERROR_TIMEOUT) {
+            printf("\naborted.\n");
+            free(buf);
+            return;
+        }
+        buf[i] = (uint8_t)gpio_get(pin);
+        if (i % 32 == 0) printf(".");
+        sleep_us((uint32_t)us_per_sample);
+    }
+    printf(" done.\n\n");
+
+    printf("     0");
+    for (int i = 16; i < samples; i += 16) {
+        printf("%*d", 16, i);
+    }
+    printf("\n");
+    printf("     |");
+    for (int i = 1; i < samples; i++) {
+        printf("%s", (i % 16 == 0) ? "|" : (i % 4 == 0) ? "." : " ");
+    }
+    printf("\n");
+
+    /* high line */
+    printf("  1  ");
+    int prev = buf[0];
+    for (int i = 0; i < samples; i++) {
+        int cur = buf[i];
+        if (i == 0) {
+            printf(cur ? "_" : " ");
+        } else {
+            if (prev == 0 && cur == 1) printf("/");
+            else if (prev == 1 && cur == 0) printf(" ");
+            else if (cur == 1) printf("_");
+            else printf(" ");
+        }
+        prev = cur;
+    }
+    printf("\n");
+
+    /* transition line */
+    printf("     ");
+    prev = buf[0];
+    for (int i = 0; i < samples; i++) {
+        int cur = buf[i];
+        if (i > 0 && prev != cur) printf(cur ? "|" : "|");
+        else printf(" ");
+        prev = cur;
+    }
+    printf("\n");
+
+    /* low line */
+    printf("  0  ");
+    prev = buf[0];
+    for (int i = 0; i < samples; i++) {
+        int cur = buf[i];
+        if (i == 0) {
+            printf(cur ? " " : "_");
+        } else {
+            if (prev == 1 && cur == 0) printf("\\");
+            else if (prev == 0 && cur == 1) printf(" ");
+            else if (cur == 0) printf("_");
+            else printf(" ");
+        }
+        prev = cur;
+    }
+    printf("\n\n");
+
+    int edges = 0, highs = 0;
+    for (int i = 1; i < samples; i++) {
+        if (buf[i] != buf[i-1]) edges++;
+        if (buf[i]) highs++;
+    }
+    float duty = (float)highs / (float)samples * 100.0f;
+    float window_ms = (float)(samples * us_per_sample) / 1000.0f;
+
+    printf("  edges      : %d\n", edges);
+    printf("  duty cycle : %.1f%%\n", duty);
+    printf("  window     : %.2f ms\n", window_ms);
+    if (edges >= 2) {
+        float period_ms = window_ms / ((float)edges / 2.0f);
+        printf("  ~freq      : %.1f Hz\n", 1000.0f / period_ms);
+    }
+    printf("\n");
+
+    free(buf);
 }
 
 static void cmd_melody(int argc, char* argv[]) {
     if (argc < 3) {
         printf("usage: melody <pin> <C4:200 E4:200 G4:400 ...>\n");
         printf("       REST:100 for silence\n");
+        printf("  passive buzzer: connect + to a GPIO, - to GND\n");
         return;
     }
+
     int pin = atoi(argv[1]);
     if (pin < 0 || pin > 28) { printf("invalid pin\n"); return; }
 
-    // Reassemble sequence
-    char seq[256]; seq[0] = '\0';
+if (strcmp(argv[2], "elise") == 0) {
+    static const char elise[] =
+        "E5:160 D#5:160 E5:160 D#5:160 E5:160 B4:320 D5:320 C5:320 "
+        "A4:640 REST:160 C4:160 E4:160 A4:160 "
+        "B4:640 REST:160 E4:160 G#4:160 B4:160 "
+        "C5:640 REST:160 E4:160 "
+        "E5:160 D#5:160 E5:160 D#5:160 E5:160 B4:320 D5:320 C5:320 "
+        "A4:640 REST:160 C4:160 E4:160 A4:160 "
+        "B4:640 REST:160 E4:160 C5:160 B4:160 "
+        "A4:960 REST:350 "
+
+        "B4:320 C5:320 D5:320 "
+        "E5:480 G4:160 F5:320 E5:320 "
+        "D5:480 F4:160 E5:320 D5:320 "
+        "C5:480 E4:160 D5:320 C5:320 "
+        "B4:640 REST:160 "
+        "B4:160 C5:160 D5:160 E5:160 "
+        "G5:640 REST:160 "
+        "F5:320 E5:320 D5:320 "
+        "F5:480 A4:160 E5:320 D5:320 "
+        "C5:480 E4:160 D5:320 C5:320 "
+        "B4:640 REST:160 "
+        "E4:160 E5:160 D#5:160 E5:160 "
+        "D#5:160 E5:160 B4:320 D5:320 C5:320 "
+        "A4:640 REST:160 C4:160 E4:160 A4:160 "
+        "B4:640 REST:160 E4:160 C5:160 B4:160 "
+        "A4:960 REST:350 "
+
+        "E5:160 D#5:160 E5:160 D#5:160 E5:160 B4:320 D5:320 C5:320 "
+        "A4:640 REST:160 C4:160 E4:160 A4:160 "
+        "B4:640 REST:160 E4:160 G#4:160 B4:160 "
+        "C5:640 REST:160 E4:160 "
+        "E5:160 D#5:160 E5:160 D#5:160 E5:160 B4:320 D5:320 C5:320 "
+        "A4:640 REST:160 C4:160 E4:160 A4:160 "
+        "B4:640 REST:160 E4:160 C5:160 B4:160 "
+        "A4:960 REST:350 "
+
+        "C5:320 D5:320 "
+        "E5:640 REST:160 E4:160 F#4:160 G#4:160 "
+        "A4:640 REST:160 A4:160 B4:160 C5:160 "
+        "D5:640 REST:160 "
+        "D5:160 E5:160 F5:160 "
+        "G5:640 REST:160 G4:160 A4:160 B4:160 "
+        "C5:640 REST:160 C5:160 D5:160 E5:160 "
+        "F5:640 REST:160 "
+        "F5:160 E5:160 D5:160 "
+        "E5:640 REST:160 E4:160 G#4:160 B4:160 "
+        "E5:480 D#5:160 E5:160 D#5:160 E5:160 "
+        "B4:320 D5:320 C5:320 "
+        "A4:640 REST:160 C4:160 E4:160 A4:160 "
+        "B4:640 REST:160 E4:160 C5:160 B4:160 "
+        "A4:960 REST:400 "
+
+        "E5:160 D#5:160 E5:160 D#5:160 E5:160 B4:320 D5:320 C5:320 "
+        "A4:640 REST:160 C4:160 E4:160 A4:160 "
+        "B4:640 REST:160 E4:160 G#4:160 B4:160 "
+        "C5:640 REST:160 E4:160 "
+        "E5:160 D#5:160 E5:160 D#5:160 E5:160 B4:320 D5:320 C5:320 "
+        "A4:640 REST:160 C4:160 E4:160 A4:160 "
+        "B4:640 REST:160 E4:160 C5:160 B4:160 "
+        "A4:640 REST:160 "
+        "E5:160 D#5:160 E5:160 B4:320 D5:320 "
+        "C5:640 A4:640 "
+        "E4:320 A4:320 C5:320 "
+        "E5:1600";
+
+    printf("melody on GPIO%d: [fur elise]\n", pin);
+    tone_melody((uint8_t)pin, elise);
+    return;
+}
+
+if (strcmp(argv[2], "canon") == 0) {
+    static const char canon[] =
+        "D5:800 "
+        "C#5:800 "
+        "B4:800 "
+        "A4:800 "
+        "G4:800 "
+        "F#4:800 "
+        "G4:800 "
+        "E4:800 "
+        "REST:300 "
+
+        "D5:800 "
+        "C#5:800 "
+        "B4:800 "
+        "A4:800 "
+        "G4:800 "
+        "F#4:800 "
+        "G4:800 "
+        "A4:800 "
+        "REST:400 "
+
+        "F#5:400 E5:400 "
+        "D5:400 C#5:400 "
+        "B4:400 A4:400 "
+        "B4:400 C#5:400 "
+        "REST:100 "
+
+        "D5:400 C#5:400 "
+        "B4:400 A4:400 "
+        "G4:400 F#4:400 "
+        "G4:400 A4:400 "
+        "REST:100 "
+
+        "D5:400 E5:400 "
+        "F#5:400 E5:400 "
+        "D5:400 B4:400 "
+        "D5:600 C#5:200 "
+        "REST:100 "
+
+        "B4:400 C#5:400 "
+        "D5:400 C#5:400 "
+        "B4:400 A4:400 "
+        "G4:800 "
+        "REST:300 "
+
+        "F#5:200 G5:200 A5:200 G5:200 "
+        "F#5:200 E5:200 D5:200 E5:200 "
+        "F#5:200 A4:200 B4:200 C#5:200 "
+        "D5:200 E5:200 F#5:200 E5:200 "
+        "REST:150 "
+
+        "D5:200 E5:200 F#5:200 G5:200 "
+        "A5:200 G5:200 F#5:200 E5:200 "
+        "D5:200 F#5:200 E5:200 D5:200 "
+        "C#5:600 B4:200 "
+        "REST:150 "
+
+        "A4:200 B4:200 C#5:200 D5:200 "
+        "E5:200 D5:200 C#5:200 B4:200 "
+        "C#5:200 E5:200 A4:200 B4:200 "
+        "C#5:600 D5:200 "
+        "REST:150 "
+
+        "E5:200 D5:200 C#5:200 B4:200 "
+        "A4:200 B4:200 C#5:200 D5:200 "
+        "E5:200 F#5:200 G5:200 A5:200 "
+        "B5:800 "
+        "REST:300 "
+
+        "F#5:150 E5:150 D5:150 C#5:150 "
+        "B4:150 A4:150 G4:150 F#4:150 "
+        "G4:150 A4:150 B4:150 C#5:150 "
+        "D5:150 E5:150 F#5:150 G5:150 "
+        "REST:120 "
+
+        "A5:150 G5:150 F#5:150 E5:150 "
+        "D5:150 C#5:150 B4:150 A4:150 "
+        "B4:150 C#5:150 D5:150 E5:150 "
+        "F#5:150 G5:150 A5:150 B5:150 "
+        "REST:120 "
+
+        "G5:150 F#5:150 E5:150 D5:150 "
+        "C#5:150 B4:150 A4:150 G4:150 "
+        "A4:150 B4:150 C#5:150 D5:150 "
+        "E5:150 D5:150 C#5:150 B4:150 "
+        "REST:120 "
+
+        "C#5:150 D5:150 E5:150 F#5:150 "
+        "G5:150 A5:150 B5:150 A5:150 "
+        "G5:150 F#5:150 E5:150 D5:150 "
+        "C#5:600 D5:200 "
+        "REST:300 "
+
+        "D5:250 F#5:250 A5:250 D6:250 "
+        "A4:250 E5:250 A5:250 C#6:250 "
+        "B4:250 D5:250 G5:250 B5:250 "
+        "F#4:250 A4:250 D5:250 F#5:250 "
+        "REST:150 "
+
+        "G4:250 B4:250 D5:250 G5:250 "
+        "D4:250 F#4:250 A4:250 D5:250 "
+        "G4:250 B4:250 D5:250 G5:250 "
+        "A4:250 C#5:250 E5:250 A5:250 "
+        "REST:150 "
+
+        "D5:300 E5:300 F#5:300 G5:300 "
+        "A5:300 G5:300 F#5:300 E5:300 "
+        "D5:300 C#5:300 B4:300 A4:300 "
+        "B4:300 C#5:300 D5:300 E5:300 "
+        "REST:150 "
+
+        "F#5:300 G5:300 A5:300 B5:300 "
+        "G5:300 A5:300 B5:300 C#6:300 "
+        "D6:300 C#6:300 B5:300 A5:300 "
+        "G5:600 F#5:200 E5:200 "
+        "REST:300 "
+        "D5:600 C#5:400 "
+        "B4:600 A4:400 "
+        "G4:600 F#4:400 "
+        "G4:600 A4:400 "
+        "REST:200 "
+
+        "D5:600 E5:400 "
+        "F#5:600 E5:400 "
+        "D5:400 C#5:400 B4:400 "
+        "A4:1000 "
+        "REST:200 "
+
+        "D5:500 C#5:300 B4:500 A4:300 "
+        "G4:500 F#4:300 E4:500 F#4:300 "
+        "G4:400 A4:400 B4:400 C#5:400 "
+        "D5:2000";
+
+    printf("melody on GPIO%d: [canon in d - full]\n", pin);
+    tone_melody((uint8_t)pin, canon);
+    return;
+}
+    char seq[2048]; seq[0] = '\0';
     for (int i = 2; i < argc; i++) {
         if (i > 2) strncat(seq, " ", sizeof(seq) - strlen(seq) - 1);
         strncat(seq, argv[i], sizeof(seq) - strlen(seq) - 1);
     }
     printf("melody on GPIO%d: %s\n", pin, seq);
     tone_melody((uint8_t)pin, seq);
-}
-
-static void cmd_avg(int argc, char* argv[]) {
-    if (argc < 2) {
-        printf("usage: avg <adc_ch 0-2> [samples 1-256]\n");
-        return;
-    }
-    int ch = atoi(argv[1]);
-    if (ch < 0 || ch > 2) { printf("channel must be 0-2\n"); return; }
-    int samples = (argc >= 3) ? atoi(argv[2]) : 64;
-    if (samples < 1 || samples > 256) { printf("samples: 1-256\n"); return; }
-
-    adc_select_input((uint)ch);
-    uint32_t sum = 0;
-    uint16_t mn  = 0xFFFF, mx = 0;
-    for (int i = 0; i < samples; i++) {
-        uint16_t r = adc_read();
-        sum += r;
-        if (r < mn) mn = r;
-        if (r > mx) mx = r;
-    }
-    uint16_t avg_raw = (uint16_t)(sum / samples);
-    float voltage    = avg_raw * 3.3f / (1 << 12);
-    float v_min      = mn * 3.3f / (1 << 12);
-    float v_max      = mx * 3.3f / (1 << 12);
-    printf("ADC%d  samples=%d\n", ch, samples);
-    printf("  avg  : %4d  /  %.3f V\n", avg_raw, voltage);
-    printf("  min  : %4d  /  %.3f V\n", mn, v_min);
-    printf("  max  : %4d  /  %.3f V\n", mx, v_max);
-    printf("  noise: %4d  counts p-p\n", mx - mn);
 }
 
 static void cmd_trigger(int argc, char* argv[]) {
@@ -575,7 +1335,6 @@ static void cmd_trigger(int argc, char* argv[]) {
     }
     int pin = atoi(argv[1]);
     if (pin < 0 || pin > 28) { printf("invalid pin\n"); return; }
-
     uint32_t mask = 0;
     if      (strcmp(argv[2], "rise") == 0) mask = GPIO_IRQ_EDGE_RISE;
     else if (strcmp(argv[2], "fall") == 0) mask = GPIO_IRQ_EDGE_FALL;
@@ -587,15 +1346,12 @@ static void cmd_trigger(int argc, char* argv[]) {
         if (i > 3) strncat(subcmd, " ", sizeof(subcmd) - strlen(subcmd) - 1);
         strncat(subcmd, argv[i], sizeof(subcmd) - strlen(subcmd) - 1);
     }
-
     gpio_init(pin);
     gpio_set_dir(pin, GPIO_IN);
     gpio_pull_up(pin);
-
     printf("trigger: waiting for %s edge on GPIO%d\n", argv[2], pin);
     printf("         command: '%s'\n", subcmd);
     printf("         (press any key to cancel)\n");
-
     int last = gpio_get(pin);
     while (true) {
         if (getchar_timeout_us(0) != PICO_ERROR_TIMEOUT) { printf("cancelled.\n"); return; }
@@ -618,19 +1374,14 @@ static void cmd_trigger(int argc, char* argv[]) {
 }
 
 static void cmd_cron(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("usage: cron <delay_ms> <command>\n");
-        return;
-    }
+    if (argc < 3) { printf("usage: cron <delay_ms> <command>\n"); return; }
     int ms = atoi(argv[1]);
     if (ms < 1 || ms > 60000) { printf("delay 1-60000 ms\n"); return; }
-
     char subcmd[INPUT_SIZE]; subcmd[0] = '\0';
     for (int i = 2; i < argc; i++) {
         if (i > 2) strncat(subcmd, " ", sizeof(subcmd) - strlen(subcmd) - 1);
         strncat(subcmd, argv[i], sizeof(subcmd) - strlen(subcmd) - 1);
     }
-
     printf("cron: '%s' will run in %d ms  (blocking)\n", subcmd, ms);
     sleep_ms((uint32_t)ms);
     char tmp[INPUT_SIZE];
@@ -640,22 +1391,42 @@ static void cmd_cron(int argc, char* argv[]) {
     commands_execute(tmp);
 }
 
-static void cmd_stats(int argc, char* argv[]) {
-    uint64_t up_us  = time_us_64();
-    uint32_t up_s   = (uint32_t)(up_us / 1000000);
-    printf("=== DeckOS Runtime Stats ===\n");
-    printf("uptime          : %02uh %02um %02us\n",
-           up_s / 3600, (up_s % 3600) / 60, up_s % 60);
-    printf("commands run    : %lu\n", s_cmd_count);
-    printf("unknown cmds    : %lu\n", s_unknown_count);
-    printf("log entries     : %lu\n", syslog_total());
-    printf("watchdog reboot : %s\n", watchdog_caused_reboot() ? "yes" : "no");
-    printf("cpu freq        : %lu MHz\n", clock_get_hz(clk_sys) / 1000000);
-    adc_select_input(4);
-    float v  = adc_read() * 3.3f / (1 << 12);
-    float tc = 27.0f - (v - 0.706f) / 0.001721f;
-    printf("core temp       : %.1f C\n", tc);
-    printf("============================\n");
+static void cmd_drivers(int argc, char* argv[]) { drivers_list(); }
+
+static void cmd_tasks(int argc, char* argv[]) {
+    if (argc >= 3 && strcmp(argv[1], "enable")  == 0) { sched_enable(atoi(argv[2]), true);  printf("task %d enabled\n",  atoi(argv[2])); return; }
+    if (argc >= 3 && strcmp(argv[1], "disable") == 0) { sched_enable(atoi(argv[2]), false); printf("task %d disabled\n", atoi(argv[2])); return; }
+    sched_list();
+}
+
+static void cmd_config(int argc, char* argv[]) {
+    if (argc < 2 || strcmp(argv[1], "show") == 0) { config_print(&g_config); return; }
+    if (strcmp(argv[1], "save")  == 0) { config_save(&g_config); return; }
+    if (strcmp(argv[1], "reset") == 0) { config_defaults(&g_config); config_save(&g_config); printf("config reset to defaults\n"); return; }
+    if (strcmp(argv[1], "set")   == 0 && argc >= 4) {
+        if (strcmp(argv[2], "hostname") == 0) {
+            strncpy(g_config.hostname, argv[3], sizeof(g_config.hostname) - 1);
+            printf("hostname = %s\n", g_config.hostname);
+        } else if (strcmp(argv[2], "cpu_mhz") == 0) {
+            int mhz = atoi(argv[3]);
+            if (mhz != 0 && (mhz < 48 || mhz > 200)) { printf("safe range: 48-200 MHz\n"); return; }
+            g_config.boot_cpu_mhz = (uint32_t)mhz;
+            printf("boot_cpu_mhz = %d\n", mhz);
+        } else if (strcmp(argv[2], "boot_led") == 0) {
+            g_config.boot_led = (uint8_t)(atoi(argv[3]) ? 1 : 0);
+            printf("boot_led = %d\n", g_config.boot_led);
+        } else {
+            printf("unknown key: %s  (valid: hostname cpu_mhz boot_led)\n", argv[2]);
+        }
+        return;
+    }
+    printf("usage: config show|set <key> <val>|save|reset\n");
+}
+
+static void cmd_dfu(int argc, char* argv[]) {
+    printf("entering USB DFU (BOOTSEL) mode...\n");
+    sleep_ms(200);
+    reset_usb_boot(0, 0);
 }
 
 static command_t command_table[] = {
@@ -667,10 +1438,12 @@ static command_t command_table[] = {
     {"uptime",  cmd_uptime,  "show time since boot"},
     {"sysinfo", cmd_sysinfo, "full system info"},
     {"stats",   cmd_stats,   "runtime statistics"},
+    {"top",     cmd_top,     "live task monitor (any key to exit)"},
     // Hardware
     {"temp",    cmd_temp,    "read internal core temperature"},
     {"mem",     cmd_mem,     "show memory info"},
     {"memmap",  cmd_memmap,  "detailed memory map"},
+    {"free",    cmd_free,    "heap allocator stats and live allocs"},
     {"led",     cmd_led,     "led <on|off|toggle|blink [n]>"},
     {"gpio",    cmd_gpio,    "gpio <read|write|mode|irq> <pin> [val]"},
     {"pwm",     cmd_pwm,     "pwm <pin> <duty 0-100>"},
@@ -679,16 +1452,26 @@ static command_t command_table[] = {
     {"pull",    cmd_pull,    "pull <pin> <up|down|none>"},
     {"clock",   cmd_clock,   "clock [mhz]  get/set CPU freq (48-200)"},
     {"i2c",     cmd_i2c,     "i2c scan|read|write  I2C bus ops"},
+    {"spi",     cmd_spi,     "spi init|write|read|xfer  SPI bus ops"},
+    {"uart",    cmd_uart,    "uart <baud> <tx> <rx> [timeout_s]  passthrough"},
+    {"pinout",  cmd_pinout,  "ASCII Pico pinout with live pin states"},
+    {"flash",   cmd_flash,   "flash read|write|erase <addr> raw flash access"},
+    {"detect",  cmd_detect,  "scan and report connected devices"},
+    {"la",      cmd_la,     "la <pin> [samples] [us]  logic analyser + timing diagram"},
+    // Servo
+    {"servo",   cmd_servo,   "servo <pin> <angle> | sweep | bg sweep/goto/stop"},
     // Audio / signalling
-    {"tone",    cmd_tone,    "tone <pin> <note|hz> [ms]  play a tone"},
+    {"tone",    cmd_tone,    "tone <pin> <note|hz> [ms]  (connect buzzer to pin+GND)"},
     {"melody",  cmd_melody,  "melody <pin> <C4:200 E4:200 ...>"},
     {"morse",   cmd_morse,   "morse <text> [wpm]  blink LED in morse"},
+    {"piano",   cmd_piano,  "piano <pin>  play buzzer like a keyboard (a-k keys)"},
     // Scripting / automation
     {"sleep",   cmd_sleep,   "sleep <ms>  pause"},
     {"repeat",  cmd_repeat,  "repeat <n> <cmd>"},
     {"watch",   cmd_watch,   "watch <ms> <cmd>  run cmd at interval"},
     {"trigger", cmd_trigger, "trigger <pin> <rise|fall|both> <cmd>"},
     {"cron",    cmd_cron,    "cron <delay_ms> <cmd>  deferred run"},
+    {"bench",   cmd_bench,   "bench <iters> <cmd>  measure cmd throughput"},
     // System
     {"reboot",  cmd_reboot,  "reboot via watchdog"},
     {"dfu",     cmd_dfu,     "reboot into USB DFU (BOOTSEL)"},
@@ -719,13 +1502,13 @@ void commands_list(void) {
 void commands_execute(char* input) {
     if (!input || strlen(input) == 0) return;
 
-    static char  buf[128];
+    char  buf[INPUT_SIZE];
     static char* argv[MAX_ARGS];
     int argc = 0;
 
     strncpy(buf, input, sizeof(buf) - 1);
     buf[sizeof(buf) - 1] = '\0';
- 
+
     char* tok = strtok(buf, " ");
     while (tok && argc < MAX_ARGS) { argv[argc++] = tok; tok = strtok(NULL, " "); }
     if (argc == 0) return;

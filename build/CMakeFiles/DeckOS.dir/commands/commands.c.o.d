@@ -70,6 +70,15 @@ CMakeFiles/DeckOS.dir/commands/commands.c.o: \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+ /home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/include/pico/unique_id.h \
+ /home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/include/pico/multicore.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sync.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+ /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+ /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/include/hardware/sync/spin_lock.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+ /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/include/hardware/adc.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/adc.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/adc.h \
@@ -85,13 +94,16 @@ CMakeFiles/DeckOS.dir/commands/commands.c.o: \
  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/include/hardware/i2c.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/i2c.h \
  /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/i2c.h \
+ /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/include/hardware/spi.h \
+ /home/indresh/embedded/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/spi.h \
+ /home/indresh/embedded/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/spi.h \
+ /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/include/hardware/flash.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom_constants.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/boot_bootrom_headers/include/boot/bootrom_constants.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom/lock.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/include/hardware/boot_lock.h \
  /home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/include/pico/flash.h \
- /home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/include/pico/unique_id.h \
  /home/indresh/embedded/DeckOS/include/commands.h \
  /home/indresh/embedded/DeckOS/include/kernel.h \
  /home/indresh/embedded/DeckOS/include/drivers.h \
@@ -100,4 +112,10 @@ CMakeFiles/DeckOS.dir/commands/commands.c.o: \
  /home/indresh/embedded/DeckOS/include/syslog.h \
  /home/indresh/embedded/DeckOS/include/gpio_mon.h \
  /home/indresh/embedded/DeckOS/include/morse.h \
- /home/indresh/embedded/DeckOS/include/tone.h
+ /home/indresh/embedded/DeckOS/include/tone.h \
+ /home/indresh/embedded/DeckOS/include/servo.h \
+ /home/indresh/embedded/DeckOS/include/spi_bus.h \
+ /home/indresh/embedded/DeckOS/include/uart_pass.h \
+ /home/indresh/embedded/DeckOS/include/device_detect.h \
+ /home/indresh/embedded/DeckOS/include/bench.h \
+ /home/indresh/embedded/DeckOS/include/heap_track.h

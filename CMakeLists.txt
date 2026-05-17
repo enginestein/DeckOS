@@ -26,8 +26,20 @@ add_executable(DeckOS
     # Commands
     commands/commands.c
 
+    # System tools
+    system/bench.c
+    system/device_detect.c
+    system/heap_track.c
+
+    # Hardware tools
+    hardware/servo.c
+
+    # Communication tools
+    communication/uart_pass.c
+
     # Drivers
     drivers/drivers.c
+    drivers/spi_bus.c
 )
 
 target_link_libraries(DeckOS
@@ -39,9 +51,10 @@ target_link_libraries(DeckOS
     hardware_pwm
     hardware_clocks
     hardware_i2c
+    hardware_spi
     hardware_flash
     hardware_sync
-    hardware_irq            # GPIO IRQ support
+    hardware_irq
     pico_unique_id
     pico_bootrom
 )

@@ -3,6 +3,7 @@
 #include "hardware/flash.h"
 #include "hardware/sync.h"
 #include "pico/stdlib.h"
+#include "pico/multicore.h"
 #include "config.h"
 
 #define FLASH_SIZE_BYTES   (2 * 1024 * 1024)
@@ -20,7 +21,6 @@ static uint32_t crc32(const uint8_t* data, size_t len) {
 }
 
 static uint32_t config_crc(const flash_config_t* cfg) {
-    // Everything except the crc32 field itself
     size_t len = offsetof(flash_config_t, crc32);
     return crc32((const uint8_t*)cfg, len);
 }
@@ -38,7 +38,6 @@ void config_defaults(flash_config_t* cfg) {
 
 bool config_load(flash_config_t* cfg) {
     const flash_config_t* flash = (const flash_config_t*)CONFIG_ADDR;
-
     if (flash->magic != CONFIG_MAGIC || flash->version != CONFIG_VERSION) {
         config_defaults(cfg);
         return false;
@@ -62,19 +61,31 @@ void config_save(flash_config_t* cfg) {
     memset(page, 0xFF, sizeof(page));
     memcpy(page, cfg, sizeof(*cfg));
 
+    printf("[config] pausing Core1 for flash write...\n");
+
+    // Stop Core1 so it cannot execute from flash during erase
+    multicore_reset_core1();
+
     uint32_t irq = save_and_disable_interrupts();
     flash_range_erase(CONFIG_OFFSET, FLASH_SECTOR_SIZE);
     flash_range_program(CONFIG_OFFSET, page, FLASH_SECTOR_SIZE);
     restore_interrupts(irq);
 
     printf("[config] saved to flash @ 0x%05X\n", CONFIG_OFFSET);
+
+    // Re-launch Core1 with the same entry point.
+    // kernel.c exports this symbol so config.c can call it.
+    extern void core1_restart(void);
+    core1_restart();
+
+    printf("[config] Core1 restarted\n");
 }
 
 void config_print(const flash_config_t* cfg) {
     printf("hostname    : %s\n",   cfg->hostname);
     printf("boot_cpu_mhz: %lu  (%s)\n",
-        cfg->boot_cpu_mhz,
-        cfg->boot_cpu_mhz ? "custom" : "default 125 MHz");
+           cfg->boot_cpu_mhz,
+           cfg->boot_cpu_mhz ? "custom" : "default 125 MHz");
     printf("boot_led    : %s\n",   cfg->boot_led    ? "on"  : "off");
     printf("shell_echo  : %s\n",   cfg->shell_echo  ? "yes" : "no");
     printf("crc32       : 0x%08lX\n", cfg->crc32);

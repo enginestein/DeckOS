@@ -1,8 +1,8 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-#define MAX_ARGS  8
-#define INPUT_SIZE 128
+#define MAX_ARGS   300
+#define INPUT_SIZE 2048
 
 typedef struct {
     const char* name;

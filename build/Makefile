@@ -231,6 +231,30 @@ commands/commands.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/commands/commands.c.s
 .PHONY : commands/commands.c.s
 
+communication/uart_pass.o: communication/uart_pass.c.o
+.PHONY : communication/uart_pass.o
+
+# target to build an object file
+communication/uart_pass.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/communication/uart_pass.c.o
+.PHONY : communication/uart_pass.c.o
+
+communication/uart_pass.i: communication/uart_pass.c.i
+.PHONY : communication/uart_pass.i
+
+# target to preprocess a source file
+communication/uart_pass.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/communication/uart_pass.c.i
+.PHONY : communication/uart_pass.c.i
+
+communication/uart_pass.s: communication/uart_pass.c.s
+.PHONY : communication/uart_pass.s
+
+# target to generate assembly for a file
+communication/uart_pass.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/communication/uart_pass.c.s
+.PHONY : communication/uart_pass.c.s
+
 drivers/drivers.o: drivers/drivers.c.o
 .PHONY : drivers/drivers.o
 
@@ -254,6 +278,54 @@ drivers/drivers.s: drivers/drivers.c.s
 drivers/drivers.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/drivers/drivers.c.s
 .PHONY : drivers/drivers.c.s
+
+drivers/spi_bus.o: drivers/spi_bus.c.o
+.PHONY : drivers/spi_bus.o
+
+# target to build an object file
+drivers/spi_bus.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o
+.PHONY : drivers/spi_bus.c.o
+
+drivers/spi_bus.i: drivers/spi_bus.c.i
+.PHONY : drivers/spi_bus.i
+
+# target to preprocess a source file
+drivers/spi_bus.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/drivers/spi_bus.c.i
+.PHONY : drivers/spi_bus.c.i
+
+drivers/spi_bus.s: drivers/spi_bus.c.s
+.PHONY : drivers/spi_bus.s
+
+# target to generate assembly for a file
+drivers/spi_bus.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/drivers/spi_bus.c.s
+.PHONY : drivers/spi_bus.c.s
+
+hardware/servo.o: hardware/servo.c.o
+.PHONY : hardware/servo.o
+
+# target to build an object file
+hardware/servo.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/hardware/servo.c.o
+.PHONY : hardware/servo.c.o
+
+hardware/servo.i: hardware/servo.c.i
+.PHONY : hardware/servo.i
+
+# target to preprocess a source file
+hardware/servo.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/hardware/servo.c.i
+.PHONY : hardware/servo.c.i
+
+hardware/servo.s: hardware/servo.c.s
+.PHONY : hardware/servo.s
+
+# target to generate assembly for a file
+hardware/servo.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/hardware/servo.c.s
+.PHONY : hardware/servo.c.s
 
 home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.o: home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o
 .PHONY : home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.o
@@ -1158,6 +1230,30 @@ home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.s: home/indresh/e
 home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
 .PHONY : home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
+
+home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.o: home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o
+.PHONY : home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.o
+
+# target to build an object file
+home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o
+.PHONY : home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o
+
+home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.i: home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
+.PHONY : home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.i
+
+# target to preprocess a source file
+home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
+.PHONY : home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
+
+home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.s: home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
+.PHONY : home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.s
+
+# target to generate assembly for a file
+home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
+.PHONY : home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
 
 home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.o: home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.o
 .PHONY : home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.o
@@ -2335,6 +2431,78 @@ shell/shell.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/shell/shell.c.s
 .PHONY : shell/shell.c.s
 
+system/bench.o: system/bench.c.o
+.PHONY : system/bench.o
+
+# target to build an object file
+system/bench.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/system/bench.c.o
+.PHONY : system/bench.c.o
+
+system/bench.i: system/bench.c.i
+.PHONY : system/bench.i
+
+# target to preprocess a source file
+system/bench.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/system/bench.c.i
+.PHONY : system/bench.c.i
+
+system/bench.s: system/bench.c.s
+.PHONY : system/bench.s
+
+# target to generate assembly for a file
+system/bench.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/system/bench.c.s
+.PHONY : system/bench.c.s
+
+system/device_detect.o: system/device_detect.c.o
+.PHONY : system/device_detect.o
+
+# target to build an object file
+system/device_detect.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/system/device_detect.c.o
+.PHONY : system/device_detect.c.o
+
+system/device_detect.i: system/device_detect.c.i
+.PHONY : system/device_detect.i
+
+# target to preprocess a source file
+system/device_detect.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/system/device_detect.c.i
+.PHONY : system/device_detect.c.i
+
+system/device_detect.s: system/device_detect.c.s
+.PHONY : system/device_detect.s
+
+# target to generate assembly for a file
+system/device_detect.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/system/device_detect.c.s
+.PHONY : system/device_detect.c.s
+
+system/heap_track.o: system/heap_track.c.o
+.PHONY : system/heap_track.o
+
+# target to build an object file
+system/heap_track.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/system/heap_track.c.o
+.PHONY : system/heap_track.c.o
+
+system/heap_track.i: system/heap_track.c.i
+.PHONY : system/heap_track.i
+
+# target to preprocess a source file
+system/heap_track.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/system/heap_track.c.i
+.PHONY : system/heap_track.c.i
+
+system/heap_track.s: system/heap_track.c.s
+.PHONY : system/heap_track.s
+
+# target to generate assembly for a file
+system/heap_track.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DeckOS.dir/build.make CMakeFiles/DeckOS.dir/system/heap_track.c.s
+.PHONY : system/heap_track.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -2353,9 +2521,18 @@ help:
 	@echo "... commands/commands.o"
 	@echo "... commands/commands.i"
 	@echo "... commands/commands.s"
+	@echo "... communication/uart_pass.o"
+	@echo "... communication/uart_pass.i"
+	@echo "... communication/uart_pass.s"
 	@echo "... drivers/drivers.o"
 	@echo "... drivers/drivers.i"
 	@echo "... drivers/drivers.s"
+	@echo "... drivers/spi_bus.o"
+	@echo "... drivers/spi_bus.i"
+	@echo "... drivers/spi_bus.s"
+	@echo "... hardware/servo.o"
+	@echo "... hardware/servo.i"
+	@echo "... hardware/servo.s"
 	@echo "... home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.o"
 	@echo "... home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.i"
 	@echo "... home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.s"
@@ -2469,6 +2646,9 @@ help:
 	@echo "... home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.o"
 	@echo "... home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.i"
 	@echo "... home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.s"
+	@echo "... home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.o"
+	@echo "... home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.i"
+	@echo "... home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.s"
 	@echo "... home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.o"
 	@echo "... home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.i"
 	@echo "... home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.s"
@@ -2616,6 +2796,15 @@ help:
 	@echo "... shell/shell.o"
 	@echo "... shell/shell.i"
 	@echo "... shell/shell.s"
+	@echo "... system/bench.o"
+	@echo "... system/bench.i"
+	@echo "... system/bench.s"
+	@echo "... system/device_detect.o"
+	@echo "... system/device_detect.i"
+	@echo "... system/device_detect.s"
+	@echo "... system/heap_track.o"
+	@echo "... system/heap_track.i"
+	@echo "... system/heap_track.s"
 .PHONY : help
 
 

@@ -226,10 +226,80 @@ CMakeFiles/DeckOS.dir/commands/commands.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/DeckOS.dir/commands/commands.c.s"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/indresh/embedded/DeckOS/commands/commands.c -o CMakeFiles/DeckOS.dir/commands/commands.c.s
 
+CMakeFiles/DeckOS.dir/system/bench.c.o: CMakeFiles/DeckOS.dir/flags.make
+CMakeFiles/DeckOS.dir/system/bench.c.o: /home/indresh/embedded/DeckOS/system/bench.c
+CMakeFiles/DeckOS.dir/system/bench.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/DeckOS.dir/system/bench.c.o"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/system/bench.c.o -MF CMakeFiles/DeckOS.dir/system/bench.c.o.d -o CMakeFiles/DeckOS.dir/system/bench.c.o -c /home/indresh/embedded/DeckOS/system/bench.c
+
+CMakeFiles/DeckOS.dir/system/bench.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/DeckOS.dir/system/bench.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/indresh/embedded/DeckOS/system/bench.c > CMakeFiles/DeckOS.dir/system/bench.c.i
+
+CMakeFiles/DeckOS.dir/system/bench.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/DeckOS.dir/system/bench.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/indresh/embedded/DeckOS/system/bench.c -o CMakeFiles/DeckOS.dir/system/bench.c.s
+
+CMakeFiles/DeckOS.dir/system/device_detect.c.o: CMakeFiles/DeckOS.dir/flags.make
+CMakeFiles/DeckOS.dir/system/device_detect.c.o: /home/indresh/embedded/DeckOS/system/device_detect.c
+CMakeFiles/DeckOS.dir/system/device_detect.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/DeckOS.dir/system/device_detect.c.o"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/system/device_detect.c.o -MF CMakeFiles/DeckOS.dir/system/device_detect.c.o.d -o CMakeFiles/DeckOS.dir/system/device_detect.c.o -c /home/indresh/embedded/DeckOS/system/device_detect.c
+
+CMakeFiles/DeckOS.dir/system/device_detect.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/DeckOS.dir/system/device_detect.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/indresh/embedded/DeckOS/system/device_detect.c > CMakeFiles/DeckOS.dir/system/device_detect.c.i
+
+CMakeFiles/DeckOS.dir/system/device_detect.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/DeckOS.dir/system/device_detect.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/indresh/embedded/DeckOS/system/device_detect.c -o CMakeFiles/DeckOS.dir/system/device_detect.c.s
+
+CMakeFiles/DeckOS.dir/system/heap_track.c.o: CMakeFiles/DeckOS.dir/flags.make
+CMakeFiles/DeckOS.dir/system/heap_track.c.o: /home/indresh/embedded/DeckOS/system/heap_track.c
+CMakeFiles/DeckOS.dir/system/heap_track.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/DeckOS.dir/system/heap_track.c.o"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/system/heap_track.c.o -MF CMakeFiles/DeckOS.dir/system/heap_track.c.o.d -o CMakeFiles/DeckOS.dir/system/heap_track.c.o -c /home/indresh/embedded/DeckOS/system/heap_track.c
+
+CMakeFiles/DeckOS.dir/system/heap_track.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/DeckOS.dir/system/heap_track.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/indresh/embedded/DeckOS/system/heap_track.c > CMakeFiles/DeckOS.dir/system/heap_track.c.i
+
+CMakeFiles/DeckOS.dir/system/heap_track.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/DeckOS.dir/system/heap_track.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/indresh/embedded/DeckOS/system/heap_track.c -o CMakeFiles/DeckOS.dir/system/heap_track.c.s
+
+CMakeFiles/DeckOS.dir/hardware/servo.c.o: CMakeFiles/DeckOS.dir/flags.make
+CMakeFiles/DeckOS.dir/hardware/servo.c.o: /home/indresh/embedded/DeckOS/hardware/servo.c
+CMakeFiles/DeckOS.dir/hardware/servo.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/DeckOS.dir/hardware/servo.c.o"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/hardware/servo.c.o -MF CMakeFiles/DeckOS.dir/hardware/servo.c.o.d -o CMakeFiles/DeckOS.dir/hardware/servo.c.o -c /home/indresh/embedded/DeckOS/hardware/servo.c
+
+CMakeFiles/DeckOS.dir/hardware/servo.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/DeckOS.dir/hardware/servo.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/indresh/embedded/DeckOS/hardware/servo.c > CMakeFiles/DeckOS.dir/hardware/servo.c.i
+
+CMakeFiles/DeckOS.dir/hardware/servo.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/DeckOS.dir/hardware/servo.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/indresh/embedded/DeckOS/hardware/servo.c -o CMakeFiles/DeckOS.dir/hardware/servo.c.s
+
+CMakeFiles/DeckOS.dir/communication/uart_pass.c.o: CMakeFiles/DeckOS.dir/flags.make
+CMakeFiles/DeckOS.dir/communication/uart_pass.c.o: /home/indresh/embedded/DeckOS/communication/uart_pass.c
+CMakeFiles/DeckOS.dir/communication/uart_pass.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/DeckOS.dir/communication/uart_pass.c.o"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/communication/uart_pass.c.o -MF CMakeFiles/DeckOS.dir/communication/uart_pass.c.o.d -o CMakeFiles/DeckOS.dir/communication/uart_pass.c.o -c /home/indresh/embedded/DeckOS/communication/uart_pass.c
+
+CMakeFiles/DeckOS.dir/communication/uart_pass.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/DeckOS.dir/communication/uart_pass.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/indresh/embedded/DeckOS/communication/uart_pass.c > CMakeFiles/DeckOS.dir/communication/uart_pass.c.i
+
+CMakeFiles/DeckOS.dir/communication/uart_pass.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/DeckOS.dir/communication/uart_pass.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/indresh/embedded/DeckOS/communication/uart_pass.c -o CMakeFiles/DeckOS.dir/communication/uart_pass.c.s
+
 CMakeFiles/DeckOS.dir/drivers/drivers.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/drivers/drivers.c.o: /home/indresh/embedded/DeckOS/drivers/drivers.c
 CMakeFiles/DeckOS.dir/drivers/drivers.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/DeckOS.dir/drivers/drivers.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/DeckOS.dir/drivers/drivers.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/drivers/drivers.c.o -MF CMakeFiles/DeckOS.dir/drivers/drivers.c.o.d -o CMakeFiles/DeckOS.dir/drivers/drivers.c.o -c /home/indresh/embedded/DeckOS/drivers/drivers.c
 
 CMakeFiles/DeckOS.dir/drivers/drivers.c.i: cmake_force
@@ -240,10 +310,24 @@ CMakeFiles/DeckOS.dir/drivers/drivers.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/DeckOS.dir/drivers/drivers.c.s"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/indresh/embedded/DeckOS/drivers/drivers.c -o CMakeFiles/DeckOS.dir/drivers/drivers.c.s
 
+CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o: CMakeFiles/DeckOS.dir/flags.make
+CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o: /home/indresh/embedded/DeckOS/drivers/spi_bus.c
+CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o -MF CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o.d -o CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o -c /home/indresh/embedded/DeckOS/drivers/spi_bus.c
+
+CMakeFiles/DeckOS.dir/drivers/spi_bus.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/DeckOS.dir/drivers/spi_bus.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/indresh/embedded/DeckOS/drivers/spi_bus.c > CMakeFiles/DeckOS.dir/drivers/spi_bus.c.i
+
+CMakeFiles/DeckOS.dir/drivers/spi_bus.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/DeckOS.dir/drivers/spi_bus.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/indresh/embedded/DeckOS/drivers/spi_bus.c -o CMakeFiles/DeckOS.dir/drivers/spi_bus.c.s
+
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i: cmake_force
@@ -257,7 +341,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i: cmake_force
@@ -271,7 +355,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpi
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c.o: /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c.o -c /home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c.i: cmake_force
@@ -285,7 +369,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/pl
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/common.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/common.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/common.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/common.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/common.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/common.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/common.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/common.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/common.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/common.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_common/common.c.i: cmake_force
@@ -299,7 +383,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platfor
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/panic.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/panic.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.i: cmake_force
@@ -313,7 +397,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_platfor
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/hardware_claim/claim.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/hardware_claim/claim.c.o: /home/indresh/embedded/pico-sdk/src/common/hardware_claim/claim.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/hardware_claim/claim.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/hardware_claim/claim.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/hardware_claim/claim.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/hardware_claim/claim.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/hardware_claim/claim.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/hardware_claim/claim.c.o -c /home/indresh/embedded/pico-sdk/src/common/hardware_claim/claim.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/hardware_claim/claim.c.i: cmake_force
@@ -327,7 +411,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/hardware_claim/c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.i: cmake_force
@@ -341,7 +425,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_syn
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.i: cmake_force
@@ -355,7 +439,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_syn
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c.i: cmake_force
@@ -368,7 +452,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o   -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.i: cmake_force
@@ -382,7 +466,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/sem.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/sem.c.o: /home/indresh/embedded/pico-sdk/src/common/pico_sync/sem.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/sem.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/sem.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/sem.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/sem.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/sem.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/sem.c.o -c /home/indresh/embedded/pico-sdk/src/common/pico_sync/sem.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/sem.c.i: cmake_force
@@ -396,7 +480,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/sem.c.
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c.o: /home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c.o -c /home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_core.c.i: cmake_force
@@ -410,7 +494,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/lock_c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.c.o: /home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.c.o -c /home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.c.i: cmake_force
@@ -424,7 +508,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/mutex.
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/critical_section.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/critical_section.c.o: /home/indresh/embedded/pico-sdk/src/common/pico_sync/critical_section.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/critical_section.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/critical_section.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/critical_section.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/critical_section.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/critical_section.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/critical_section.c.o -c /home/indresh/embedded/pico-sdk/src/common/pico_sync/critical_section.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/critical_section.c.i: cmake_force
@@ -438,7 +522,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_sync/critic
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/time.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/time.c.o: /home/indresh/embedded/pico-sdk/src/common/pico_time/time.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/time.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/time.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/time.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/time.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/time.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/time.c.o -c /home/indresh/embedded/pico-sdk/src/common/pico_time/time.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/time.c.i: cmake_force
@@ -452,7 +536,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/time.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/timeout_helper.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/timeout_helper.c.o: /home/indresh/embedded/pico-sdk/src/common/pico_time/timeout_helper.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/timeout_helper.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/timeout_helper.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/timeout_helper.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/timeout_helper.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/timeout_helper.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/timeout_helper.c.o -c /home/indresh/embedded/pico-sdk/src/common/pico_time/timeout_helper.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/timeout_helper.c.i: cmake_force
@@ -466,7 +550,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_time/timeou
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/timer.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/timer.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/timer.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/timer.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/timer.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/timer.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/timer.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/timer.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/timer.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/timer.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_timer/timer.c.i: cmake_force
@@ -480,7 +564,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_tim
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/datetime.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/datetime.c.o: /home/indresh/embedded/pico-sdk/src/common/pico_util/datetime.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/datetime.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/datetime.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/datetime.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/datetime.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/datetime.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/datetime.c.o -c /home/indresh/embedded/pico-sdk/src/common/pico_util/datetime.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/datetime.c.i: cmake_force
@@ -494,7 +578,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/dateti
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/pheap.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/pheap.c.o: /home/indresh/embedded/pico-sdk/src/common/pico_util/pheap.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/pheap.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/pheap.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/pheap.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/pheap.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/pheap.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/pheap.c.o -c /home/indresh/embedded/pico-sdk/src/common/pico_util/pheap.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/pheap.c.i: cmake_force
@@ -508,7 +592,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/pheap.
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/queue.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/queue.c.o: /home/indresh/embedded/pico-sdk/src/common/pico_util/queue.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/queue.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/queue.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/queue.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/queue.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/queue.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/queue.c.o -c /home/indresh/embedded/pico-sdk/src/common/pico_util/queue.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/queue.c.i: cmake_force
@@ -522,7 +606,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/common/pico_util/queue.
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uart/uart.c.i: cmake_force
@@ -536,7 +620,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_uar
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/clocks.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/clocks.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i: cmake_force
@@ -550,7 +634,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_clo
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.i: cmake_force
@@ -564,7 +648,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i: cmake_force
@@ -578,7 +662,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_vre
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i: cmake_force
@@ -592,7 +676,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_wat
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.i: cmake_force
@@ -606,7 +690,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_tic
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i: cmake_force
@@ -620,7 +704,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.i: cmake_force
@@ -634,7 +718,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bootrom
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.i: cmake_force
@@ -648,7 +732,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_boo
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/flash.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/flash.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/flash.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/flash.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/flash.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/flash.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/flash.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/flash.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/flash.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/flash.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/flash.c.i: cmake_force
@@ -662,7 +746,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_flash/f
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xosc/xosc.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xosc/xosc.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i: cmake_force
@@ -675,7 +759,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xos
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_divider/divider.S.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_divider/divider.S.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_divider/divider.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_divider/divider.S.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_divider/divider.S.o"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_divider/divider.S.o   -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_divider/divider.S
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_divider/divider.S.i: cmake_force
@@ -689,7 +773,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_div
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/runtime.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/runtime.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i: cmake_force
@@ -703,7 +787,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.i: cmake_force
@@ -717,7 +801,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.i: cmake_force
@@ -731,7 +815,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.i: cmake_force
@@ -744,7 +828,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_runtime
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o   -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.i: cmake_force
@@ -757,7 +841,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_bit_ops
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.o"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.o   -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.i: cmake_force
@@ -770,7 +854,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_divider
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.o"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.o   -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.i: cmake_force
@@ -784,7 +868,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_58) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.i: cmake_force
@@ -798,7 +882,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_math.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_math.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_math.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_math.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_math.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_59) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_math.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_math.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_math.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_math.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_math.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_math.c.i: cmake_force
@@ -811,7 +895,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_60) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o   -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.i: cmake_force
@@ -824,7 +908,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_double/
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_61) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.o"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.o   -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.i: cmake_force
@@ -837,7 +921,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_int64_o
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.o"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.o   -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.i: cmake_force
@@ -851,7 +935,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/f
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.i: cmake_force
@@ -865,7 +949,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/f
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_math.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_math.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_math.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_math.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_58) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_math.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_math.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_math.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_math.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_math.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_math.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_math.c.i: cmake_force
@@ -878,7 +962,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/f
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_59) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.o"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.o   -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.i: cmake_force
@@ -892,7 +976,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_float/f
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/malloc.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_60) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/malloc.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/malloc.c.i: cmake_force
@@ -905,7 +989,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_malloc/
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_61) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o   -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.i: cmake_force
@@ -919,7 +1003,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_mem_ops
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_atomic/atomic.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_atomic/atomic.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_atomic/atomic.c.i: cmake_force
@@ -933,7 +1017,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_atomic/
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building CXX object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building CXX object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o"
 	/usr/bin/arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.i: cmake_force
@@ -947,7 +1031,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_opt
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.i: cmake_force
@@ -961,7 +1045,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_standar
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_printf/printf.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_printf/printf.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_printf/printf.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_printf/printf.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_printf/printf.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_printf/printf.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_printf/printf.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_printf/printf.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_printf/printf.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_printf/printf.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_printf/printf.c.i: cmake_force
@@ -974,7 +1058,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_printf/
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_crt0/crt0.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building ASM object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o   -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_crt0/crt0.S
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_crt0/crt0.S.i: cmake_force
@@ -988,7 +1072,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_crt0/cr
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.i: cmake_force
@@ -1002,7 +1086,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_clib_in
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/stdio.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/stdio.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i: cmake_force
@@ -1016,7 +1100,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio/s
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i: cmake_force
@@ -1030,7 +1114,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_u
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i: cmake_force
@@ -1044,7 +1128,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_u
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_77) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i: cmake_force
@@ -1058,7 +1142,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdio_u
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_78) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i: cmake_force
@@ -1072,7 +1156,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_unique_
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/flash.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/flash.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/flash.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/flash.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/flash.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_79) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/flash.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/flash.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/flash.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/flash.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/flash.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_flash/flash.c.i: cmake_force
@@ -1086,7 +1170,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_fla
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_80) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.i: cmake_force
@@ -1100,7 +1184,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_xip
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_81) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i: cmake_force
@@ -1114,7 +1198,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/ra
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_82) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i: cmake_force
@@ -1128,7 +1212,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/portable/ra
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_77) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_83) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd.c.i: cmake_force
@@ -1142,7 +1226,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_78) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_84) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i: cmake_force
@@ -1156,7 +1240,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/device/usbd
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_79) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_85) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i: cmake_force
@@ -1170,7 +1254,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_80) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_86) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i: cmake_force
@@ -1184,7 +1268,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_81) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_87) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i: cmake_force
@@ -1198,7 +1282,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/d
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_82) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_88) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i: cmake_force
@@ -1212,7 +1296,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/d
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_83) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_89) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i: cmake_force
@@ -1226,7 +1310,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/hid/h
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_84) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_90) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i: cmake_force
@@ -1240,7 +1324,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/midi/
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_85) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_91) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i: cmake_force
@@ -1254,7 +1338,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/msc/m
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_86) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_92) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i: cmake_force
@@ -1268,7 +1352,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/e
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_87) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_93) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i: cmake_force
@@ -1282,7 +1366,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/net/n
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_88) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_94) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i: cmake_force
@@ -1296,7 +1380,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/usbtm
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_89) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_95) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i: cmake_force
@@ -1310,7 +1394,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/vendo
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_90) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_96) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i: cmake_force
@@ -1324,7 +1408,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/video
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_91) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_97) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c.i: cmake_force
@@ -1338,7 +1422,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/tusb.c.s: c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o: /home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_92) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_98) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o -c /home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i: cmake_force
@@ -1352,7 +1436,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/common/tusb
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_93) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_99) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i: cmake_force
@@ -1366,7 +1450,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_94) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_100) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i: cmake_force
@@ -1380,7 +1464,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multico
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_95) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_101) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c.i: cmake_force
@@ -1394,7 +1478,7 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o: CMakeFiles/DeckOS.dir/flags.make
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_96) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_102) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c
 
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i: cmake_force
@@ -1404,6 +1488,20 @@ CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c
 CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s
+
+CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o: CMakeFiles/DeckOS.dir/flags.make
+CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o: /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c
+CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o: CMakeFiles/DeckOS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_103) "Building C object CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o -MF CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o.d -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o -c /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c
+
+CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c > CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
+
+CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c -o CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
 
 # Object files for target DeckOS
 DeckOS_OBJECTS = \
@@ -1418,7 +1516,13 @@ DeckOS_OBJECTS = \
 "CMakeFiles/DeckOS.dir/kernel/tone.c.o" \
 "CMakeFiles/DeckOS.dir/shell/shell.c.o" \
 "CMakeFiles/DeckOS.dir/commands/commands.c.o" \
+"CMakeFiles/DeckOS.dir/system/bench.c.o" \
+"CMakeFiles/DeckOS.dir/system/device_detect.c.o" \
+"CMakeFiles/DeckOS.dir/system/heap_track.c.o" \
+"CMakeFiles/DeckOS.dir/hardware/servo.c.o" \
+"CMakeFiles/DeckOS.dir/communication/uart_pass.c.o" \
 "CMakeFiles/DeckOS.dir/drivers/drivers.c.o" \
+"CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o" \
 "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o" \
 "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o" \
 "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c.o" \
@@ -1502,7 +1606,8 @@ DeckOS_OBJECTS = \
 "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o" \
 "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o" \
 "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c.o" \
-"CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o"
+"CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o" \
+"CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o"
 
 # External object files for target DeckOS
 DeckOS_EXTERNAL_OBJECTS =
@@ -1518,7 +1623,13 @@ DeckOS.elf: CMakeFiles/DeckOS.dir/kernel/morse.c.o
 DeckOS.elf: CMakeFiles/DeckOS.dir/kernel/tone.c.o
 DeckOS.elf: CMakeFiles/DeckOS.dir/shell/shell.c.o
 DeckOS.elf: CMakeFiles/DeckOS.dir/commands/commands.c.o
+DeckOS.elf: CMakeFiles/DeckOS.dir/system/bench.c.o
+DeckOS.elf: CMakeFiles/DeckOS.dir/system/device_detect.c.o
+DeckOS.elf: CMakeFiles/DeckOS.dir/system/heap_track.c.o
+DeckOS.elf: CMakeFiles/DeckOS.dir/hardware/servo.c.o
+DeckOS.elf: CMakeFiles/DeckOS.dir/communication/uart_pass.c.o
 DeckOS.elf: CMakeFiles/DeckOS.dir/drivers/drivers.c.o
+DeckOS.elf: CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o
 DeckOS.elf: CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o
 DeckOS.elf: CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o
 DeckOS.elf: CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2040/pico_platform/platform.c.o
@@ -1603,11 +1714,12 @@ DeckOS.elf: CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/
 DeckOS.elf: CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o
 DeckOS.elf: CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/adc.c.o
 DeckOS.elf: CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o
+DeckOS.elf: CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o
 DeckOS.elf: CMakeFiles/DeckOS.dir/build.make
 DeckOS.elf: pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.o
 DeckOS.elf: /home/indresh/embedded/pico-sdk/src/rp2_common/pico_crt0/rp2040/memmap_default.ld
 DeckOS.elf: CMakeFiles/DeckOS.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_97) "Linking CXX executable DeckOS.elf"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/indresh/embedded/DeckOS/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_104) "Linking CXX executable DeckOS.elf"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/DeckOS.dir/link.txt --verbose=$(VERBOSE)
 	/usr/bin/arm-none-eabi-objdump -h /home/indresh/embedded/DeckOS/build/DeckOS.elf > DeckOS.dis
 	/usr/bin/arm-none-eabi-objdump -d /home/indresh/embedded/DeckOS/build/DeckOS.elf >> DeckOS.dis

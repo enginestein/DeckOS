@@ -151,12 +151,16 @@ set(CMAKE_ASM_TARGET_INCLUDE_PATH
   "/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_adc/include"
   "/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pwm/include"
   "/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/include"
+  "/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/include"
   )
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/indresh/embedded/DeckOS/commands/commands.c" "CMakeFiles/DeckOS.dir/commands/commands.c.o" "gcc" "CMakeFiles/DeckOS.dir/commands/commands.c.o.d"
+  "/home/indresh/embedded/DeckOS/communication/uart_pass.c" "CMakeFiles/DeckOS.dir/communication/uart_pass.c.o" "gcc" "CMakeFiles/DeckOS.dir/communication/uart_pass.c.o.d"
   "/home/indresh/embedded/DeckOS/drivers/drivers.c" "CMakeFiles/DeckOS.dir/drivers/drivers.c.o" "gcc" "CMakeFiles/DeckOS.dir/drivers/drivers.c.o.d"
+  "/home/indresh/embedded/DeckOS/drivers/spi_bus.c" "CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o" "gcc" "CMakeFiles/DeckOS.dir/drivers/spi_bus.c.o.d"
+  "/home/indresh/embedded/DeckOS/hardware/servo.c" "CMakeFiles/DeckOS.dir/hardware/servo.c.o" "gcc" "CMakeFiles/DeckOS.dir/hardware/servo.c.o.d"
   "/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o" "gcc" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o.d"
   "/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o" "gcc" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o.d"
   "/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o" "gcc" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o.d"
@@ -194,6 +198,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o" "gcc" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o.d"
   "/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c.o" "gcc" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_irq/irq.c.o.d"
   "/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.o" "gcc" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_pll/pll.c.o.d"
+  "/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o" "gcc" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_spi/spi.c.o.d"
   "/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.o" "gcc" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync/sync.c.o.d"
   "/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o" "gcc" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o.d"
   "/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o" "gcc" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o.d"
@@ -239,6 +244,9 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/indresh/embedded/DeckOS/kernel/tone.c" "CMakeFiles/DeckOS.dir/kernel/tone.c.o" "gcc" "CMakeFiles/DeckOS.dir/kernel/tone.c.o.d"
   "/home/indresh/embedded/DeckOS/main.c" "CMakeFiles/DeckOS.dir/main.c.o" "gcc" "CMakeFiles/DeckOS.dir/main.c.o.d"
   "/home/indresh/embedded/DeckOS/shell/shell.c" "CMakeFiles/DeckOS.dir/shell/shell.c.o" "gcc" "CMakeFiles/DeckOS.dir/shell/shell.c.o.d"
+  "/home/indresh/embedded/DeckOS/system/bench.c" "CMakeFiles/DeckOS.dir/system/bench.c.o" "gcc" "CMakeFiles/DeckOS.dir/system/bench.c.o.d"
+  "/home/indresh/embedded/DeckOS/system/device_detect.c" "CMakeFiles/DeckOS.dir/system/device_detect.c.o" "gcc" "CMakeFiles/DeckOS.dir/system/device_detect.c.o.d"
+  "/home/indresh/embedded/DeckOS/system/heap_track.c" "CMakeFiles/DeckOS.dir/system/heap_track.c.o" "gcc" "CMakeFiles/DeckOS.dir/system/heap_track.c.o.d"
   "/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o" "gcc" "CMakeFiles/DeckOS.dir/home/indresh/embedded/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o.d"
   )
 

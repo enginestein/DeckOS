@@ -76,4 +76,6 @@ CMakeFiles/DeckOS.dir/kernel/scheduler.c.o: \
  /home/indresh/embedded/pico-sdk/src/rp2_common/hardware_sync_spin_lock/include/hardware/sync/spin_lock.h \
  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
  /home/indresh/embedded/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
- /home/indresh/embedded/DeckOS/include/scheduler.h
+ /home/indresh/embedded/DeckOS/include/scheduler.h \
+ /home/indresh/embedded/DeckOS/include/spinlock_util.h \
+ /home/indresh/embedded/DeckOS/include/servo.h
