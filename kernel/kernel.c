@@ -7,8 +7,10 @@
 #include "scheduler.h"
 #include "bootloader.h"
 #include "syslog.h"
+#include "bt.h"
 #include "heap_track.h"
 #include "hardware/gpio.h"
+#include "vfs.h"
 
 static void (*s_core1_fn)(void) = NULL;
 
@@ -38,13 +40,14 @@ static void task_heartbeat(void) {
 void kernel_init(void) {
     stdio_init_all();
     while (!stdio_usb_connected()) sleep_ms(100);
-
     heap_track_init();
     syslog_init();
-    LOG_I("kernel", "booting DeckOS v1.3");
+    LOG_I("kernel", "booting DeckOS v1.4");
 
     bootloader_run();
+    vfs_init();
     drivers_init_all();
+    bt_init(BT_DEFAULT_BAUD);
     LOG_I("kernel", "drivers ready");
 
     sched_init();

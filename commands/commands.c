@@ -19,6 +19,9 @@
 #include "commands.h"
 #include "kernel.h"
 #include "drivers.h"
+#include "vfs.h"
+#include "uart_detect.h"
+#include "bt.h"
 #include "scheduler.h"
 #include "config.h"
 #include "syslog.h"
@@ -46,10 +49,151 @@ static void print_uptime(void) {
     printf("%02uh %02um %02us", s / 3600, (s % 3600) / 60, s % 60);
 }
 
-static void cmd_help(int argc, char* argv[])    { commands_list(); }
+static void cmd_help(int argc, char* argv[]) {
+    (void)argc; (void)argv;
+
+    typedef struct { const char* name; const char* desc; } entry_t;
+    typedef struct { const char* group; const entry_t* cmds; int count; } group_t;
+
+    static const entry_t g_core[] = {
+        {"help",    "show this help"},
+        {"version", "OS version and build info"},
+        {"clear",   "clear terminal screen"},
+        {"echo",    "echo <text>"},
+        {"uptime",  "time since boot"},
+        {"sysinfo", "full system summary"},
+        {"stats",   "runtime statistics"},
+        {"top",     "live task monitor"},
+    };
+    static const entry_t g_hardware[] = {
+        {"temp",    "internal core temperature"},
+        {"mem",     "memory overview"},
+        {"memmap",  "detailed memory map"},
+        {"free",    "heap allocator stats"},
+        {"gpio",    "read / write / mode / irq <pin>"},
+        {"led",     "on | off | toggle | blink [n]"},
+        {"pwm",     "pwm <pin> <duty 0-100>"},
+        {"adc",     "raw ADC read  (ch 0-2, GPIO26-28)"},
+        {"avg",     "averaged ADC read  [samples]"},
+        {"pull",    "pull <pin> up | down | none"},
+        {"clock",   "get / set CPU freq (48-200 MHz)"},
+        {"pin",     "snapshot of all GPIO states"},
+        {"pinout",  "ASCII Pico pinout with live states"},
+        {"uid",     "unique board ID"},
+        {"wdog",    "watchdog status"},
+    };
+    static const entry_t g_buses[] = {
+        {"i2c",     "scan | read | write  (SDA=GP4 SCL=GP5)"},
+        {"spi",     "init | write | read | xfer"},
+        {"uart",    "passthrough <baud> <tx> <rx> [timeout_s]"},
+    };
+    static const entry_t g_probes[] = {
+        {"la",      "logic analyser  <pin> [samples] [us]"},
+        {"detect",  "scan | uart <pin> | analyze <pin>"},
+    };
+    static const entry_t g_servo[] = {
+        {"servo",   "<pin> <angle> | sweep | bg sweep/goto/stop"},
+    };
+    static const entry_t g_audio[] = {
+        {"tone",    "<pin> <note|Hz> [ms]  passive buzzer"},
+        {"melody",  "<pin> <C4:200 E4:200 ...> | elise | canon"},
+        {"morse",   "<text> [wpm]  blink LED in morse"},
+        {"piano",   "<pin>  play buzzer from keyboard"},
+    };
+    static const entry_t g_scripting[] = {
+        {"sleep",   "sleep <ms>"},
+        {"repeat",  "repeat <n> <command>"},
+        {"watch",   "watch <ms> <command>  run at interval"},
+        {"trigger", "trigger <pin> <rise|fall|both> <cmd>"},
+        {"cron",    "cron <delay_ms> <command>  deferred run"},
+        {"bench",   "bench <iters> <cmd>  throughput test"},
+    };
+    static const entry_t g_flash[] = {
+        {"flash",   "read | write | erase <addr>  raw flash"},
+    };
+    static const entry_t g_system[] = {
+        {"reboot",  "reboot via watchdog"},
+        {"dfu",     "enter USB DFU (BOOTSEL) mode"},
+        {"drivers", "list loaded drivers"},
+        {"tasks",   "list / enable / disable background tasks"},
+        {"config",  "show | set | save | reset"},
+        {"syslog",  "show | warn | err | write | clear | stats"},
+    };
+    static const entry_t g_bluetooth[] = {
+        {"bt shell",  "wireless DeckOS terminal over HC-05"},
+        {"bt log",    "on|off  mirror syslog to BT"},
+        {"bt exec",   "<cmd>  remote command execution"},
+        {"bt top",    "[ms]  stream live stats to BT"},
+        {"bt send",   "<file>  send VFS file over BT"},
+        {"bt recv",   "<file>  receive file into VFS"},
+        {"bt sniff",  "[s]  raw byte sniffer"},
+        {"bt at",     "interactive AT command mode"},
+        {"bt name",   "<n>  set module name (AT mode)"},
+        {"bt pin",    "<n>  set pairing PIN (AT mode)"},
+        {"bt baud",   "<n>  change UART baud (AT mode)"},
+        {"bt status", "show BT state"},
+    };
+    static const entry_t g_fs[] = {
+        {"ls",      "list directory  [path]"},
+        {"cat",     "print file contents"},
+        {"touch",   "create / update file"},
+        {"mkdir",   "create directory"},
+        {"rm",      "rm [-r] <path>  remove file or dir"},
+        {"write",   "overwrite file with text"},
+        {"append",  "append text to file"},
+        {"hexdump", "hex + ASCII dump"},
+        {"cd",      "change directory"},
+        {"pwd",     "print working directory"},
+        {"cp",      "cp <src> <dst>"},
+        {"mv",      "mv <src> <dst>  move / rename"},
+        {"stat",    "file / dir metadata"},
+        {"wc",      "count lines, words, bytes"},
+        {"grep",    "grep <pattern> <file>"},
+        {"find",    "recursive name search"},
+        {"df",      "filesystem usage summary"},
+        {"tree",    "print directory tree"},
+    };
+
+#define COUNT(a) (int)(sizeof(a) / sizeof((a)[0]))
+
+    static const group_t groups[] = {
+        {"core",              g_core,      COUNT(g_core)},
+        {"hardware",          g_hardware,  COUNT(g_hardware)},
+        {"buses",             g_buses,     COUNT(g_buses)},
+        {"sensors & probes",  g_probes,    COUNT(g_probes)},
+        {"servo",             g_servo,     COUNT(g_servo)},
+        {"audio & signalling",g_audio,     COUNT(g_audio)},
+        {"scripting",         g_scripting, COUNT(g_scripting)},
+        {"flash",             g_flash,     COUNT(g_flash)},
+        {"system",            g_system,    COUNT(g_system)},
+        {"bluetooth",  g_bluetooth,  COUNT(g_bluetooth)},
+        {"filesystem",        g_fs,        COUNT(g_fs)},
+    };
+
+#undef COUNT
+
+    static const int group_count = (int)(sizeof(groups) / sizeof(group_t));
+    static const int NAME_COL    = 12;
+
+    printf("DeckOS v1.4  \xe2\x80\x94  available commands\n");
+    printf("====================================================\n");
+
+    for (int g = 0; g < group_count; g++) {
+        printf("\n  \xe2\x96\xb8 %s\n", groups[g].group);
+        for (int i = 0; i < groups[g].count; i++) {
+            printf("    %-*s %s\n",
+                   NAME_COL,
+                   groups[g].cmds[i].name,
+                   groups[g].cmds[i].desc);
+        }
+    }
+
+    printf("\n----------------------------------------------------\n");
+    printf("  type <command> without args for usage details\n");
+}
 
 static void cmd_version(int argc, char* argv[]) {
-    printf("DeckOS v1.3  |  Raspberry Pi Pico\n");
+    printf("DeckOS v1.4  |  Raspberry Pi Pico\n");
     printf("Build: %s %s\n", __DATE__, __TIME__);
 }
 
@@ -156,9 +300,203 @@ static void cmd_pin(int argc, char* argv[]) {
     }
 }
 
+static void cmd_bt(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage:\n");
+        printf("  bt shell              - wireless DeckOS terminal\n");
+        printf("  bt log <on|off>       - mirror syslog to BT\n");
+        printf("  bt exec <command>     - run command, reply to BT\n");
+        printf("  bt top [interval_ms]  - stream live stats to BT\n");
+        printf("  bt send <file>        - send VFS file over BT\n");
+        printf("  bt recv <file>        - receive file from BT into VFS\n");
+        printf("  bt sniff [timeout_s]  - raw byte sniffer (hex + ASCII)\n");
+        printf("  bt at                 - interactive AT command mode\n");
+        printf("  bt name <name>        - set HC-05 module name (AT mode)\n");
+        printf("  bt pin  <code>        - set HC-05 PIN code  (AT mode)\n");
+        printf("  bt baud <rate>        - set HC-05 UART baud (AT mode)\n");
+        printf("  bt status             - show BT subsystem state\n");
+        printf("  bt init [baud]        - (re)initialise BT UART\n");
+        return;
+    }
+
+    if (strcmp(argv[1], "status") == 0) {
+        printf("BT subsystem status:\n");
+        printf("  initialised : %s\n", bt_is_ready()     ? "yes" : "no");
+        printf("  connected   : %s\n", bt_is_connected() ? "yes" : "no (or STATE pin not wired)");
+        printf("  log mirror  : %s\n", bt_log_is_enabled()? "on" : "off");
+        printf("  uart        : UART%d  TX=GP%d  RX=GP%d\n",
+               BT_UART == uart0 ? 0 : 1, BT_TX_PIN, BT_RX_PIN);
+        printf("  default baud: %d\n", BT_DEFAULT_BAUD);
+        return;
+    }
+
+    if (strcmp(argv[1], "init") == 0) {
+        uint32_t baud = (argc >= 3) ? (uint32_t)atoi(argv[2]) : BT_DEFAULT_BAUD;
+        if (baud < 300 || baud > 921600) { printf("baud must be 300-921600\n"); return; }
+        bt_init(baud);
+        return;
+    }
+
+    if (strcmp(argv[1], "shell") == 0) {
+        if (!bt_is_ready()) { printf("bt: not initialised — run 'bt init'\n"); return; }
+        printf("Starting BT shell. Connect phone terminal to HC-05.\n");
+        printf("USB terminal will also show output.\n");
+        printf("Type 'exit' in BT terminal to stop.\n");
+        bt_shell_run();
+        return;
+    }
+
+    if (strcmp(argv[1], "log") == 0) {
+        if (!bt_is_ready()) { printf("bt: not initialised\n"); return; }
+        if (argc < 3) {
+            printf("bt log: %s\n", bt_log_is_enabled() ? "on" : "off");
+            return;
+        }
+        bool on = (strcmp(argv[2], "on") == 0 || strcmp(argv[2], "1") == 0);
+        bt_log_enable(on);
+        printf("BT log mirror: %s\n", on ? "on" : "off");
+        return;
+    }
+
+    if (strcmp(argv[1], "exec") == 0) {
+        if (!bt_is_ready()) { printf("bt: not initialised\n"); return; }
+        if (argc < 3) { printf("bt exec <command>\n"); return; }
+        char subcmd[INPUT_SIZE]; subcmd[0] = '\0';
+        for (int i = 2; i < argc; i++) {
+            if (i > 2) strncat(subcmd, " ", sizeof(subcmd) - strlen(subcmd) - 1);
+            strncat(subcmd, argv[i], sizeof(subcmd) - strlen(subcmd) - 1);
+        }
+        printf("bt exec: '%s'\n", subcmd);
+        bt_exec(subcmd);
+        return;
+    }
+
+    if (strcmp(argv[1], "top") == 0) {
+        if (!bt_is_ready()) { printf("bt: not initialised\n"); return; }
+        uint32_t ms = (argc >= 3) ? (uint32_t)atoi(argv[2]) : 1000;
+        if (ms < 100 || ms > 30000) ms = 1000;
+        bt_top_stream(ms);
+        return;
+    }
+
+    if (strcmp(argv[1], "send") == 0) {
+        if (!bt_is_ready()) { printf("bt: not initialised\n"); return; }
+        if (argc < 3) { printf("bt send <vfs_path>\n"); return; }
+        bt_send_file(argv[2]);
+        return;
+    }
+
+    if (strcmp(argv[1], "recv") == 0) {
+        if (!bt_is_ready()) { printf("bt: not initialised\n"); return; }
+        if (argc < 3) { printf("bt recv <vfs_path>\n"); return; }
+        bt_recv_file(argv[2]);
+        return;
+    }
+
+    if (strcmp(argv[1], "sniff") == 0) {
+        if (!bt_is_ready()) { printf("bt: not initialised\n"); return; }
+        uint32_t timeout_ms = (argc >= 3)
+            ? (uint32_t)(atoi(argv[2]) * 1000) : 0;
+        bt_sniff(timeout_ms);
+        return;
+    }
+
+    if (strcmp(argv[1], "at") == 0) {
+        if (!bt_is_ready()) bt_init(BT_DEFAULT_BAUD);
+        bt_at_mode();
+        return;
+    }
+
+    if (strcmp(argv[1], "name") == 0) {
+        if (!bt_is_ready()) { printf("bt: not initialised\n"); return; }
+        if (argc < 3) { printf("bt name <new_name>\n"); return; }
+        char cmd[64], resp[64];
+        snprintf(cmd, sizeof(cmd), "AT+NAME=%s", argv[2]);
+        extern void bt_uart_init_pub(uint32_t baud);
+        printf("Sending: %s\n", cmd);
+        bool ok = bt_at_cmd(cmd, resp, sizeof(resp), 2000);
+        printf("Response: %s\n", ok ? resp : "(no response)");
+        printf("Note: HC-05 must be in AT mode (KEY pin HIGH at power-on)\n");
+        return;
+    }
+
+    if (strcmp(argv[1], "pin") == 0) {
+        if (!bt_is_ready()) { printf("bt: not initialised\n"); return; }
+        if (argc < 3) { printf("bt pin <4-digit-code>\n"); return; }
+        char cmd[64], resp[64];
+        snprintf(cmd, sizeof(cmd), "AT+PSWD=%s", argv[2]);
+        printf("Sending: %s\n", cmd);
+        bool ok = bt_at_cmd(cmd, resp, sizeof(resp), 2000);
+        printf("Response: %s\n", ok ? resp : "(no response)");
+        printf("Note: HC-05 must be in AT mode (KEY pin HIGH at power-on)\n");
+        return;
+    }
+
+    if (strcmp(argv[1], "baud") == 0) {
+        if (!bt_is_ready()) { printf("bt: not initialised\n"); return; }
+        if (argc < 3) { printf("bt baud <rate>  (e.g. 9600 or 115200)\n"); return; }
+        uint32_t new_baud = (uint32_t)atoi(argv[2]);
+        if (new_baud < 1200 || new_baud > 921600) {
+            printf("baud must be 1200-921600\n"); return;
+        }
+        // HC-05 AT+UART=<baud>,<stop>,<parity>
+        char cmd[64], resp[64];
+        snprintf(cmd, sizeof(cmd), "AT+UART=%lu,1,0", new_baud);
+        printf("Sending: %s\n", cmd);
+        bool ok = bt_at_cmd(cmd, resp, sizeof(resp), 2000);
+        printf("Response: %s\n", ok ? resp : "(no response)");
+        if (ok && strstr(resp, "OK")) {
+            printf("Success — reinitialising UART at %lu baud\n", new_baud);
+            bt_init(new_baud);
+        }
+        return;
+    }
+
+    printf("bt: unknown subcommand '%s'  (type 'bt' for help)\n", argv[1]);
+}
+
+
+static void cmd_detect_extended(int argc, char* argv[]) {
+
+    if (argc < 2) {
+        extern void device_detect_print(void);
+        device_detect_print();
+        return;
+    }
+
+    if (strcmp(argv[1], "uart") == 0) {
+        int pin = (argc >= 3) ? atoi(argv[2]) : -1;
+        if (pin < 0 || pin > 28) {
+            printf("usage: detect uart <pin> [timeout_s]\n");
+            printf("  Probes a GPIO for UART activity and identifies the device.\n");
+            printf("  Standard UART RX pins: GP1 GP5 GP9 GP13 GP17 GP21 GP25\n");
+            return;
+        }
+        uint32_t timeout_ms = (argc >= 4) ? (uint32_t)(atoi(argv[3]) * 1000) : 3000;
+        uart_detect_run((uint8_t)pin, timeout_ms);
+        return;
+    }
+
+    if (strcmp(argv[1], "analyze") == 0 || strcmp(argv[1], "analyse") == 0) {
+        int pin = (argc >= 3) ? atoi(argv[2]) : -1;
+        if (pin < 0 || pin > 28) {
+            printf("usage: detect analyze <pin> [samples] [us_per_sample]\n");
+            printf("  Uses the logic analyser to guess the protocol on a GPIO.\n");
+            return;
+        }
+        int samples       = (argc >= 4) ? atoi(argv[3]) : 256;
+        int us_per_sample = (argc >= 5) ? atoi(argv[4]) : 5;
+        la_detect_protocol((uint8_t)pin, samples, us_per_sample);
+        return;
+    }
+
+    extern void device_detect_print(void);
+    device_detect_print();
+}
+
 static void cmd_sysinfo(int argc, char* argv[]) {
     printf("=================================\n");
-    printf("  DeckOS v1.3  —  system info  \n");
+    printf("  DeckOS v1.4  —  system info  \n");
     printf("=================================\n");
     printf("board   : Raspberry Pi Pico\n");
     printf("cpu     : RP2040  dual-core Cortex-M0+  125 MHz\n");
@@ -192,6 +530,147 @@ static void cmd_stats(int argc, char* argv[]) {
     printf("core temp       : %.1f C\n", tc);
     printf("============================\n");
 }
+
+static void argv_join(char *buf, int buflen, int argc, char *argv[], int start) {
+    buf[0] = '\0';
+    for (int i = start; i < argc; i++) {
+        if (i > start) strncat(buf, " ", (size_t)(buflen - 1) - strlen(buf));
+        strncat(buf, argv[i], (size_t)(buflen - 1) - strlen(buf));
+    }
+    int len = (int)strlen(buf);
+    if (len >= 2 && buf[0] == '"' && buf[len - 1] == '"') {
+        memmove(buf, buf + 1, (size_t)(len - 2));
+        buf[len - 2] = '\0';
+    }
+}
+ 
+static void cmd_ls(int argc, char *argv[]) {
+    vfs_ls(argc >= 2 ? argv[1] : ".");
+}
+ 
+static void cmd_cat(int argc, char *argv[]) {
+    if (argc < 2) { printf("usage: cat <file> [file2 ...]\n"); return; }
+    for (int a = 1; a < argc; a++) {
+        if (argc > 2) printf("==> %s <==\n", argv[a]);
+        vfs_cat(argv[a]);
+    }
+}
+ 
+static void cmd_touch(int argc, char *argv[]) {
+    if (argc < 2) { printf("usage: touch <file> [file2 ...]\n"); return; }
+    for (int a = 1; a < argc; a++) {
+        int idx = vfs_touch(argv[a]);
+        if (idx >= 0) printf("touched '%s'\n", argv[a]);
+    }
+}
+ 
+static void cmd_mkdir(int argc, char *argv[]) {
+    if (argc < 2) { printf("usage: mkdir <dir> [dir2 ...]\n"); return; }
+    for (int a = 1; a < argc; a++) {
+        if (vfs_mkdir(argv[a]) >= 0) printf("created dir '%s'\n", argv[a]);
+    }
+}
+ 
+static void cmd_rm(int argc, char *argv[]) {
+    if (argc < 2) { printf("usage: rm [-r] <path> [path2 ...]\n"); return; }
+    bool recursive = false;
+    int  start     = 1;
+    if (strcmp(argv[1], "-r") == 0) { recursive = true; start = 2; }
+    if (start >= argc) { printf("rm: missing path argument\n"); return; }
+    for (int a = start; a < argc; a++) {
+        if (vfs_rm(argv[a], recursive) == 0)
+            printf("removed '%s'\n", argv[a]);
+    }
+}
+ 
+static void cmd_write(int argc, char *argv[]) {
+    if (argc < 3) {
+        printf("usage: write <file> <content...>\n");
+        printf("       overwrites the file; content may be quoted\n");
+        return;
+    }
+    char content[VFS_MAX_FILE_SIZE];
+    argv_join(content, sizeof(content), argc, argv, 2);
+    /* append newline so repeated cats look clean */
+    int clen = (int)strlen(content);
+    if (clen < VFS_MAX_FILE_SIZE - 1) { content[clen] = '\n'; content[clen + 1] = '\0'; }
+    int n = vfs_write(argv[1], (const uint8_t *)content, (uint32_t)strlen(content), false);
+    if (n >= 0) printf("wrote %d B to '%s'\n", n, argv[1]);
+}
+ 
+static void cmd_append(int argc, char *argv[]) {
+    if (argc < 3) {
+        printf("usage: append <file> <content...>\n");
+        return;
+    }
+    char content[VFS_MAX_FILE_SIZE];
+    argv_join(content, sizeof(content), argc, argv, 2);
+    int clen = (int)strlen(content);
+    if (clen < VFS_MAX_FILE_SIZE - 1) { content[clen] = '\n'; content[clen + 1] = '\0'; }
+    int n = vfs_write(argv[1], (const uint8_t *)content, (uint32_t)strlen(content), true);
+    if (n >= 0) printf("appended %d B to '%s'\n", n, argv[1]);
+}
+ 
+static void cmd_hexdump(int argc, char *argv[]) {
+    if (argc < 2) { printf("usage: hexdump <file>\n"); return; }
+    vfs_hexdump(argv[1]);
+}
+ 
+static void cmd_cd(int argc, char *argv[]) {
+    const char *path = (argc >= 2) ? argv[1] : "/";
+    if (vfs_cd(path)) printf("%s\n", vfs_cwd_path());
+}
+ 
+static void cmd_pwd(int argc, char *argv[]) {
+    (void)argc; (void)argv;
+    vfs_pwd();
+}
+ 
+static void cmd_cp(int argc, char *argv[]) {
+    if (argc < 3) { printf("usage: cp <src> <dst>\n"); return; }
+    vfs_cp(argv[1], argv[2]);
+}
+ 
+static void cmd_mv(int argc, char *argv[]) {
+    if (argc < 3) { printf("usage: mv <src> <dst>\n"); return; }
+    vfs_mv(argv[1], argv[2]);
+}
+ 
+static void cmd_stat(int argc, char *argv[]) {
+    if (argc < 2) { printf("usage: stat <path>\n"); return; }
+    for (int a = 1; a < argc; a++) {
+        if (argc > 2) printf("==> %s\n", argv[a]);
+        vfs_stat(argv[a]);
+    }
+}
+ 
+static void cmd_wc(int argc, char *argv[]) {
+    if (argc < 2) { printf("usage: wc <file> [file2 ...]\n"); return; }
+    for (int a = 1; a < argc; a++) vfs_wc(argv[a]);
+}
+ 
+static void cmd_grep(int argc, char *argv[]) {
+    if (argc < 3) { printf("usage: grep <pattern> <file>\n"); return; }
+    vfs_grep(argv[2], argv[1]);
+}
+ 
+static void cmd_find(int argc, char *argv[]) {
+    const char *name = (argc >= 2) ? argv[1] : "";
+    vfs_find_all(name);
+}
+ 
+static void cmd_df(int argc, char *argv[]) {
+    (void)argc; (void)argv;
+    printf("=== VFS disk usage ===\n");
+    vfs_df();
+    printf("======================\n");
+}
+ 
+static void cmd_tree(int argc, char *argv[]) {
+    (void)argc; (void)argv;
+    vfs_tree();
+}
+
 
 static void cmd_pwm(int argc, char* argv[]) {
     if (argc < 3) { printf("usage: pwm <pin> <duty 0-100>\n"); return; }
@@ -847,8 +1326,12 @@ static void cmd_flash(int argc, char* argv[]) {
     printf("unknown flash subcommand: %s\n", argv[1]);
 }
 
-static void cmd_detect(int argc, char* argv[]) {
+/*static void cmd_detect(int argc, char* argv[]) {
     device_detect_print();
+}*/
+
+static void cmd_detect(int argc, char* argv[]) {
+    cmd_detect_extended(argc, argv);
 }
 
 
@@ -1478,11 +1961,32 @@ static command_t command_table[] = {
     {"uid",     cmd_uid,     "show unique board ID"},
     {"wdog",    cmd_wdog,    "show watchdog status"},
     {"pin",     cmd_pin,     "dump all GPIO pin states"},
+    {"bt", cmd_bt, "bt shell|log|exec|top|send|recv|sniff|at|name|pin|baud|status"},
     // Subsystems
     {"drivers", cmd_drivers, "list loaded drivers"},
     {"tasks",   cmd_tasks,   "list/enable/disable background tasks"},
     {"config",  cmd_config,  "config show|set|save|reset"},
     {"syslog",  cmd_syslog,  "syslog show|warn|err|write|clear|stats"},
+    // Filesystem
+    {"ls",       cmd_ls,       "ls [path]  list directory"},
+    {"cat",      cmd_cat,      "cat <file>  print file contents"},
+    {"touch",    cmd_touch,    "touch <file>  create empty file (or update mtime)"},
+    {"mkdir",    cmd_mkdir,    "mkdir <dir>  create directory"},
+    {"rm",       cmd_rm,       "rm [-r] <path>  remove file or directory"},
+    {"write",    cmd_write,    "write <file> <text>  write (overwrite) text to file"},
+    {"append",   cmd_append,   "append <file> <text>  append text to file"},
+    {"hexdump",  cmd_hexdump,  "hexdump <file>  hex + ASCII dump"},
+    {"cd",       cmd_cd,       "cd [dir]  change directory"},
+    {"pwd",      cmd_pwd,      "pwd  print working directory"},
+    {"cp",       cmd_cp,       "cp <src> <dst>  copy file"},
+    {"mv",       cmd_mv,       "mv <src> <dst>  move / rename"},
+    {"stat",     cmd_stat,     "stat <path>  file / dir metadata"},
+    {"wc",       cmd_wc,       "wc <file>  count lines, words, bytes"},
+    {"grep",     cmd_grep,     "grep <pattern> <file>  search file"},
+    {"find",     cmd_find,     "find [name]  recursive name search"},
+    {"df",       cmd_df,       "df  filesystem usage summary"},
+    {"tree",     cmd_tree,     "tree  print directory tree"},
+
 };
 
 static const int command_count = sizeof(command_table) / sizeof(command_t);

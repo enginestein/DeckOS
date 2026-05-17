@@ -19,6 +19,7 @@ add_executable(DeckOS
     kernel/gpio_mon.c        # GPIO IRQ monitor
     kernel/morse.c           # Morse code LED blinker
     kernel/tone.c            # PWM tone / melody generator
+    kernel/vfs.c
 
     # Shell
     shell/shell.c
@@ -36,6 +37,9 @@ add_executable(DeckOS
 
     # Communication tools
     communication/uart_pass.c
+    communication/bt.c
+    communication/uart_detect.c
+
 
     # Drivers
     drivers/drivers.c

@@ -2,6 +2,7 @@
 #include <string.h>
 #include "pico/stdlib.h"
 #include "syslog.h"
+#include "bt.h"
 
 #define SYSLOG_SLOTS  64
 #define SYSLOG_MSG_LEN 64
@@ -62,6 +63,9 @@ void syslog_write(log_level_t lvl, const char* tag, const char* msg) {
     s_head = (s_head + 1) % SYSLOG_SLOTS;
     if (s_count < SYSLOG_SLOTS) s_count++;
     s_total++;
+    if (bt_log_is_enabled()) {
+     bt_log_mirror(level_str(lvl), tag, msg, e->timestamp_ms);
+    }
 }
 
 void syslog_dump(log_level_t min_level, int tail) {
