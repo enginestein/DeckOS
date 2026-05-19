@@ -39,6 +39,7 @@ add_executable(DeckOS
     communication/uart_pass.c
     communication/bt.c
     communication/uart_detect.c
+    communication/esp8266.c
 
 
     # Drivers

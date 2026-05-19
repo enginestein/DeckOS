@@ -4,7 +4,7 @@
 
 ```
   ╔══════════════════════════════════╗
-  ║           DeckOS v1.4            ║
+  ║           DeckOS v1.5            ║
   ║      Raspberry Pi Pico / RP2040  ║
   ╚══════════════════════════════════╝
 ```
@@ -32,6 +32,9 @@ It's built around a clean kernel/driver/scheduler architecture that uses both RP
   - [Scripting & Automation](#scripting--automation)
   - [System](#system)
   - [Subsystems](#subsystems)
+  - [WiFi / ESP8266](#wifi--esp8266)
+  - [Bluetooth / HC-05](#bluetooth--hc-05)
+  - [Filesystem](#filesystem)
 - [Buzzer setup](#buzzer-setup)
 - [Config system](#config-system)
 - [Syslog](#syslog)
@@ -64,6 +67,8 @@ It's built around a clean kernel/driver/scheduler architecture that uses both RP
 - **ADC averaging** — clean up noisy readings with configurable sample counts
 - **Three boot modes** — normal, recovery, and USB DFU for reflashing
 - **I²C tools** — scan the bus, read and write registers
+- **WiFi via ESP8266** — scan networks, connect to WiFi, run commands wirelessly through a bridge firmware
+- **Bluetooth via HC-05** — wireless shell terminal, remote command execution, file transfer, syslog mirroring *(beta)*
 
 ---
 
@@ -78,6 +83,8 @@ It's built around a clean kernel/driver/scheduler architecture that uses both RP
 | Optional | SPI device; default pins GP2 (SCK), GP3 (MOSI), GP4 (MISO) |
 | Optional | Servo on any GPIO pin |
 | Optional | A button wired from GP15 to GND (for recovery mode) |
+| Optional | ESP8266 module on UART1 (GP5 TX, GP4 RX) for WiFi |
+| Optional | HC-05 Bluetooth module on UART0 for wireless shell |
 
 ---
 
@@ -365,6 +372,136 @@ White keys: A  S  D  F  G  H  J  K  L  ;
 
 ---
 
+## WiFi / ESP8266
+
+DeckOS supports WiFi through an ESP8266 module running the **DeckOS Bridge firmware** — a small Arduino sketch that lives on the ESP8266 and translates DeckOS commands into WiFi actions. This lets the Pico connect to networks, scan for access points, and in the future send and receive data over the internet, all from the DeckOS shell.
+
+### What WiFi lets you do
+
+- **Scan nearby networks** — see every access point in range with signal strength and security type. Useful for site surveys, finding a specific AP, or just confirming your router is visible
+- **Connect to WiFi** — join a network so the ESP8266 has an IP address, opening the door to network-based features
+- **Remote monitoring** — combined with future HTTP support, you'll be able to push sensor readings (temperature, ADC values) to a server or dashboard without a USB cable anywhere near the Pico
+- **Wireless data logging** — log GPIO events, ADC samples, or syslog entries to a remote server rather than to RAM
+- **Home automation** — trigger GPIO outputs, run shell commands, or control servos in response to network events
+- **Headless deployment** — once configured, the Pico can operate without a USB connection and still participate in your network
+
+### Wiring
+
+| ESP8266 pin | Pico pin | Notes |
+|---|---|---|
+| TX | GP4 (UART1 RX) | Crosses over — ESP TX → Pico RX |
+| RX | GP5 (UART1 TX) | Crosses over — ESP RX → Pico TX |
+| VCC / 3V3 | External 3.3V | Use a dedicated regulator; the Pico's 3V3 pin may brown out under WiFi load |
+| GND | GND | Common ground required |
+| EN / CH_PD | 3.3V | Must be HIGH for the module to boot |
+| RST | 3.3V | Pull HIGH for normal operation |
+
+> **Power note:** The ESP8266 can draw up to 300 mA during WiFi association. Power it from a dedicated 3.3V supply or an AMS1117-3.3 regulator fed from VBUS (5V), not from the Pico's onboard regulator.
+
+### Bridge firmware setup
+
+Flash `ESP8266_DeckOS_Bridge.ino` to the ESP8266 using the Arduino IDE with the ESP8266 board package installed. Before flashing, edit the credentials at the top of the sketch:
+
+```cpp
+String wifi_ssid     = "YourNetworkName";
+String wifi_password = "YourPassword";
+```
+
+The bridge starts in auto-detect mode and responds to `@`-prefixed control commands from the Pico.
+
+### WiFi commands
+
+| Command | What it does |
+|---|---|
+| `wifi init` | Initialise the ESP8266 on UART1 at 115200 baud |
+| `wifi init <baud>` | Initialise at a custom baud rate |
+| `wifi status` | Show UART config and ready state |
+| `wifi ping` | Query the bridge and show its current status |
+| `wifi scan` | Scan for WiFi networks via the bridge |
+| `wifi shell` | Drop into a raw interactive shell with the ESP8266 |
+| `wifi deinit` | Release UART1 from the ESP8266 |
+| `wifi bridge status` | Show bridge mode, WiFi connection state, and IP address |
+| `wifi bridge scan` | Scan for nearby WiFi networks |
+| `wifi bridge connect` | Connect using the credentials stored in the bridge firmware |
+| `wifi bridge reset` | Reboot the ESP8266 |
+| `wifi bridge auto` | Switch bridge to auto-detect firmware mode |
+| `wifi bridge at` | Switch bridge to raw AT command passthrough |
+| `wifi bridge raw` | Switch bridge to raw command mode |
+
+### Typical workflow
+
+```bash
+> wifi init                  # start the UART link to the ESP8266
+> wifi bridge status         # confirm the bridge is alive and check WiFi state
+> wifi bridge scan           # see what networks are in range
+> wifi bridge connect        # connect using credentials in the bridge firmware
+> wifi bridge status         # confirm connection and get the IP address
+```
+
+If the credentials in the sketch are correct and the network is in range, `wifi bridge connect` will print a series of dots followed by the assigned IP address. From there `wifi bridge status` shows the full connection summary.
+
+---
+
+## Bluetooth / HC-05
+
+> **Status: beta.** Still trying to fix some bugs.
+
+DeckOS supports wireless shell access through an HC-05 Bluetooth module. Once paired, you can control the Pico from a phone or laptop terminal app without touching a USB cable.
+
+### What Bluetooth lets you do
+
+- **Wireless shell** — run any DeckOS command from a Bluetooth terminal on your phone or laptop, exactly as if you were on the USB serial console
+- **Remote command execution** — send a single command from the BT side and get the output back without entering the full shell
+- **Live stats streaming** — stream `top`-style CPU and temperature data to a connected Bluetooth client at a configurable interval
+- **Syslog mirroring** — automatically forward every log entry to the Bluetooth terminal as it happens
+- **File transfer** — send and receive VFS files over the Bluetooth link
+
+### Wiring
+
+Connect the HC-05 to UART0 on the Pico. Exact pins depend on your `bt.h` configuration — check `BT_TX_PIN` and `BT_RX_PIN` in your project headers. The standard setup uses GP0 (TX) and GP1 (RX).
+
+Power the HC-05 from 3.3V or 5V depending on your module variant. Most bare HC-05 boards accept 3.6–6V on VCC with a built-in regulator.
+
+### Bluetooth commands
+
+| Command | What it does |
+|---|---|
+| `bt init [baud]` | Initialise the HC-05 UART (default baud from config) |
+| `bt status` | Show init state, connection state, log mirror state |
+| `bt shell` | Start a full wireless DeckOS terminal over Bluetooth |
+| `bt exec <command>` | Run one command and send the output to the BT client |
+| `bt top [ms]` | Stream live CPU/temp stats to the BT client |
+| `bt log on` | Mirror all syslog entries to the BT client in real time |
+| `bt log off` | Stop mirroring |
+| `bt send <file>` | Send a VFS file over Bluetooth |
+| `bt recv <file>` | Receive a file from Bluetooth into VFS |
+| `bt sniff [s]` | Raw byte sniffer — print everything the module sends |
+| `bt at` | Drop into interactive AT command mode |
+| `bt name <name>` | Set the HC-05 module name (requires AT mode) |
+| `bt pin <code>` | Set the pairing PIN (requires AT mode) |
+| `bt baud <rate>` | Change the HC-05 UART baud rate (requires AT mode) |
+
+### Typical workflow
+
+```bash
+> bt init                    # start UART link to HC-05
+> bt status                  # confirm it's ready
+> bt shell                   # open wireless terminal — connect from your phone now
+```
+
+On the phone side, pair with the HC-05 (default PIN is usually `1234` or `0000`), then open any Bluetooth serial terminal app and connect. You'll get a full `>` prompt.
+
+To set a custom name and PIN before deploying:
+
+```bash
+> bt at                      # enter AT mode (HC-05 must have KEY pin HIGH at power-on)
+AT+NAME=DeckOS
+AT+PSWD=9876
+EXIT
+```
+
+---
+
 ## Buzzer setup
 
 The `tone`, `melody`, and `piano` commands use the RP2040's hardware PWM to drive a **passive buzzer**. It works well and sounds perfectly fine for a microcontroller.
@@ -459,5 +596,31 @@ Drivers are registered and initialised in order at boot. Each one reports OK or 
 
 ---
 
+## Filesystem
+
+DeckOS includes a small in-memory virtual filesystem (VFS) for storing files and directories across the session. It does not persist across reboots — it lives in SRAM and is wiped on power-off.
+
+| Command | What it does |
+|---|---|
+| `ls [path]` | List directory contents |
+| `cat <file>` | Print file contents |
+| `touch <file>` | Create an empty file |
+| `mkdir <dir>` | Create a directory |
+| `rm [-r] <path>` | Remove a file or directory |
+| `write <file> <text>` | Overwrite a file with text |
+| `append <file> <text>` | Append text to a file |
+| `hexdump <file>` | Hex + ASCII dump of a file |
+| `cd [dir]` | Change working directory |
+| `pwd` | Print working directory |
+| `cp <src> <dst>` | Copy a file |
+| `mv <src> <dst>` | Move or rename a file |
+| `stat <path>` | Show file or directory metadata |
+| `wc <file>` | Count lines, words, and bytes |
+| `grep <pattern> <file>` | Search a file for a pattern |
+| `find [name]` | Recursive name search |
+| `df` | Filesystem usage summary |
+| `tree` | Print the full directory tree |
+
+---
 
 *Who doesn't love a decent shell?*

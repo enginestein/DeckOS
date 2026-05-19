@@ -22,6 +22,7 @@
 #include "vfs.h"
 #include "uart_detect.h"
 #include "bt.h"
+#include "esp8266.h"
 #include "scheduler.h"
 #include "config.h"
 #include "syslog.h"
@@ -133,6 +134,16 @@ static void cmd_help(int argc, char* argv[]) {
         {"bt baud",   "<n>  change UART baud (AT mode)"},
         {"bt status", "show BT state"},
     };
+    static const entry_t g_wifi[] = {
+        {"wifi init",   "[baud]  initialise ESP8266 on UART1"},
+        {"wifi status",  "show ESP8266 wiring and runtime state"},
+        {"wifi ping",    "probe module and test connectivity"},
+        {"wifi scan",    "scan nearby access points"},
+        {"wifi join",    "<ssid> <password>  join a network"},
+        {"wifi ip",      "show assigned IP / station info"},
+        {"wifi shell",   "interactive ESP8266 AT shell"},
+        {"wifi deinit",  "release UART1 from ESP8266"},
+    };
     static const entry_t g_fs[] = {
         {"ls",      "list directory  [path]"},
         {"cat",     "print file contents"},
@@ -166,7 +177,8 @@ static void cmd_help(int argc, char* argv[]) {
         {"scripting",         g_scripting, COUNT(g_scripting)},
         {"flash",             g_flash,     COUNT(g_flash)},
         {"system",            g_system,    COUNT(g_system)},
-        {"bluetooth",  g_bluetooth,  COUNT(g_bluetooth)},
+        {"bluetooth",         g_bluetooth, COUNT(g_bluetooth)},
+        {"wifi / esp8266",    g_wifi,      COUNT(g_wifi)},
         {"filesystem",        g_fs,        COUNT(g_fs)},
     };
 
@@ -175,7 +187,7 @@ static void cmd_help(int argc, char* argv[]) {
     static const int group_count = (int)(sizeof(groups) / sizeof(group_t));
     static const int NAME_COL    = 12;
 
-    printf("DeckOS v1.4  \xe2\x80\x94  available commands\n");
+    printf("DeckOS v1.5  \xe2\x80\x94  available commands\n");
     printf("====================================================\n");
 
     for (int g = 0; g < group_count; g++) {
@@ -193,7 +205,7 @@ static void cmd_help(int argc, char* argv[]) {
 }
 
 static void cmd_version(int argc, char* argv[]) {
-    printf("DeckOS v1.4  |  Raspberry Pi Pico\n");
+    printf("DeckOS v1.5  |  Raspberry Pi Pico\n");
     printf("Build: %s %s\n", __DATE__, __TIME__);
 }
 
@@ -455,6 +467,116 @@ static void cmd_bt(int argc, char* argv[]) {
     printf("bt: unknown subcommand '%s'  (type 'bt' for help)\n", argv[1]);
 }
 
+static void cmd_wifi(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage:\n");
+        printf("  wifi init [baud]        - initialise ESP8266 on UART1\n");
+        printf("  wifi status             - show ESP8266 wiring and runtime state\n");
+        printf("  wifi ping               - probe module\n");
+        printf("  wifi scan               - scan nearby access points\n");
+        printf("  wifi join <ssid> <pass> - join a network\n");
+        printf("  wifi ip                 - show assigned IP\n");
+        printf("  wifi shell              - interactive AT shell\n");
+        printf("  wifi deinit             - release UART1\n");
+        printf("  wifi bridge <sub>       - bridge control (auto|at|deauther|raw|status|reset)\n");
+        return;
+    }
+
+if (strcmp(argv[1], "bridge") == 0) {
+    if (argc < 3) {
+        printf("wifi bridge subcommands: auto|at|deauther|raw|status|reset|scan|connect\n");
+        return;
+    }
+    if (!esp8266_is_ready()) {
+        printf("wifi: not initialised -- run 'wifi init' first\n");
+        return;
+    }
+    if      (strcmp(argv[2], "auto")     == 0) esp8266_bridge_mode_set("auto");
+    else if (strcmp(argv[2], "at")       == 0) esp8266_bridge_mode_set("at");
+    else if (strcmp(argv[2], "deauther") == 0) esp8266_bridge_mode_set("deauther");
+    else if (strcmp(argv[2], "raw")      == 0) esp8266_bridge_mode_set("raw");
+    else if (strcmp(argv[2], "status")   == 0) esp8266_bridge_status();
+    else if (strcmp(argv[2], "reset")    == 0) esp8266_bridge_reset();
+    else if (strcmp(argv[2], "scan")     == 0) esp8266_bridge_scan();
+    else if (strcmp(argv[2], "connect")  == 0) esp8266_bridge_connect();
+    else printf("unknown bridge subcommand: %s\n", argv[2]);
+    return;
+}
+
+    if (strcmp(argv[1], "init") == 0) {
+        uint32_t baud = (argc >= 3) ? (uint32_t)atoi(argv[2]) : ESP8266_DEFAULT_BAUD;
+        if (baud < 1200 || baud > 921600) { printf("baud must be 1200-921600\n"); return; }
+        esp8266_init(baud);
+        return;
+    }
+
+    if (strcmp(argv[1], "status") == 0) {
+        esp8266_print_status();
+        return;
+    }
+
+    if (strcmp(argv[1], "ping") == 0) {
+        esp8266_ping();
+        return;
+    }
+
+    if (strcmp(argv[1], "scan") == 0) {
+        esp8266_scan();
+        return;
+    }
+
+    if (strcmp(argv[1], "join") == 0) {
+        if (argc < 4) { printf("usage: wifi join <ssid> <password>\n"); return; }
+        esp8266_join(argv[2], argv[3]);
+        return;
+    }
+
+    if (strcmp(argv[1], "ip") == 0) {
+        esp8266_ip();
+        return;
+    }
+
+    if (strcmp(argv[1], "shell") == 0) {
+        esp8266_shell();
+        return;
+    }
+
+    if (strcmp(argv[1], "deinit") == 0) {
+        if (!esp8266_is_ready()) { printf("wifi: already deinitialised\n"); return; }
+        esp8266_deinit();
+        printf("wifi: ESP8266 released from UART1\n");
+        return;
+    }
+
+    printf("wifi: unknown subcommand '%s'  (type 'wifi' for help)\n", argv[1]);
+}
+
+static void cmd_wifi_bridge(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("bridge commands:\n");
+        printf("  wifi bridge auto      - auto-detect firmware\n");
+        printf("  wifi bridge at        - AT passthrough mode\n");
+        printf("  wifi bridge deauther  - Deauther command mode\n");
+        printf("  wifi bridge raw       - raw command mode\n");
+        printf("  wifi bridge status    - show bridge status\n");
+        printf("  wifi bridge reset     - reset ESP8266\n");
+        return;
+    }
+
+    // argv[0] = "wifi bridge", argv[1] = subcommand
+    if (!esp8266_is_ready()) {
+        printf("wifi: not initialised — run 'wifi init' first\n");
+        return;
+    }
+
+    if      (strcmp(argv[1], "auto")     == 0) esp8266_bridge_mode_set("auto");
+    else if (strcmp(argv[1], "at")       == 0) esp8266_bridge_mode_set("at");
+    else if (strcmp(argv[1], "deauther") == 0) esp8266_bridge_mode_set("deauther");
+    else if (strcmp(argv[1], "raw")      == 0) esp8266_bridge_mode_set("raw");
+    else if (strcmp(argv[1], "status")   == 0) esp8266_bridge_status();
+    else if (strcmp(argv[1], "reset")    == 0) esp8266_bridge_reset();
+    else printf("unknown bridge command: %s\n", argv[1]);
+}
 
 static void cmd_detect_extended(int argc, char* argv[]) {
 
@@ -496,7 +618,7 @@ static void cmd_detect_extended(int argc, char* argv[]) {
 
 static void cmd_sysinfo(int argc, char* argv[]) {
     printf("=================================\n");
-    printf("  DeckOS v1.4  —  system info  \n");
+    printf("  DeckOS v1.5  —  system info  \n");
     printf("=================================\n");
     printf("board   : Raspberry Pi Pico\n");
     printf("cpu     : RP2040  dual-core Cortex-M0+  125 MHz\n");
@@ -1962,6 +2084,8 @@ static command_t command_table[] = {
     {"wdog",    cmd_wdog,    "show watchdog status"},
     {"pin",     cmd_pin,     "dump all GPIO pin states"},
     {"bt", cmd_bt, "bt shell|log|exec|top|send|recv|sniff|at|name|pin|baud|status"},
+    {"wifi",        cmd_wifi,        "wifi init|status|ping|scan|join|ip|shell|deinit"},
+    {"wifi bridge", cmd_wifi_bridge, "wifi bridge auto|at|deauther|raw|status|reset"},
     // Subsystems
     {"drivers", cmd_drivers, "list loaded drivers"},
     {"tasks",   cmd_tasks,   "list/enable/disable background tasks"},
