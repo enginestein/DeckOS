@@ -54,21 +54,32 @@ void loop() {
 }
 
 void processCommand(String cmd) {
+    if (cmd.startsWith("@")) {
+        handleBridgeCommand(cmd);
+        return;
+    }
 
-  if (cmd.startsWith("@")) {
-    handleBridgeCommand(cmd);
-    return;
-  }
+    if (cmd.startsWith("join ")) {
+        int firstSpace = cmd.indexOf(' ');
+        String rest = cmd.substring(firstSpace + 1);
+        int secondSpace = rest.indexOf(' ');
+        if (secondSpace > 0) {
+            wifi_ssid = rest.substring(0, secondSpace);
+            wifi_password = rest.substring(secondSpace + 1);
+        } else {
+            wifi_ssid = rest;
+            wifi_password = "";
+        }
+        Serial.print("[BRIDGE] Credentials stored. SSID: ");
+        Serial.println(wifi_ssid);
+        Serial.println("OK");
+        return;
+    }
 
-  if (currentMode == MODE_AUTO_DETECT) {
-    autoDetectAndRoute(cmd);
-  } else if (currentMode == MODE_AT_PASSTHROUGH) {
-    forwardToATFirmware(cmd);
-  } else if (currentMode == MODE_DEAUTHER_COMMANDS) {
-    forwardToDeauther(cmd);
-  } else if (currentMode == MODE_RAW_COMMANDS) {
-    forwardRaw(cmd);
-  }
+    if (currentMode == MODE_AUTO_DETECT)         autoDetectAndRoute(cmd);
+    else if (currentMode == MODE_AT_PASSTHROUGH) forwardToATFirmware(cmd);
+    else if (currentMode == MODE_DEAUTHER_COMMANDS) forwardToDeauther(cmd);
+    else if (currentMode == MODE_RAW_COMMANDS)   forwardRaw(cmd);
 }
 
 void autoDetectAndRoute(String cmd) {

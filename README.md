@@ -444,8 +444,6 @@ If the credentials in the sketch are correct and the network is in range, `wifi 
 
 ## Bluetooth / HC-05
 
-> **Status: beta.** Still trying to fix some bugs.
-
 DeckOS supports wireless shell access through an HC-05 Bluetooth module. Once paired, you can control the Pico from a phone or laptop terminal app without touching a USB cable.
 
 ### What Bluetooth lets you do
@@ -458,7 +456,10 @@ DeckOS supports wireless shell access through an HC-05 Bluetooth module. Once pa
 
 ### Wiring
 
-Connect the HC-05 to UART0 on the Pico. Exact pins depend on your `bt.h` configuration — check `BT_TX_PIN` and `BT_RX_PIN` in your project headers. The standard setup uses GP0 (TX) and GP1 (RX).
+HC-05 VCC -> VSYS (worked for me) / 5V / VBUS
+HC-05 GND -> GND 
+RXD -> GP 01
+TXD -> GP 00
 
 Power the HC-05 from 3.3V or 5V depending on your module variant. Most bare HC-05 boards accept 3.6–6V on VCC with a built-in regulator.
 
@@ -622,5 +623,10 @@ DeckOS includes a small in-memory virtual filesystem (VFS) for storing files and
 | `tree` | Print the full directory tree |
 
 ---
+
+# TO-DO
+
+- Custom HTTP server, runs on wifi serve turns pico into a tiny web endpoint
+- HTTP GET/POST support with wifi commands, `wifi get <url>` or `wifi post <url>`
 
 *Who doesn't love a decent shell?*

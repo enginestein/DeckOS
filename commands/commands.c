@@ -134,16 +134,24 @@ static void cmd_help(int argc, char* argv[]) {
         {"bt baud",   "<n>  change UART baud (AT mode)"},
         {"bt status", "show BT state"},
     };
-    static const entry_t g_wifi[] = {
-        {"wifi init",   "[baud]  initialise ESP8266 on UART1"},
-        {"wifi status",  "show ESP8266 wiring and runtime state"},
-        {"wifi ping",    "probe module and test connectivity"},
-        {"wifi scan",    "scan nearby access points"},
-        {"wifi join",    "<ssid> <password>  join a network"},
-        {"wifi ip",      "show assigned IP / station info"},
-        {"wifi shell",   "interactive ESP8266 AT shell"},
-        {"wifi deinit",  "release UART1 from ESP8266"},
-    };
+static const entry_t g_wifi[] = {
+    {"wifi init",          "[baud]  initialise ESP8266 on UART1"},
+    {"wifi status",        "show ESP8266 wiring and runtime state"},
+    {"wifi ping",          "probe module and test connectivity"},
+    {"wifi scan",          "scan nearby access points"},
+    {"wifi join",          "<ssid> <password>  join a network"},
+    {"wifi ip",            "show assigned IP / station info"},
+    {"wifi shell",         "interactive ESP8266 AT shell"},
+    {"wifi deinit",        "release UART1 from ESP8266"},
+    {"wifi bridge auto",   "auto-detect ESP firmware type"},
+    {"wifi bridge at",     "force AT passthrough mode"},
+    {"wifi bridge deauther","translate to Deauther firmware commands"},
+    {"wifi bridge raw",    "pass commands without translation"},
+    {"wifi bridge status", "show bridge mode and WiFi state"},
+    {"wifi bridge reset",  "restart the ESP8266"},
+    {"wifi bridge scan",   "scan networks via bridge (@scan)"},
+    {"wifi bridge connect","connect using stored SSID via bridge"},
+};
     static const entry_t g_fs[] = {
         {"ls",      "list directory  [path]"},
         {"cat",     "print file contents"},
@@ -2085,7 +2093,6 @@ static command_t command_table[] = {
     {"pin",     cmd_pin,     "dump all GPIO pin states"},
     {"bt", cmd_bt, "bt shell|log|exec|top|send|recv|sniff|at|name|pin|baud|status"},
     {"wifi",        cmd_wifi,        "wifi init|status|ping|scan|join|ip|shell|deinit"},
-    {"wifi bridge", cmd_wifi_bridge, "wifi bridge auto|at|deauther|raw|status|reset"},
     // Subsystems
     {"drivers", cmd_drivers, "list loaded drivers"},
     {"tasks",   cmd_tasks,   "list/enable/disable background tasks"},

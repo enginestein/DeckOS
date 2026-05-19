@@ -5,9 +5,9 @@
 #include "hardware/uart.h"
 
 #define BT_UART         uart0
-#define BT_TX_PIN       1
-#define BT_RX_PIN       0
-#define BT_DEFAULT_BAUD 115200
+#define BT_TX_PIN       0
+#define BT_RX_PIN       1
+#define BT_DEFAULT_BAUD 9600
 
 #define BT_STATE_PIN    0xFF
 

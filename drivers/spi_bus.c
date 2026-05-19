@@ -26,7 +26,7 @@ int spi_bus_transfer(spi_inst_t* spi, uint cs_pin,
     if (manage_cs) {
         gpio_init(cs_pin);
         gpio_set_dir(cs_pin, GPIO_OUT);
-        gpio_put(cs_pin, 0);   // assert CS
+        gpio_put(cs_pin, 0);
     }
 
     int rc;

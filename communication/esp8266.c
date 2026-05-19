@@ -114,50 +114,44 @@ void esp8266_print_status(void) {
   printf("  boot pins  : EN/CH_PD=HIGH, RST=HIGH, GPIO0=HIGH, GPIO2=HIGH for normal boot\n");
 }
 
-static void esp8266_bridge_send(const char * at_cmd, uint32_t timeout_ms) {
-  if (!s_ready) {
-    printf("[wifi] not initialised\n");
-    return;
-  }
+static void esp8266_bridge_send(const char *at_cmd, uint32_t timeout_ms) {
+    if (!s_ready) { printf("[wifi] not initialised\n"); return; }
 
-  esp8266_flush_rx();
-  uart_puts(ESP8266_UART, at_cmd);
-  uart_puts(ESP8266_UART, "\r\n");
+    esp8266_flush_rx();
+    uart_puts(ESP8266_UART, at_cmd);
+    uart_puts(ESP8266_UART, "\r\n");
 
-  char line[256];
-  int pos = 0;
-  uint32_t start = to_ms_since_boot(get_absolute_time());
-  uint32_t last_byte_ms = start;
+    char line[256];
+    int pos = 0;
+    uint32_t start = to_ms_since_boot(get_absolute_time());
+    uint32_t last_byte_ms = start;
 
-  while (true) {
-    uint32_t now = to_ms_since_boot(get_absolute_time());
+    while (true) {
+        uint32_t now = to_ms_since_boot(get_absolute_time());
+        if (now - start >= timeout_ms) break;
 
-    if (now - start >= timeout_ms) break;
-    if (now - last_byte_ms >= 300 && pos == 0) break;
+        if ((now - last_byte_ms) >= 2000 &&
+            last_byte_ms != start) break;
 
-    if (uart_is_readable(ESP8266_UART)) {
-      char c = (char) uart_getc(ESP8266_UART);
-      last_byte_ms = now;
+        if (uart_is_readable(ESP8266_UART)) {
+            char c = (char)uart_getc(ESP8266_UART);
+            last_byte_ms = now;
 
-      if (pos < (int) sizeof(line) - 1) {
-        line[pos++] = c;
-        line[pos] = '\0';
-      }
-
-      if (c == '\n') {
-        printf("%s", line);
-        pos = 0;
-        line[0] = '\0';
-      }
-    } else {
-      sleep_us(500);
+            if (pos < (int)sizeof(line) - 1) {
+                line[pos++] = c;
+                line[pos] = '\0';
+            }
+            if (c == '\n') {
+                printf("%s", line);
+                pos = 0;
+                line[0] = '\0';
+            }
+        } else {
+            sleep_us(500);
+        }
     }
-  }
 
-  if (pos > 0) {
-    line[pos] = '\0';
-    printf("%s\n", line);
-  }
+    if (pos > 0) { line[pos] = '\0'; printf("%s\n", line); }
 }
 
 void esp8266_bridge_mode_set(const char * mode) {
@@ -251,23 +245,21 @@ void esp8266_scan(void) {
   esp8266_bridge_send("@scan", 15000);
 }
 
-void esp8266_join(const char * ssid,
-  const char * password) {
-  if (!s_ready) {
-    printf("wifi: not initialised -- run 'wifi init' first\n");
-    return;
-  }
-  if (!ssid || ! * ssid) {
-    printf("usage: wifi join <ssid> <password>\n");
-    return;
-  }
+void esp8266_join(const char *ssid, const char *password) {
+    if (!s_ready) { printf("wifi: not initialised\n"); return; }
+    if (!ssid || !*ssid) { printf("usage: wifi join <ssid> <password>\n"); return; }
+    char cmd[256];
+    snprintf(cmd, sizeof(cmd), "join %s %s", ssid, password ? password : "");
+    printf("[wifi] storing credentials for '%s'...\n", ssid);
+    
+    esp8266_flush_rx();
+    uart_puts(ESP8266_UART, cmd);
+    uart_puts(ESP8266_UART, "\r\n");
+    sleep_ms(500);                      
+    esp8266_flush_rx();      
 
-  char cmd[256];
-  snprintf(cmd, sizeof(cmd), "join %s %s", ssid, password ? password : "");
-  printf("[wifi] joining '%s'...\n", ssid);
-  esp8266_bridge_send(cmd, 2000);
-
-  esp8266_bridge_send("@connect", 25000);
+    printf("[wifi] connecting (this may take up to 20s)...\n");
+    esp8266_bridge_send("@connect", 25000);
 }
 
 void esp8266_ip(void) {
