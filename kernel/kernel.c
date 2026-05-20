@@ -42,7 +42,7 @@ void kernel_init(void) {
     while (!stdio_usb_connected()) sleep_ms(100);
     heap_track_init();
     syslog_init();
-    LOG_I("kernel", "booting DeckOS v1.5");
+    LOG_I("kernel", "booting DeckOS v1.7");
 
     bootloader_run();
     vfs_init();

@@ -7,9 +7,17 @@
 enum BridgeMode {
   MODE_AUTO_DETECT,
   MODE_AT_PASSTHROUGH,
-  MODE_DEAUTHER_COMMANDS,
   MODE_RAW_COMMANDS
 };
+
+WiFiServer httpServer(80);
+bool httpServerRunning = false;
+
+WiFiServer telnetServer(23);
+bool telnetRunning = false;
+WiFiClient telnetClient;
+
+bool telnetPassthroughActive = false;
 
 BridgeMode currentMode = MODE_AUTO_DETECT;
 
@@ -40,17 +48,214 @@ void setup() {
 }
 
 void loop() {
+  handleHttpServer();
+  handleTelnetServer();
+
+  if (telnetPassthroughActive) {
+    forwardPicoOutputToTelnet();
+
+    // After forwarding output, if telnet client is connected and
+    // Serial has been quiet for a moment, send the prompt
+    static uint32_t lastSerialActivity = 0;
+    static bool promptPending = false;
+
+    if (Serial.available()) {
+      lastSerialActivity = millis();
+      promptPending = true;
+    }
+    if (promptPending && (millis() - lastSerialActivity) > 150) {
+      if (telnetClient && telnetClient.connected()) {
+        telnetClient.print("> ");
+      }
+      promptPending = false;
+    }
+    return;
+  }
 
   if (Serial.available()) {
     String cmd = Serial.readStringUntil('\n');
     cmd.trim();
-
     if (cmd.length() > 0) {
       processCommand(cmd);
     }
   }
 
   delay(10);
+}
+
+void handleTelnetServer() {
+  if (!telnetRunning) return;
+
+  // Accept new client if none connected
+  if (!telnetClient || !telnetClient.connected()) {
+    // If client just dropped, clean up passthrough state
+    if (telnetPassthroughActive) {
+      telnetPassthroughActive = false;
+      currentMode = MODE_RAW_COMMANDS;
+    }
+
+    WiFiClient newClient = telnetServer.available();
+    if (newClient) {
+      if (telnetClient) telnetClient.stop();
+      telnetClient = newClient;
+      telnetPassthroughActive = true;  // activate NOW when client connects
+      currentMode = MODE_RAW_COMMANDS; // ensure bridge is in known good state
+      telnetClient.println("[DeckOS] Connected. Type EXIT to disconnect.");
+      telnetClient.print("> ");
+
+    }
+    return;
+  }
+
+  static String telnetLineBuffer = "";
+
+  while (telnetClient.available()) {
+    char c = (char)telnetClient.read();
+
+    if (c == '\r') continue;  // ignore carriage return
+
+    if (c == '\n') {
+      telnetLineBuffer.trim();
+
+      if (telnetLineBuffer == "exit" || telnetLineBuffer == "quit" ||
+          telnetLineBuffer == "EXIT" || telnetLineBuffer == "QUIT") {
+        telnetClient.println("[DeckOS] Disconnecting.");
+        telnetClient.stop();
+        telnetPassthroughActive = false;
+        currentMode = MODE_RAW_COMMANDS;
+        telnetLineBuffer = "";
+        return;
+      }
+
+      if (telnetLineBuffer.length() > 0) {
+        // Send command to Pico over Serial
+        Serial.println(telnetLineBuffer);
+      }
+
+      telnetLineBuffer = "";
+    } else {
+      if (telnetLineBuffer.length() < 127) {
+        telnetLineBuffer += c;
+      }
+    }
+  }
+}
+
+void forwardPicoOutputToTelnet() {
+  if (!telnetRunning) return;
+  if (!telnetClient || !telnetClient.connected()) {
+    telnetPassthroughActive = false;
+    currentMode = MODE_RAW_COMMANDS;
+    return;
+  }
+
+  // Forward Pico output to telnet client, char by char, non-blocking
+  static String stopCheckBuf = "";
+
+  while (Serial.available()) {
+    char c = (char)Serial.read();
+
+    // Check for @stoptelnet escape sequence
+    stopCheckBuf += c;
+    if (stopCheckBuf.length() > 12)
+      stopCheckBuf = stopCheckBuf.substring(stopCheckBuf.length() - 12);
+
+    if (stopCheckBuf.indexOf("@stoptelnet") >= 0) {
+      stopCheckBuf = "";
+      telnetPassthroughActive = false;
+      currentMode = MODE_RAW_COMMANDS;
+      if (telnetClient) {
+        telnetClient.println("\r\n[DeckOS] Telnet server stopped.");
+        telnetClient.stop();
+      }
+      telnetServer.stop();
+      telnetRunning = false;
+      return;
+    }
+
+    telnetClient.write(c);
+  }
+}
+
+void handleHttpServer() {
+  if (!httpServerRunning) return;
+
+  WiFiClient client = httpServer.available();
+  if (!client) return;
+
+  unsigned long timeout = millis() + 3000;
+  while (!client.available() && millis() < timeout) {
+    delay(1);
+  }
+  if (!client.available()) { client.stop(); return; }
+
+  String requestLine = client.readStringUntil('\n');
+  requestLine.trim();
+
+  while (client.available()) {
+    String line = client.readStringUntil('\n');
+    line.trim();
+    if (line.length() == 0) break;
+  }
+
+  String method = "";
+  String path   = "/";
+  int s1 = requestLine.indexOf(' ');
+  int s2 = requestLine.lastIndexOf(' ');
+  if (s1 > 0 && s2 > s1) {
+    method = requestLine.substring(0, s1);
+    path   = requestLine.substring(s1 + 1, s2);
+  }
+
+  Serial.print("[HTTP] ");
+  Serial.print(method);
+  Serial.print(" ");
+  Serial.println(path);
+
+  String body = "";
+
+  if (path == "/" || path == "/status") {
+    body = "{\"status\":\"ok\",\"ssid\":\"" + WiFi.SSID() +
+           "\",\"ip\":\"" + WiFi.localIP().toString() +
+           "\",\"rssi\":" + String(WiFi.RSSI()) + "}";
+  } else if (path == "/scan") {
+    int n = WiFi.scanNetworks();
+    body = "{\"networks\":[";
+    for (int i = 0; i < n; i++) {
+      if (i > 0) body += ",";
+      body += "{\"ssid\":\"" + WiFi.SSID(i) +
+              "\",\"rssi\":" + String(WiFi.RSSI(i)) +
+              ",\"secure\":" + (WiFi.encryptionType(i) == ENC_TYPE_NONE ? "false" : "true") + "}";
+    }
+    body += "]}";
+    WiFi.scanDelete();
+  } else if (path == "/reset") {
+    body = "{\"status\":\"rebooting\"}";
+    client.print("HTTP/1.0 200 OK\r\nContent-Type: application/json\r\nContent-Length: ");
+    client.print(body.length());
+    client.print("\r\n\r\n");
+    client.print(body);
+    client.stop();
+    delay(200);
+    ESP.restart();
+    return;
+  } else {
+    body = "{\"error\":\"not found\",\"path\":\"" + path + "\"}";
+    client.print("HTTP/1.0 404 Not Found\r\nContent-Type: application/json\r\nContent-Length: ");
+    client.print(body.length());
+    client.print("\r\n\r\n");
+    client.print(body);
+    client.stop();
+    return;
+  }
+
+  client.print("HTTP/1.0 200 OK\r\n");
+  client.print("Content-Type: application/json\r\n");
+  client.print("Content-Length: ");
+  client.print(body.length());
+  client.print("\r\n\r\n");
+  client.print(body);
+  client.stop();
 }
 
 void processCommand(String cmd) {
@@ -78,7 +283,6 @@ void processCommand(String cmd) {
 
     if (currentMode == MODE_AUTO_DETECT)         autoDetectAndRoute(cmd);
     else if (currentMode == MODE_AT_PASSTHROUGH) forwardToATFirmware(cmd);
-    else if (currentMode == MODE_DEAUTHER_COMMANDS) forwardToDeauther(cmd);
     else if (currentMode == MODE_RAW_COMMANDS)   forwardRaw(cmd);
 }
 
@@ -98,13 +302,8 @@ void autoDetectAndRoute(String cmd) {
 
   response.toLowerCase();
 
-  if (response.indexOf("deauther") >= 0 ||
-    response.indexOf("scan all") >= 0 ||
-    response.indexOf("attack") >= 0) {
-    currentMode = MODE_DEAUTHER_COMMANDS;
-    Serial.println("[BRIDGE] Detected Deauther firmware");
-    Serial.println("[BRIDGE] Switching to Deauther command mode");
-  } else if (response.indexOf("ok") >= 0 ||
+ 
+  if (response.indexOf("ok") >= 0 ||
     response.indexOf("ready") >= 0 ||
     cmd == "AT") {
     currentMode = MODE_AT_PASSTHROUGH;
@@ -134,90 +333,6 @@ void forwardToATFirmware(String cmd) {
   Serial.println();
 }
 
-void forwardToDeauther(String cmd) {
-
-  String translated = translateToDeauther(cmd);
-
-  if (translated.length() > 0) {
-    Serial.println(translated);
-    delay(200);
-
-    unsigned long timeout = millis() + 10000;
-    bool commandDone = false;
-
-    while (millis() < timeout && !commandDone) {
-      while (Serial.available()) {
-        String line = Serial.readStringUntil('\n');
-        if (line.length() > 0) {
-          Serial.println(line);
-
-          line.toLowerCase();
-          if (line.indexOf("done") >= 0 ||
-            line.indexOf("error") >= 0 ||
-            line.indexOf("ok") >= 0) {
-            commandDone = true;
-            break;
-          }
-        }
-      }
-      delay(10);
-    }
-  }
-}
-
-String translateToDeauther(String cmd) {
-  String lowerCmd = cmd;
-  lowerCmd.toLowerCase();
-
-  cmd.replace("\"", "");
-  cmd.trim();
-
-  if (lowerCmd == "at" || lowerCmd == "ping") {
-    return "sysinfo";
-  } else if (lowerCmd == "scan" || lowerCmd == "wifi scan") {
-    return "scan all";
-  } else if (lowerCmd.startsWith("join")) {
-
-    int firstSpace = cmd.indexOf(' ');
-    if (firstSpace > 0) {
-      String rest = cmd.substring(firstSpace + 1);
-      int secondSpace = rest.indexOf(' ');
-
-      if (secondSpace > 0) {
-        wifi_ssid = rest.substring(0, secondSpace);
-        wifi_password = rest.substring(secondSpace + 1);
-
-        Serial.print("[BRIDGE] Stored SSID: ");
-        Serial.println(wifi_ssid);
-
-        return "add ssid \"" + wifi_ssid + "\"";
-      } else {
-        wifi_ssid = rest;
-        wifi_password = "";
-        return "add ssid \"" + wifi_ssid + "\"";
-      }
-    }
-    return "scan all";
-  } else if (lowerCmd == "ip" || lowerCmd == "wifi ip") {
-    if (WiFi.status() == WL_CONNECTED) {
-      Serial.print("[BRIDGE] IP Address: ");
-      Serial.println(WiFi.localIP());
-      return "";
-    } else {
-      return "sysinfo";
-    }
-  } else if (lowerCmd == "status" || lowerCmd == "wifi status") {
-    return "info";
-  } else if (lowerCmd == "connect") {
-    if (wifi_ssid.length() > 0) {
-      return "@connect";
-    }
-    return "";
-  } else {
-
-    return cmd;
-  }
-}
 
 void forwardRaw(String cmd) {
 
@@ -241,14 +356,157 @@ void handleBridgeCommand(String cmd) {
     currentMode = MODE_AT_PASSTHROUGH;
     Serial.println("[BRIDGE] Mode: AT Passthrough");
     Serial.println("[BRIDGE] Sending AT commands directly");
-  } else if (cmd == "@mode deauther") {
-    currentMode = MODE_DEAUTHER_COMMANDS;
-    Serial.println("[BRIDGE] Mode: Deauther Commands");
-    Serial.println("[BRIDGE] Translating DeckOS wifi commands to Deauther");
+
   } else if (cmd == "@mode raw") {
     currentMode = MODE_RAW_COMMANDS;
     Serial.println("[BRIDGE] Mode: Raw Commands");
     Serial.println("[BRIDGE] Passing commands without translation");
+  } else if (cmd == "@serve") {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[BRIDGE] Not connected to WiFi — run @connect first");
+    return;
+  }
+  if (!httpServerRunning) {
+    httpServer.begin();
+    httpServerRunning = true;
+  }
+  Serial.print("[BRIDGE] HTTP server started on http://");
+  Serial.print(WiFi.localIP());
+  Serial.println(":80");
+  Serial.println("[BRIDGE] Endpoints: / /status /scan /reset");
+} else if (cmd == "@telnet") {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[BRIDGE] Not connected to WiFi");
+    return;
+  }
+  if (!telnetRunning) {
+    telnetServer.begin();
+    telnetRunning = true;
+  }
+  telnetPassthroughActive = true;
+  Serial.println("[TELNET] Server started on port 23");
+  Serial.print("[TELNET] Connect to: telnet ");
+  Serial.println(WiFi.localIP());
+
+
+} else if (cmd == "@stoptelnet") {
+  telnetPassthroughActive = false;
+  if (telnetClient) telnetClient.stop();
+  telnetServer.stop();
+  telnetRunning = false;
+  Serial.println("[TELNET] Stopped");
+} else if (cmd == "@stopserve") {
+  httpServer.stop();
+  httpServerRunning = false;
+  Serial.println("[BRIDGE] HTTP server stopped");
+  } else if (cmd.startsWith("@get ")) {
+  String url = cmd.substring(5);
+  url.trim();
+
+  // Parse host and path from "host/path" or "http://host/path"
+  if (url.startsWith("http://")) url = url.substring(7);
+  int slash = url.indexOf('/');
+  String host = (slash > 0) ? url.substring(0, slash) : url;
+  String path = (slash > 0) ? url.substring(slash)    : "/";
+
+  // Parse optional port
+  uint16_t port = 80;
+  int colon = host.indexOf(':');
+  if (colon > 0) {
+    port = host.substring(colon + 1).toInt();
+    host = host.substring(0, colon);
+  }
+
+  Serial.print("[BRIDGE] GET http://");
+  Serial.print(host);
+  Serial.println(path);
+
+  WiFiClient client;
+  if (!client.connect(host.c_str(), port)) {
+    Serial.println("[BRIDGE] Connection failed");
+    return;
+  }
+
+  client.print("GET " + path + " HTTP/1.0\r\n");
+  client.print("Host: " + host + "\r\n");
+  client.print("Connection: close\r\n\r\n");
+
+  // Wait for response
+  unsigned long timeout = millis() + 10000;
+  while (!client.available() && millis() < timeout) delay(10);
+
+  // Skip headers, print body
+  bool pastHeaders = false;
+  String headerLine = "";
+  while (client.available()) {
+    char c = client.read();
+    if (!pastHeaders) {
+      headerLine += c;
+      if (headerLine.endsWith("\r\n\r\n")) {
+        pastHeaders = true;
+        headerLine = "";
+      }
+    } else {
+      Serial.write(c);
+    }
+  }
+  Serial.println();
+  Serial.println("[BRIDGE] GET done");
+  client.stop();
+
+} else if (cmd.startsWith("@post ")) {
+  // Format: @post host/path body_here
+  String rest = cmd.substring(6);
+  int space = rest.indexOf(' ');
+  String url  = (space > 0) ? rest.substring(0, space) : rest;
+  String body = (space > 0) ? rest.substring(space + 1) : "";
+
+  if (url.startsWith("http://")) url = url.substring(7);
+  int slash = url.indexOf('/');
+  String host = (slash > 0) ? url.substring(0, slash) : url;
+  String path = (slash > 0) ? url.substring(slash)    : "/";
+
+  uint16_t port = 80;
+  int colon = host.indexOf(':');
+  if (colon > 0) {
+    port = host.substring(colon + 1).toInt();
+    host = host.substring(0, colon);
+  }
+
+  Serial.print("[BRIDGE] POST http://");
+  Serial.print(host);
+  Serial.println(path);
+
+  WiFiClient client;
+  if (!client.connect(host.c_str(), port)) {
+    Serial.println("[BRIDGE] Connection failed");
+    return;
+  }
+
+  client.print("POST " + path + " HTTP/1.0\r\n");
+  client.print("Host: " + host + "\r\n");
+  client.print("Content-Type: application/x-www-form-urlencoded\r\n");
+  client.print("Content-Length: " + String(body.length()) + "\r\n");
+  client.print("Connection: close\r\n\r\n");
+  client.print(body);
+
+  unsigned long timeout = millis() + 10000;
+  while (!client.available() && millis() < timeout) delay(10);
+
+  bool pastHeaders = false;
+  String headerLine = "";
+  while (client.available()) {
+    char c = client.read();
+    if (!pastHeaders) {
+      headerLine += c;
+      if (headerLine.endsWith("\r\n\r\n")) { pastHeaders = true; }
+    } else {
+      Serial.write(c);
+    }
+  }
+  Serial.println();
+  Serial.println("[BRIDGE] POST done");
+  client.stop();
   } else if (cmd == "@status") {
     Serial.println("[BRIDGE] ====================");
     Serial.print("[BRIDGE] Mode: ");
@@ -258,9 +516,6 @@ void handleBridgeCommand(String cmd) {
       break;
     case MODE_AT_PASSTHROUGH:
       Serial.println("AT Passthrough");
-      break;
-    case MODE_DEAUTHER_COMMANDS:
-      Serial.println("Deauther");
       break;
     case MODE_RAW_COMMANDS:
       Serial.println("Raw");

@@ -145,12 +145,16 @@ static const entry_t g_wifi[] = {
     {"wifi deinit",        "release UART1 from ESP8266"},
     {"wifi bridge auto",   "auto-detect ESP firmware type"},
     {"wifi bridge at",     "force AT passthrough mode"},
-    {"wifi bridge deauther","translate to Deauther firmware commands"},
     {"wifi bridge raw",    "pass commands without translation"},
     {"wifi bridge status", "show bridge mode and WiFi state"},
     {"wifi bridge reset",  "restart the ESP8266"},
     {"wifi bridge scan",   "scan networks via bridge (@scan)"},
     {"wifi bridge connect","connect using stored SSID via bridge"},
+    {"wifi telnet",        "start telnet server on port 23"},
+    {"wifi telnet stop",   "stop telnet server"},
+    {"wifi serve",         "start HTTP server (connect first)"},
+    {"wifi get",           "<url>  HTTP GET request"},
+    {"wifi post",          "<url> <body>  HTTP POST request"},
 };
     static const entry_t g_fs[] = {
         {"ls",      "list directory  [path]"},
@@ -195,7 +199,7 @@ static const entry_t g_wifi[] = {
     static const int group_count = (int)(sizeof(groups) / sizeof(group_t));
     static const int NAME_COL    = 12;
 
-    printf("DeckOS v1.5  \xe2\x80\x94  available commands\n");
+    printf("DeckOS v1.7  \xe2\x80\x94  available commands\n");
     printf("====================================================\n");
 
     for (int g = 0; g < group_count; g++) {
@@ -213,7 +217,7 @@ static const entry_t g_wifi[] = {
 }
 
 static void cmd_version(int argc, char* argv[]) {
-    printf("DeckOS v1.5  |  Raspberry Pi Pico\n");
+    printf("DeckOS v1.7  |  Raspberry Pi Pico\n");
     printf("Build: %s %s\n", __DATE__, __TIME__);
 }
 
@@ -486,13 +490,18 @@ static void cmd_wifi(int argc, char* argv[]) {
         printf("  wifi ip                 - show assigned IP\n");
         printf("  wifi shell              - interactive AT shell\n");
         printf("  wifi deinit             - release UART1\n");
-        printf("  wifi bridge <sub>       - bridge control (auto|at|deauther|raw|status|reset)\n");
+        printf("  wifi bridge <sub>       - bridge control (auto|at|raw|status|reset)\n");
+        printf("  wifi serve              - start HTTP server on port 80\n");
+        printf("  wifi get <url>          - HTTP GET request\n");
+        printf("  wifi post <url> <body>  - HTTP POST request\n");
+        printf("  wifi telnet             - start telnet server on port 23\n");
+        printf("  wifi telnet stop        - stop telnet server\n");
         return;
     }
 
 if (strcmp(argv[1], "bridge") == 0) {
     if (argc < 3) {
-        printf("wifi bridge subcommands: auto|at|deauther|raw|status|reset|scan|connect\n");
+        printf("wifi bridge subcommands: auto|at|raw|status|reset|scan|connect\n");
         return;
     }
     if (!esp8266_is_ready()) {
@@ -501,7 +510,6 @@ if (strcmp(argv[1], "bridge") == 0) {
     }
     if      (strcmp(argv[2], "auto")     == 0) esp8266_bridge_mode_set("auto");
     else if (strcmp(argv[2], "at")       == 0) esp8266_bridge_mode_set("at");
-    else if (strcmp(argv[2], "deauther") == 0) esp8266_bridge_mode_set("deauther");
     else if (strcmp(argv[2], "raw")      == 0) esp8266_bridge_mode_set("raw");
     else if (strcmp(argv[2], "status")   == 0) esp8266_bridge_status();
     else if (strcmp(argv[2], "reset")    == 0) esp8266_bridge_reset();
@@ -510,7 +518,29 @@ if (strcmp(argv[1], "bridge") == 0) {
     else printf("unknown bridge subcommand: %s\n", argv[2]);
     return;
 }
+    if (strcmp(argv[1], "serve") == 0) {
+    esp8266_http_serve();
+    return;
+}
+if (strcmp(argv[1], "telnet") == 0) {
+    if (argc >= 3 && strcmp(argv[2], "stop") == 0) {
+        esp8266_telnet_stop();
+    } else {
+        esp8266_telnet_start();
+    }
+    return;
+}
+if (strcmp(argv[1], "get") == 0) {
+    if (argc < 3) { printf("usage: wifi get <url>\n"); return; }
+    esp8266_http_get(argv[2]);
+    return;
+}
 
+if (strcmp(argv[1], "post") == 0) {
+    if (argc < 4) { printf("usage: wifi post <url> <body>\n"); return; }
+    esp8266_http_post(argv[2], argv[3]);
+    return;
+}
     if (strcmp(argv[1], "init") == 0) {
         uint32_t baud = (argc >= 3) ? (uint32_t)atoi(argv[2]) : ESP8266_DEFAULT_BAUD;
         if (baud < 1200 || baud > 921600) { printf("baud must be 1200-921600\n"); return; }
@@ -564,7 +594,6 @@ static void cmd_wifi_bridge(int argc, char* argv[]) {
         printf("bridge commands:\n");
         printf("  wifi bridge auto      - auto-detect firmware\n");
         printf("  wifi bridge at        - AT passthrough mode\n");
-        printf("  wifi bridge deauther  - Deauther command mode\n");
         printf("  wifi bridge raw       - raw command mode\n");
         printf("  wifi bridge status    - show bridge status\n");
         printf("  wifi bridge reset     - reset ESP8266\n");
@@ -579,7 +608,6 @@ static void cmd_wifi_bridge(int argc, char* argv[]) {
 
     if      (strcmp(argv[1], "auto")     == 0) esp8266_bridge_mode_set("auto");
     else if (strcmp(argv[1], "at")       == 0) esp8266_bridge_mode_set("at");
-    else if (strcmp(argv[1], "deauther") == 0) esp8266_bridge_mode_set("deauther");
     else if (strcmp(argv[1], "raw")      == 0) esp8266_bridge_mode_set("raw");
     else if (strcmp(argv[1], "status")   == 0) esp8266_bridge_status();
     else if (strcmp(argv[1], "reset")    == 0) esp8266_bridge_reset();
@@ -626,7 +654,7 @@ static void cmd_detect_extended(int argc, char* argv[]) {
 
 static void cmd_sysinfo(int argc, char* argv[]) {
     printf("=================================\n");
-    printf("  DeckOS v1.5  —  system info  \n");
+    printf("  DeckOS v1.7  —  system info  \n");
     printf("=================================\n");
     printf("board   : Raspberry Pi Pico\n");
     printf("cpu     : RP2040  dual-core Cortex-M0+  125 MHz\n");

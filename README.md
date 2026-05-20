@@ -4,7 +4,7 @@
 
 ```
   ╔══════════════════════════════════╗
-  ║           DeckOS v1.5            ║
+  ║           DeckOS v1.7            ║
   ║      Raspberry Pi Pico / RP2040  ║
   ╚══════════════════════════════════╝
 ```
@@ -121,7 +121,7 @@ Boot order:
 
 ### Prerequisites
 
-- [Raspberry Pi Pico SDK](https://github.com/raspberrypi/pico-sdk) v1.5 or newer
+- [Raspberry Pi Pico SDK](https://github.com/raspberrypi/pico-sdk) v1.7 or newer
 - CMake 3.13+
 - ARM GCC toolchain (`arm-none-eabi-gcc`)
 
@@ -389,14 +389,11 @@ DeckOS supports WiFi through an ESP8266 module running the **DeckOS Bridge firmw
 
 | ESP8266 pin | Pico pin | Notes |
 |---|---|---|
-| TX | GP4 (UART1 RX) | Crosses over — ESP TX → Pico RX |
-| RX | GP5 (UART1 TX) | Crosses over — ESP RX → Pico TX |
+| TX | GP5 | |
+| RX | GP4 | |
 | VCC / 3V3 | External 3.3V | Use a dedicated regulator; the Pico's 3V3 pin may brown out under WiFi load |
 | GND | GND | Common ground required |
 | EN / CH_PD | 3.3V | Must be HIGH for the module to boot |
-| RST | 3.3V | Pull HIGH for normal operation |
-
-> **Power note:** The ESP8266 can draw up to 300 mA during WiFi association. Power it from a dedicated 3.3V supply or an AMS1117-3.3 regulator fed from VBUS (5V), not from the Pico's onboard regulator.
 
 ### Bridge firmware setup
 

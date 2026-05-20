@@ -262,6 +262,45 @@ void esp8266_join(const char *ssid, const char *password) {
     esp8266_bridge_send("@connect", 25000);
 }
 
+void esp8266_http_serve(void) {
+    if (!s_ready) { printf("wifi: not initialised\n"); return; }
+    printf("[wifi] starting HTTP server...\n");
+    esp8266_bridge_send("@serve", 3000);
+}
+
+void esp8266_telnet_start(void) {
+    if (!s_ready) { printf("wifi: not initialised\n"); return; }
+    printf("[wifi] starting telnet server on port 23...\n");
+    esp8266_bridge_send("@telnet", 3000);
+}
+void esp8266_telnet_stop(void) {
+    if (!s_ready) return;
+    printf("[wifi] stopping telnet server...\n");
+    esp8266_flush_rx();
+    uart_puts(ESP8266_UART, "@stoptelnet\r\n");
+    sleep_ms(500);
+    esp8266_flush_rx();
+    printf("[wifi] telnet stopped\n");
+}
+
+void esp8266_http_get(const char *url) {
+    if (!s_ready) { printf("wifi: not initialised\n"); return; }
+    if (!url || !*url) { printf("usage: wifi get <url>\n"); return; }
+    char cmd[256];
+    snprintf(cmd, sizeof(cmd), "@get %s", url);
+    printf("[wifi] GET %s\n", url);
+    esp8266_bridge_send(cmd, 15000);
+}
+
+void esp8266_http_post(const char *url, const char *body) {
+    if (!s_ready) { printf("wifi: not initialised\n"); return; }
+    if (!url || !*url) { printf("usage: wifi post <url> <body>\n"); return; }
+    char cmd[512];
+    snprintf(cmd, sizeof(cmd), "@post %s %s", url, body ? body : "");
+    printf("[wifi] POST %s\n", url);
+    esp8266_bridge_send(cmd, 15000);
+}
+
 void esp8266_ip(void) {
   if (!s_ready) {
     printf("wifi: not initialised -- run 'wifi init' first\n");
