@@ -23,6 +23,7 @@ add_executable(DeckOS
 
     # Shell
     shell/shell.c
+    shell/editor.c
 
     # Commands
     commands/commands.c
@@ -31,6 +32,7 @@ add_executable(DeckOS
     system/bench.c
     system/device_detect.c
     system/heap_track.c
+    scripting/dscript.c
 
     # Hardware tools
     hardware/servo.c

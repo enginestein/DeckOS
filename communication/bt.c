@@ -329,7 +329,7 @@ void bt_top_stream(uint32_t interval_ms) {
   }
   if (interval_ms < 100) interval_ms = 500;
 
-  printf("[bt] streaming top to BT — press any key (USB) to stop\n");
+  printf("[bt] streaming top to BT - press any key (USB) to stop\n");
   bt_puts("[bt-top] streaming... type 'stop' to end\r\n");
 
   char stop_buf[8];
@@ -479,7 +479,7 @@ void bt_sniff(uint32_t timeout_ms) {
     return;
   }
 
-  printf("[bt] packet sniffer — RX on GP%d  (any key to stop)\n", BT_RX_PIN);
+  printf("[bt] packet sniffer - RX on GP%d  (any key to stop)\n", BT_RX_PIN);
   printf("     OFFSET    HEX                                  ASCII\n");
   printf("     ------    ----------------------------------   --------\n");
 
@@ -643,5 +643,5 @@ void bt_at_mode(void) {
 
   bt_uart_deinit();
   bt_uart_init(s_current_baud);
-  printf("\n[bt] AT mode exited — restored %lu baud\n", s_current_baud);
+  printf("\n[bt] AT mode exited - restored %lu baud\n", s_current_baud);
 }

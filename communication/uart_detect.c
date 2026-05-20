@@ -262,7 +262,7 @@ void uart_detect_run(uint8_t rx_pin, uint32_t timeout_ms) {
   if (port) {
     device = probe_device(port, tx_pin, rx_pin, baud);
   } else {
-    printf("  (GP%d is not a standard UART RX pin — skipping AT probe)\n", rx_pin);
+    printf("  (GP%d is not a standard UART RX pin - skipping AT probe)\n", rx_pin);
   }
 
   printf("\n  RESULT:\n");

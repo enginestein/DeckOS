@@ -8,6 +8,7 @@
 
 #define SCHED_SPINLOCK_ID   14   // spinlock IDs 0-31; 14 is unused by SDK
 #define CONFIG_SPINLOCK_ID  15
+#define SYSLOG_SPINLOCK_ID  13
 
 static inline spin_lock_t* sched_spinlock(void) {
     return spin_lock_instance(SCHED_SPINLOCK_ID);
@@ -32,4 +33,11 @@ static inline uint32_t config_lock(void) {
 
 static inline void config_unlock(uint32_t saved) {
     spin_unlock(config_spinlock(), saved);
+}
+
+static inline uint32_t syslog_lock(void) {
+    return spin_lock_blocking(spin_lock_instance(SYSLOG_SPINLOCK_ID));
+}
+static inline void syslog_unlock(uint32_t saved) {
+    spin_unlock(spin_lock_instance(SYSLOG_SPINLOCK_ID), saved);
 }

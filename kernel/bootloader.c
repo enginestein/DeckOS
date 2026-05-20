@@ -44,7 +44,7 @@ static void apply_config(void) {
 static void print_banner(boot_mode_t mode) {
     printf("\n");
     printf("  ╔══════════════════════════════════╗\n");
-    printf("  ║           DeckOS v1.7            ║\n");
+    printf("  ║           DeckOS v2.0            ║\n");
     printf("  ║           Built: %s              ║\n", __DATE__);
     printf("  ╚══════════════════════════════════╝\n");
     printf("  mode   : %s\n", bootloader_mode_str(mode));
@@ -56,7 +56,7 @@ static void print_banner(boot_mode_t mode) {
 boot_mode_t bootloader_run(void) {
     bool had_valid = config_load(&g_config);
     if (!had_valid)
-        printf("[boot] flash config blank — using defaults\n");
+        printf("[boot] flash config blank - using defaults\n");
 
     boot_mode_t mode = detect_mode();
 
@@ -70,7 +70,7 @@ boot_mode_t bootloader_run(void) {
     print_banner(mode);
 
     if (mode == BOOT_RECOVERY) {
-        printf("  *** RECOVERY MODE — only built-in commands available ***\n\n");
+        printf("  *** RECOVERY MODE - only built-in commands available ***\n\n");
     }
 
     return mode;

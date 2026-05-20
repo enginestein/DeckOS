@@ -105,7 +105,7 @@ static int detect_adc(detected_device_t* out, int max, int* count) {
             strncpy(d->bus, "ADC", 7);
             snprintf(d->name, 24, "ADC ch%d (GP%d)", i, adc_pins[i]);
             snprintf(d->detail, sizeof(d->detail),
-                     "%.3f V  (raw=%d) — sensor/pot/signal present", v, raw);
+                     "%.3f V  (raw=%d) - sensor/pot/signal present", v, raw);
             d->addr_or_pin = (uint8_t)adc_pins[i];
             found++;
         }

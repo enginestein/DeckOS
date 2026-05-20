@@ -45,7 +45,7 @@ bool config_load(flash_config_t* cfg) {
     memcpy(cfg, flash, sizeof(*cfg));
     uint32_t expected = config_crc(cfg);
     if (cfg->crc32 != expected) {
-        printf("[config] CRC mismatch — loading defaults\n");
+        printf("[config] CRC mismatch - loading defaults\n");
         config_defaults(cfg);
         return false;
     }

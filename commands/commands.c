@@ -5,6 +5,7 @@
 #include "pico/stdlib.h"
 #include "pico/time.h"
 #include "pico/unique_id.h"
+#include "editor.h"
 #include "pico/multicore.h"
 #include "hardware/adc.h"
 #include "hardware/gpio.h"
@@ -18,6 +19,7 @@
 #include "pico/bootrom.h"
 #include "commands.h"
 #include "kernel.h"
+#include "dscript.h"
 #include "drivers.h"
 #include "vfs.h"
 #include "uart_detect.h"
@@ -199,7 +201,7 @@ static const entry_t g_wifi[] = {
     static const int group_count = (int)(sizeof(groups) / sizeof(group_t));
     static const int NAME_COL    = 12;
 
-    printf("DeckOS v1.7  \xe2\x80\x94  available commands\n");
+    printf("DeckOS v2.0  \xe2\x80\x94  available commands\n");
     printf("====================================================\n");
 
     for (int g = 0; g < group_count; g++) {
@@ -217,7 +219,7 @@ static const entry_t g_wifi[] = {
 }
 
 static void cmd_version(int argc, char* argv[]) {
-    printf("DeckOS v1.7  |  Raspberry Pi Pico\n");
+    printf("DeckOS v2.0  |  Raspberry Pi Pico\n");
     printf("Build: %s %s\n", __DATE__, __TIME__);
 }
 
@@ -362,7 +364,7 @@ static void cmd_bt(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "shell") == 0) {
-        if (!bt_is_ready()) { printf("bt: not initialised — run 'bt init'\n"); return; }
+        if (!bt_is_ready()) { printf("bt: not initialised - run 'bt init'\n"); return; }
         printf("Starting BT shell. Connect phone terminal to HC-05.\n");
         printf("USB terminal will also show output.\n");
         printf("Type 'exit' in BT terminal to stop.\n");
@@ -470,7 +472,7 @@ static void cmd_bt(int argc, char* argv[]) {
         bool ok = bt_at_cmd(cmd, resp, sizeof(resp), 2000);
         printf("Response: %s\n", ok ? resp : "(no response)");
         if (ok && strstr(resp, "OK")) {
-            printf("Success — reinitialising UART at %lu baud\n", new_baud);
+            printf("Success - reinitialising UART at %lu baud\n", new_baud);
             bt_init(new_baud);
         }
         return;
@@ -602,7 +604,7 @@ static void cmd_wifi_bridge(int argc, char* argv[]) {
 
     // argv[0] = "wifi bridge", argv[1] = subcommand
     if (!esp8266_is_ready()) {
-        printf("wifi: not initialised — run 'wifi init' first\n");
+        printf("wifi: not initialised - run 'wifi init' first\n");
         return;
     }
 
@@ -612,6 +614,47 @@ static void cmd_wifi_bridge(int argc, char* argv[]) {
     else if (strcmp(argv[1], "status")   == 0) esp8266_bridge_status();
     else if (strcmp(argv[1], "reset")    == 0) esp8266_bridge_reset();
     else printf("unknown bridge command: %s\n", argv[1]);
+}
+
+static void cmd_run(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage: run <vfs_script_path>\n");
+        printf("       run /home/blink.ds\n");
+        return;
+    }
+    script_run_file(argv[1]);
+}
+
+static void cmd_script(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage:\n");
+        printf("  script run <file>     - run a .ds script from VFS\n");
+        printf("  script test           - run built-in self-test\n");
+        return;
+    }
+    if (strcmp(argv[1], "run") == 0 && argc >= 3) {
+        script_run_file(argv[2]);
+    } else if (strcmp(argv[1], "test") == 0) {
+        const char* test =
+            "# DeckScript self-test\n"
+            "let x = 10\n"
+            "let y = 3\n"
+            "let z = x + y\n"
+            "print z is $z\n"
+            "if $z == 13\n"
+            "  print PASS: arithmetic ok\n"
+            "else\n"
+            "  print FAIL\n"
+            "endif\n"
+            "let i = 0\n"
+            "repeat 3\n"
+            "  print loop $_i\n"
+            "endrepeat\n"
+            "print test done\n";
+        script_ctx_t ctx;
+        script_ctx_init(&ctx);
+        script_run_string(&ctx, test);
+    }
 }
 
 static void cmd_detect_extended(int argc, char* argv[]) {
@@ -654,7 +697,7 @@ static void cmd_detect_extended(int argc, char* argv[]) {
 
 static void cmd_sysinfo(int argc, char* argv[]) {
     printf("=================================\n");
-    printf("  DeckOS v1.7  —  system info  \n");
+    printf("  DeckOS v2.0  -  system info  \n");
     printf("=================================\n");
     printf("board   : Raspberry Pi Pico\n");
     printf("cpu     : RP2040  dual-core Cortex-M0+  125 MHz\n");
@@ -1093,7 +1136,7 @@ static void cmd_spi(int argc, char* argv[]) {
     }
 
     if (!s_spi_inited) {
-        printf("SPI not initialised — run 'spi init' first\n");
+        printf("SPI not initialised - run 'spi init' first\n");
         return;
     }
 
@@ -1422,7 +1465,7 @@ static void cmd_flash(int argc, char* argv[]) {
         printf("  flash write <addr_hex> <hex bytes>  - program bytes (addr must be page-aligned)\n");
         printf("  flash erase <addr_hex>              - erase 4 KB sector\n");
         printf("  note: addresses are XIP offsets (0x00000000 = start of flash)\n");
-        printf("  config sector is at 0x%05X — do not erase it manually\n",
+        printf("  config sector is at 0x%05X - do not erase it manually\n",
                (uint32_t)(2*1024*1024 - 4096));
         return;
     }
@@ -1558,6 +1601,27 @@ static void cmd_watch(int argc, char* argv[]) {
             waited += 10;
         }
     }
+}
+
+static void cmd_edit(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage: edit <file>\n");
+        printf("  opens file in built-in editor, creates if needed\n");
+        printf("  example: edit test.ds\n");
+        printf("  example: edit /home/blink.ds\n");
+        return;
+    }
+    char path[64];
+    if (argv[1][0] != '/') {
+        const char* cwd = vfs_cwd_path();
+        if (strcmp(cwd, "/") == 0)
+            snprintf(path, sizeof(path), "/%s", argv[1]);
+        else
+            snprintf(path, sizeof(path), "%s/%s", cwd, argv[1]);
+    } else {
+        strncpy(path, argv[1], sizeof(path) - 1);
+    }
+    editor_run(path);
 }
 
 static void cmd_morse(int argc, char* argv[]) {
@@ -2014,24 +2078,83 @@ static void cmd_trigger(int argc, char* argv[]) {
     }
 }
 
+
+
+typedef struct {
+    bool active;
+    absolute_time_t execute_at;
+    char command[INPUT_SIZE];
+} cron_job_t;
+
+static cron_job_t cron_jobs[MAX_CRON_JOBS];
+
+void cron_poll(void) {
+    absolute_time_t now = get_absolute_time();
+
+    for (int i = 0; i < MAX_CRON_JOBS; i++) {
+        if (!cron_jobs[i].active)
+            continue;
+
+        if (absolute_time_diff_us(now, cron_jobs[i].execute_at) <= 0) {
+            cron_jobs[i].active = false;
+
+            char tmp[INPUT_SIZE];
+            strncpy(tmp, cron_jobs[i].command, sizeof(tmp) - 1);
+            tmp[sizeof(tmp) - 1] = '\0';
+
+            printf("cron: running '%s'\n", tmp);
+            kernel_enqueue_command(tmp); 
+        }
+    }
+}
 static void cmd_cron(int argc, char* argv[]) {
-    if (argc < 3) { printf("usage: cron <delay_ms> <command>\n"); return; }
+    if (argc < 3) {
+        printf("usage: cron <delay_ms> <command>\n");
+        return;
+    }
+
     int ms = atoi(argv[1]);
-    if (ms < 1 || ms > 60000) { printf("delay 1-60000 ms\n"); return; }
-    char subcmd[INPUT_SIZE]; subcmd[0] = '\0';
+
+    if (ms < 1 || ms > 60000) {
+        printf("delay 1-60000 ms\n");
+        return;
+    }
+
+    char subcmd[INPUT_SIZE];
+    subcmd[0] = '\0';
+
     for (int i = 2; i < argc; i++) {
-        if (i > 2) strncat(subcmd, " ", sizeof(subcmd) - strlen(subcmd) - 1);
+        if (i > 2)
+            strncat(subcmd, " ", sizeof(subcmd) - strlen(subcmd) - 1);
+
         strncat(subcmd, argv[i], sizeof(subcmd) - strlen(subcmd) - 1);
     }
-    printf("cron: '%s' will run in %d ms  (blocking)\n", subcmd, ms);
-    sleep_ms((uint32_t)ms);
-    char tmp[INPUT_SIZE];
-    strncpy(tmp, subcmd, sizeof(tmp) - 1);
-    tmp[sizeof(tmp) - 1] = '\0';
-    printf("cron: running '%s'\n", tmp);
-    commands_execute(tmp);
-}
 
+    for (int i = 0; i < MAX_CRON_JOBS; i++) {
+
+        if (!cron_jobs[i].active) {
+
+            cron_jobs[i].active = true;
+            cron_jobs[i].execute_at = make_timeout_time_ms(ms);
+
+            strncpy(cron_jobs[i].command,
+                    subcmd,
+                    sizeof(cron_jobs[i].command) - 1);
+
+            cron_jobs[i].command[
+                sizeof(cron_jobs[i].command) - 1
+            ] = '\0';
+
+            printf("cron: scheduled '%s' in %d ms\n",
+                   subcmd,
+                   ms);
+
+            return;
+        }
+    }
+
+    printf("cron: job queue full\n");
+}
 static void cmd_drivers(int argc, char* argv[]) { drivers_list(); }
 
 static void cmd_tasks(int argc, char* argv[]) {
@@ -2121,6 +2244,8 @@ static command_t command_table[] = {
     {"pin",     cmd_pin,     "dump all GPIO pin states"},
     {"bt", cmd_bt, "bt shell|log|exec|top|send|recv|sniff|at|name|pin|baud|status"},
     {"wifi",        cmd_wifi,        "wifi init|status|ping|scan|join|ip|shell|deinit"},
+    {"run",    cmd_run,    "run <file>  execute a DeckScript file from VFS"},
+    {"script", cmd_script, "script run|test  DeckScript interpreter"},
     // Subsystems
     {"drivers", cmd_drivers, "list loaded drivers"},
     {"tasks",   cmd_tasks,   "list/enable/disable background tasks"},
@@ -2140,6 +2265,7 @@ static command_t command_table[] = {
     {"cp",       cmd_cp,       "cp <src> <dst>  copy file"},
     {"mv",       cmd_mv,       "mv <src> <dst>  move / rename"},
     {"stat",     cmd_stat,     "stat <path>  file / dir metadata"},
+    {"edit",   cmd_edit,   "edit <file>  nano-style text editor"},
     {"wc",       cmd_wc,       "wc <file>  count lines, words, bytes"},
     {"grep",     cmd_grep,     "grep <pattern> <file>  search file"},
     {"find",     cmd_find,     "find [name]  recursive name search"},
@@ -2166,7 +2292,7 @@ void commands_execute(char* input) {
     if (!input || strlen(input) == 0) return;
 
     char  buf[INPUT_SIZE];
-    static char* argv[MAX_ARGS];
+    char* argv[MAX_ARGS];
     int argc = 0;
 
     strncpy(buf, input, sizeof(buf) - 1);

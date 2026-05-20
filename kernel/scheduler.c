@@ -18,7 +18,7 @@ static void core1_entry(void) {
     while (1) {
         uint32_t now = to_ms_since_boot(get_absolute_time());
 
-        // Lock while iterating — short critical section
+        // Lock while iterating - short critical section
         uint32_t saved = sched_lock();
         int count_snap = task_count;
         sched_unlock(saved);
@@ -60,7 +60,7 @@ void sched_init(void) {
     // Claim our spinlock IDs
     spin_lock_claim(SCHED_SPINLOCK_ID);
     spin_lock_claim(CONFIG_SPINLOCK_ID);
-
+    spin_lock_claim(SYSLOG_SPINLOCK_ID);
     multicore_launch_core1(core1_entry);
     printf("[sched] core1 launched (spinlock-protected)\n");
 }

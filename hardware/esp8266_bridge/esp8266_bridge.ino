@@ -363,7 +363,7 @@ void handleBridgeCommand(String cmd) {
     Serial.println("[BRIDGE] Passing commands without translation");
   } else if (cmd == "@serve") {
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("[BRIDGE] Not connected to WiFi — run @connect first");
+    Serial.println("[BRIDGE] Not connected to WiFi - run @connect first");
     return;
   }
   if (!httpServerRunning) {

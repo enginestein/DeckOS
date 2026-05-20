@@ -134,7 +134,7 @@ void tone_melody(uint8_t pin, const char* sequence) {
         uint32_t hz = tone_note_to_hz(tok);
         printf("  %s -> %lu Hz, %lu ms\n", tok, hz, ms);
         tone_play(pin, hz, ms);
-        // Inter-note articulation gap — scales with note length
+        // Inter-note articulation gap - scales with note length
         if      (ms >= 300) sleep_ms(12);
         else if (ms >= 150) sleep_ms(8);
         else                sleep_ms(4);
