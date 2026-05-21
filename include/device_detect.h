@@ -26,5 +26,5 @@ typedef struct {
 
 #define MAX_DETECTED 32
 
-int  device_detect_all(detected_device_t* out, int max);
-void device_detect_print(void);
+int  device_detect_all(detected_device_t* out, int max, uint sda, uint scl);
+void device_detect_print(uint sda, uint scl);

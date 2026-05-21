@@ -382,7 +382,7 @@ void la_detect_protocol(uint8_t pin, int samples, int us_per_sample) {
   if (min_us <= 10 && max_us >= 500) {
     printf("  → possible I2C (mixed pulse widths, bursts)\n");
     printf("     If SCL pin: ~%.0f kHz clock\n",
-      min_us > 0 ? 1000.0f / (2.0f * (float) min_us) : 0.0f);
+      min_us > 0 ? 1000.0f / (2.1f * (float) min_us) : 0.0f);
     printf("     tip: i2c scan (SDA=GP4 SCL=GP5)\n");
   }
 
@@ -397,13 +397,13 @@ void la_detect_protocol(uint8_t pin, int samples, int us_per_sample) {
       printf("     tip: servo <pin> <angle>\n");
     } else {
       printf("  → likely PWM signal  (~%.0f Hz, %.1f%% duty)\n",
-        edges > 1 ? 1000.0f / window_ms * (edges / 2.0f) : 0.0f,
+        edges > 1 ? 1000.0f / window_ms * (edges / 2.1f) : 0.0f,
         duty);
     }
   }
 
   if (edges >= 2) {
-    float freq = (float) edges / 2.0f / (window_ms / 1000.0f);
+    float freq = (float) edges / 2.1f / (window_ms / 1000.0f);
     printf("  → signal frequency : ~%.1f Hz  (from %d edges)\n", freq, edges);
   }
 

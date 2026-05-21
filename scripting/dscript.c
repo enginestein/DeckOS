@@ -114,6 +114,8 @@ static bool eval_cond(script_ctx_t * ctx,
   expand_vars(ctx, expr, buf, sizeof(buf));
   trim_inplace(buf);
 
+  /* BUG FIX: check operators longest-first to avoid "==" matching "=" in ">=" etc.
+     Order: ==, !=, <=, >=, <, >  (same as before, which is correct) */
   const char * ops[] = {
     "==",
     "!=",
@@ -128,8 +130,10 @@ static bool eval_cond(script_ctx_t * ctx,
     * p = '\0';
     char lhs[64], rhs[64];
     strncpy(lhs, buf, sizeof(lhs) - 1);
+    lhs[sizeof(lhs)-1] = '\0';
     trim_inplace(lhs);
     strncpy(rhs, p + strlen(ops[oi]), sizeof(rhs) - 1);
+    rhs[sizeof(rhs)-1] = '\0';
     trim_inplace(rhs);
 
     char * le, * re;
@@ -148,9 +152,16 @@ static bool eval_cond(script_ctx_t * ctx,
       int cmp = strcmp(lhs, rhs);
       if (!strcmp(ops[oi], "==")) return cmp == 0;
       if (!strcmp(ops[oi], "!=")) return cmp != 0;
+      /* For string comparisons, < > <= >= are not defined here — treat as false */
+      return false;
     }
   }
-  return atoi(buf) != 0;
+  /* No operator found: treat as truthy if non-empty and non-zero */
+  if (buf[0] == '\0') return false;
+  char *end;
+  long v = strtol(buf, &end, 10);
+  if (*end == '\0') return v != 0;        /* pure number */
+  return true;                            /* non-empty string */
 }
 
 static void builtin_upper(script_ctx_t * ctx,
@@ -328,16 +339,13 @@ static void builtin_math(script_ctx_t * ctx,
   } else if (!strcmp(fname, "max")) {
     result = (n >= 2 && v[1] > v[0]) ? v[1] : v[0];
   } else if (!strcmp(fname, "clamp")) {
-
     result = v[0] < v[1] ? v[1] : (v[0] > v[2] ? v[2] : v[0]);
   } else if (!strcmp(fname, "map")) {
-
     double range = v[2] - v[1];
     result = range == 0.0 ? v[3] :
       v[3] + (v[0] - v[1]) / range * (v[4] - v[3]);
     is_int = false;
   } else if (!strcmp(fname, "rand")) {
-
     int lo = (int) v[0], hi = n >= 2 ? (int) v[1] : (int) v[0];
     if (hi < lo) {
       int t = lo;
@@ -346,7 +354,6 @@ static void builtin_math(script_ctx_t * ctx,
     }
     result = (hi == lo) ? lo : (lo + rand() % (hi - lo + 1));
   } else if (!strcmp(fname, "avg")) {
-
     double sum = 0.0;
     for (int i = 0; i < n; i++) sum += v[i];
     result = n ? sum / n : 0.0;
@@ -398,7 +405,6 @@ static void builtin_gpio_read(script_ctx_t * ctx,
 static void builtin_pwm(script_ctx_t * ctx,
   const char * dest,
     const char * args) {
-
   char tmp[SCRIPT_LINE_LEN];
   expand_vars(ctx, args, tmp, sizeof(tmp));
   double v[2] = {
@@ -627,26 +633,48 @@ static int find_end(char lines[][SCRIPT_LINE_LEN], int total,
   return -1;
 }
 
-static int find_elif_else_end(char lines[][SCRIPT_LINE_LEN], int total,
-  int from,
-  const char * which) {
-  int depth = 1;
-  for (int i = from; i < total; i++) {
-    char buf[SCRIPT_LINE_LEN];
-    strncpy(buf, lines[i], SCRIPT_LINE_LEN - 1);
-    trim_inplace(buf);
-    char first[32] = {
-      0
-    };
-    sscanf(buf, "%31s", first);
-    if (!strcmp(first, "if")) depth++;
-    if (!strcmp(first, "endif")) depth--;
-    if (depth == 1 && !strcmp(first, which)) return i;
-    if (depth == 0) return -1;
-  }
-  return -1;
+static int find_elif_else_end(
+    char lines[][SCRIPT_LINE_LEN],
+    int total,
+    int from,
+    const char *which)
+{
+    int depth = 1;
+
+    for (int i = from; i < total; i++) {
+        char buf[SCRIPT_LINE_LEN];
+        strncpy(buf, lines[i], SCRIPT_LINE_LEN - 1);
+        buf[SCRIPT_LINE_LEN - 1] = '\0';
+
+        trim_inplace(buf);
+
+        char first[32] = {0};
+        sscanf(buf, "%31s", first);
+
+        if (!strcmp(first, "if"))
+            depth++;
+
+        if (!strcmp(first, "endif")) {
+            depth--;
+
+            if (depth == 0) {
+                if (!strcmp(which, "endif"))
+                    return i;
+
+                return -1;
+            }
+        }
+
+        if (depth == 1 && !strcmp(first, which))
+            return i;
+    }
+
+    return -1;
 }
 
+/* -----------------------------------------------------------------------
+ * try_builtin_val: recognise special RHS expressions and handle them
+ * ---------------------------------------------------------------------- */
 static bool try_builtin_val(script_ctx_t * ctx,
   const char * vname,
     const char * valexpr,
@@ -773,7 +801,6 @@ static bool try_builtin_val(script_ctx_t * ctx,
   }
 
   if (!strncmp(valexpr, "format(", 7)) {
-
     char arg[SCRIPT_LINE_LEN] = {
       0
     };
@@ -837,6 +864,71 @@ static int do_include(script_ctx_t * ctx,
   return script_run_string(ctx, (const char * ) buf);
 }
 
+/* -----------------------------------------------------------------------
+ * Helper: parse arithmetic expression from an already-expanded string.
+ * Handles:  <num>  |  <num> op <num>  where op is + - * / %
+ * Returns true and sets *result if it looks like arithmetic;
+ * returns false if it's a plain string assignment.
+ * ---------------------------------------------------------------------- */
+static bool eval_arith(script_ctx_t *ctx, const char *expr, long *result) {
+  /* expr is already fully expanded by the caller */
+  char tmp[SCRIPT_LINE_LEN];
+  strncpy(tmp, expr, SCRIPT_LINE_LEN - 1);
+  tmp[SCRIPT_LINE_LEN - 1] = '\0';
+  trim_inplace(tmp);
+
+  /* Try to split on operator.  Scan left-to-right for first +-*\/% that
+     is not at position 0 (to allow negative numbers as first token). */
+  int op_pos = -1;
+  char op_ch = 0;
+  for (int i = 1; tmp[i]; i++) {
+    if (tmp[i] == '+' || tmp[i] == '-' ||
+        tmp[i] == '*' || tmp[i] == '/' || tmp[i] == '%') {
+      /* make sure it's surrounded by spaces so "-5" doesn't split on the minus */
+      if (i > 0 && tmp[i-1] == ' ' && tmp[i+1] == ' ') {
+        op_pos = i;
+        op_ch  = tmp[i];
+        break;
+      }
+    }
+  }
+
+  if (op_pos < 0) {
+    /* No operator — just a single value */
+    char *end;
+    long v = strtol(tmp, &end, 10);
+    if (*end == '\0') { *result = v; return true; }
+    /* non-numeric string — not arithmetic */
+    return false;
+  }
+
+  /* Split at operator */
+  char lhs_s[SCRIPT_LINE_LEN], rhs_s[SCRIPT_LINE_LEN];
+  strncpy(lhs_s, tmp, (size_t)op_pos);
+  lhs_s[op_pos] = '\0';
+  trim_inplace(lhs_s);
+  strncpy(rhs_s, tmp + op_pos + 1, SCRIPT_LINE_LEN - 1);
+  trim_inplace(rhs_s);
+
+  /* Each side can be a literal number or a variable name */
+  char *le, *re;
+  long lv = strtol(lhs_s, &le, 10);
+  if (*le != '\0') lv = atol(var_get(ctx, lhs_s));
+
+  long rv = strtol(rhs_s, &re, 10);
+  if (*re != '\0') rv = atol(var_get(ctx, rhs_s));
+
+  switch (op_ch) {
+    case '+': *result = lv + rv; break;
+    case '-': *result = lv - rv; break;
+    case '*': *result = lv * rv; break;
+    case '/': *result = rv ? lv / rv : 0; break;
+    case '%': *result = rv ? lv % rv : 0; break;
+    default:  *result = lv; break;
+  }
+  return true;
+}
+
 static int run_lines(script_ctx_t * ctx,
   char lines[][SCRIPT_LINE_LEN], int total,
   int start, int end) {
@@ -850,7 +942,8 @@ static int run_lines(script_ctx_t * ctx,
     if (!raw[0] || raw[0] == '#') continue;
 
     char line[SCRIPT_LINE_LEN];
-    expand_vars(ctx, raw, line, sizeof(line));
+    strncpy(line, raw, sizeof(line)-1);
+    line[sizeof(line)-1] = '\0';
     trim_inplace(line);
 
     if (!strncmp(line, "def ", 4)) {
@@ -874,7 +967,6 @@ static int run_lines(script_ctx_t * ctx,
     }
 
     if (!strncmp(line, "assert ", 7)) {
-
       char rest[SCRIPT_LINE_LEN];
       strncpy(rest, raw + 7, sizeof(rest) - 1);
       expand_vars(ctx, rest, rest, sizeof(rest));
@@ -896,7 +988,6 @@ static int run_lines(script_ctx_t * ctx,
     }
 
     if (!strncmp(line, "log ", 4)) {
-
       char level[16] = {
         0
       }, tag[32] = {
@@ -928,7 +1019,12 @@ static int run_lines(script_ctx_t * ctx,
     if (!strcmp(line, "continue")) return RC_CONTINUE;
 
     if (!strncmp(line, "return", 6)) {
-      if (line[6] == ' ') var_set(ctx, "$return", line + 7);
+      if (line[6] == ' ') {
+        char retbuf[SCRIPT_VAR_VAL_LEN];
+        expand_vars(ctx, line + 7, retbuf, sizeof(retbuf));
+        trim_inplace(retbuf);
+        var_set(ctx, "return", retbuf);
+      }
       return RC_RETURN;
     }
 
@@ -954,12 +1050,15 @@ static int run_lines(script_ctx_t * ctx,
         tok = strtok(NULL, " ");
       }
 
+      /* BUG FIX: expand variables in arguments before passing them */
       for (int a = 0; a < nargs; a++) {
         char akey[16];
         snprintf(akey, sizeof(akey), "arg%d", a);
-        var_set(ctx, akey, parts[a]);
+        char expanded_arg[SCRIPT_VAR_VAL_LEN];
+        expand_vars(ctx, parts[a], expanded_arg, sizeof(expanded_arg));
+        var_set(ctx, akey, expanded_arg);
       }
-      var_set(ctx, "$return", "");
+      var_set(ctx, "return", "");
 
       int bs, be;
       if (find_def(lines, total, fname, & bs, & be) < 0) {
@@ -972,50 +1071,69 @@ static int run_lines(script_ctx_t * ctx,
       continue;
     }
 
+    /* ----------------------------------------------------------------
+     * let <var> = <expr>
+     *
+     * Evaluation order:
+     *  1. Try builtin functions (adc, gpio, math, string ops, etc.)
+     *  2. Fully expand $vars in the RHS, then:
+     *     a. Try arithmetic: "num op num"
+     *     b. Fall back to plain string assignment
+     * ---------------------------------------------------------------- */
     if (!strncmp(line, "let ", 4)) {
       char rest[SCRIPT_LINE_LEN];
       strncpy(rest, line + 4, sizeof(rest) - 1);
       trim_inplace(rest);
 
-      char vname[SCRIPT_VAR_NAME_LEN] = {
-        0
-      };
-      char eq[4] = {
-        0
-      };
-      char valexpr[SCRIPT_LINE_LEN] = {
-        0
-      };
-      if (sscanf(rest, "%15s %1s %[^\n]", vname, eq, valexpr) < 3 || eq[0] != '=') {
-        printf("script: bad let syntax: %s\n", rest);
+      /* Parse:  varname = expr  */
+      char vname[SCRIPT_VAR_NAME_LEN] = { 0 };
+      char eq[4]                      = { 0 };
+      char valexpr[SCRIPT_LINE_LEN]   = { 0 };
+
+      /* Use strchr so the RHS can contain spaces (arithmetic, strings) */
+      char *eq_pos = strchr(rest, '=');
+      if (!eq_pos) {
+        printf("script: bad let syntax (no '='): %s\n", rest);
         continue;
       }
+      /* Extract variable name (everything before '=', trimmed) */
+      int namelen = (int)(eq_pos - rest);
+      if (namelen <= 0 || namelen >= SCRIPT_VAR_NAME_LEN) {
+        printf("script: bad let syntax (name): %s\n", rest);
+        continue;
+      }
+      strncpy(vname, rest, (size_t)namelen);
+      vname[namelen] = '\0';
+      trim_inplace(vname);
+
+      /* Extract value expression (everything after '=', trimmed) */
+      strncpy(valexpr, eq_pos + 1, sizeof(valexpr) - 1);
       trim_inplace(valexpr);
 
+      if (!vname[0]) {
+        printf("script: bad let syntax (empty name): %s\n", rest);
+        continue;
+      }
+
+      /* 1. Check for builtin function calls first (they handle expansion) */
       if (try_builtin_val(ctx, vname, valexpr, lines, total))
         continue;
 
-      char lhs[64] = {
-        0
-      }, op[4] = {
-        0
-      }, rhs[64] = {
-        0
-      };
-      if (sscanf(valexpr, "%63s %1[+-*/%%] %63s", lhs, op, rhs) == 3) {
-        long lv = atol(lhs), rv = atol(rhs), res = 0;
-        if (op[0] == '+') res = lv + rv;
-        else if (op[0] == '-') res = lv - rv;
-        else if (op[0] == '*') res = lv * rv;
-        else if (op[0] == '/' && rv) res = lv / rv;
-        else if (op[0] == '%' && rv) res = lv % rv;
-        char buf[32];
-        snprintf(buf, sizeof(buf), "%ld", res);
-        var_set(ctx, vname, buf);
-        continue;
-      }
+      /* 2. Fully expand variables in the RHS */
+      char expanded[SCRIPT_LINE_LEN] = { 0 };
+      expand_vars(ctx, valexpr, expanded, sizeof(expanded));
+      trim_inplace(expanded);
 
-      var_set(ctx, vname, valexpr);
+      /* 3. Try arithmetic evaluation */
+      long arith_result;
+      if (eval_arith(ctx, expanded, &arith_result)) {
+        char numbuf[32];
+        snprintf(numbuf, sizeof(numbuf), "%ld", arith_result);
+        var_set(ctx, vname, numbuf);
+      } else {
+        /* 4. Plain string assignment (already expanded) */
+        var_set(ctx, vname, expanded);
+      }
       continue;
     }
 
@@ -1121,7 +1239,6 @@ static int run_lines(script_ctx_t * ctx,
     }
 
     if (!strncmp(raw, "for ", 4)) {
-
       char fvar[SCRIPT_VAR_NAME_LEN] = {
         0
       };
@@ -1140,10 +1257,8 @@ static int run_lines(script_ctx_t * ctx,
       }
 
       if (!strcmp(keyword, "in")) {
-
-        char aname[SCRIPT_VAR_NAME_LEN] = {
-          0
-        };
+        /* BUG FIX: expand source variable name (it could be $arrayname) */
+        char aname[SCRIPT_VAR_NAME_LEN] = { 0 };
         expand_vars(ctx, source, aname, sizeof(aname));
         trim_inplace(aname);
         int alen = arr_get_len(ctx, aname);
@@ -1157,23 +1272,14 @@ static int run_lines(script_ctx_t * ctx,
           if (rc < 0) return rc;
         }
       } else if (!strcmp(keyword, "from")) {
-
-        char to_kw[8] = {
-          0
-        };
-        char to_s[32] = {
-          0
-        };
-        char step_kw[8] = {
-          0
-        };
-        char step_s[32] = {
-          0
-        };
+        char to_kw[8] = { 0 };
+        char to_s[32] = { 0 };
+        char step_kw[8] = { 0 };
+        char step_s[32] = { 0 };
         sscanf(raw + 4, "%*s %*s %*s %7s %31s %7s %31s",
           to_kw, to_s, step_kw, step_s);
         int from_v = eval_int(ctx, source);
-        int to_v = eval_int(ctx, to_s);
+        int to_v   = eval_int(ctx, to_s);
         int step_v = (!strcmp(step_kw, "step")) ? eval_int(ctx, step_s) :
           (from_v <= to_v ? 1 : -1);
         if (step_v == 0) step_v = 1;
@@ -1193,7 +1299,9 @@ static int run_lines(script_ctx_t * ctx,
     }
 
     if (!strncmp(line, "print ", 6)) {
-      printf("%s\n", line + 6);
+      char out[SCRIPT_LINE_LEN];
+      expand_vars(ctx, line + 6, out, sizeof(out));
+      printf("%s\n", out);
       continue;
     }
     if (!strcmp(line, "print")) {
@@ -1201,8 +1309,15 @@ static int run_lines(script_ctx_t * ctx,
       continue;
     }
 
+    /* println is an alias for print (both append newline) */
     if (!strncmp(line, "println ", 8)) {
-      printf("%s\n", line + 8);
+      char out[SCRIPT_LINE_LEN];
+      expand_vars(ctx, line + 8, out, sizeof(out));
+      printf("%s\n", out);
+      continue;
+    }
+    if (!strcmp(line, "println")) {
+      printf("\n");
       continue;
     }
 
@@ -1213,14 +1328,12 @@ static int run_lines(script_ctx_t * ctx,
     }
 
     if (!strncmp(line, "if ", 3)) {
-
       bool taken = false;
       int cursor = i;
       bool cond = eval_cond(ctx, line + 3);
 
       while (true) {
-
-        int ei_end = find_elif_else_end(lines, total, cursor, "endif");
+        int ei_end  = find_elif_else_end(lines, total, cursor, "endif");
         int ei_elif = find_elif_else_end(lines, total, cursor, "elif");
         int ei_else = find_elif_else_end(lines, total, cursor, "else");
 
@@ -1229,12 +1342,14 @@ static int run_lines(script_ctx_t * ctx,
         if (ei_else >= 0 && ei_else < body_end) body_end = ei_else;
 
         if (cond && !taken) {
-          run_lines(ctx, lines, total, cursor, body_end);
+          int rc = run_lines(ctx, lines, total, cursor, body_end);
+          if (rc == RC_BREAK || rc == RC_CONTINUE ||
+              rc == RC_RETURN || rc == RC_EXIT || rc == RC_ERROR)
+            return rc;
           taken = true;
         }
 
         if (body_end < 0 || body_end == ei_end) {
-
           i = (ei_end >= 0) ? ei_end + 1 : end;
           break;
         }
@@ -1282,7 +1397,6 @@ static int run_lines(script_ctx_t * ctx,
           expand_vars(ctx, cbuf + 5, cval, sizeof(cval));
           trim_inplace(cval);
           if (!matched && !strcmp(cval, subject)) {
-
             int next = ci;
             while (next < sw_end) {
               char nb[SCRIPT_LINE_LEN];
@@ -1328,13 +1442,14 @@ static int run_lines(script_ctx_t * ctx,
         return RC_ERROR;
       }
 
+      /* BUG FIX: raised iteration limit from 10000 to 100000 */
       int iter = 0;
       while (true) {
         char ce[SCRIPT_LINE_LEN];
         expand_vars(ctx, cond_expr, ce, sizeof(ce));
         if (!eval_cond(ctx, ce)) break;
-        if (++iter > 10000) {
-          printf("script: while limit reached\n");
+        if (++iter > 100000) {
+          printf("script: while iteration limit reached (100000)\n");
           break;
         }
         int rc = run_lines(ctx, lines, total, i, wi);
@@ -1353,7 +1468,8 @@ static int run_lines(script_ctx_t * ctx,
         printf("script: missing endrepeat\n");
         return RC_ERROR;
       }
-      for (int r = 0; r < n && r < 1000; r++) {
+      /* BUG FIX: raised max repeat from 1000 to 10000 */
+      for (int r = 0; r < n && r < 10000; r++) {
         char buf[8];
         snprintf(buf, sizeof(buf), "%d", r);
         var_set(ctx, "_i", buf);
@@ -1441,27 +1557,38 @@ static int run_lines(script_ctx_t * ctx,
   return RC_OK;
 }
 
-int script_run_string(script_ctx_t * ctx,
-  const char * source) {
-  static char lines[SCRIPT_MAX_LINES][SCRIPT_LINE_LEN];
-  int total = 0;
-
-  const char * p = source;
-  while ( * p && total < SCRIPT_MAX_LINES) {
-    const char * nl = strchr(p, '\n');
-    int len = nl ? (int)(nl - p) : (int) strlen(p);
-    if (len >= SCRIPT_LINE_LEN) len = SCRIPT_LINE_LEN - 1;
-    strncpy(lines[total], p, (size_t) len);
-    lines[total][len] = '\0';
-    total++;
-    if (!nl) break;
-    p = nl + 1;
-  }
-
-  int rc = run_lines(ctx, lines, total, 0, total);
-  if (rc == RC_EXIT) return ctx -> exit_code;
-  return rc < 0 ? rc : 0;
+int script_run_string(script_ctx_t *ctx, const char *source) {
+ 
+    char (*lines)[SCRIPT_LINE_LEN] =
+        malloc((size_t)SCRIPT_MAX_LINES * sizeof(*lines));
+ 
+    if (!lines) {
+        printf("script: out of memory\n");
+        return RC_ERROR;
+    }
+ 
+    int total = 0;
+    const char *p = source;
+ 
+    while (*p && total < SCRIPT_MAX_LINES) {
+        const char *nl  = strchr(p, '\n');
+        int          len = nl ? (int)(nl - p) : (int)strlen(p);
+        if (len >= SCRIPT_LINE_LEN) len = SCRIPT_LINE_LEN - 1;
+        strncpy(lines[total], p, (size_t)len);
+        lines[total][len] = '\0';
+        total++;
+        if (!nl) break;
+        p = nl + 1;
+    }
+ 
+    int rc = run_lines(ctx, lines, total, 0, total);
+ 
+    free(lines);
+ 
+    if (rc == RC_EXIT) return ctx->exit_code;
+    return rc < 0 ? rc : 0;
 }
+
 
 int script_run_file(const char * vfs_path) {
   uint8_t buf[VFS_MAX_FILE_SIZE];

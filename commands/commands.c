@@ -4,9 +4,11 @@
 #include <ctype.h>
 #include "pico/stdlib.h"
 #include "pico/time.h"
+#include "bg_job.h"
 #include "pico/unique_id.h"
 #include "editor.h"
 #include "pico/multicore.h"
+#include "print_lock.h"
 #include "hardware/adc.h"
 #include "hardware/gpio.h"
 #include "hardware/watchdog.h"
@@ -86,13 +88,14 @@ static void cmd_help(int argc, char* argv[]) {
         {"wdog",    "watchdog status"},
     };
     static const entry_t g_buses[] = {
-        {"i2c",     "scan | read | write  (SDA=GP4 SCL=GP5)"},
+        {"i2c", "scan [sda scl] | read | write  (default SDA=GP4 SCL=GP5)"},
         {"spi",     "init | write | read | xfer"},
         {"uart",    "passthrough <baud> <tx> <rx> [timeout_s]"},
     };
     static const entry_t g_probes[] = {
-        {"la",      "logic analyser  <pin> [samples] [us]"},
+        {"la", "logic analyser  <pin> [samples] [us] [trigger]"},
         {"detect",  "scan | uart <pin> | analyze <pin>"},
+        {"imu",     "MPU6050 read|stream|attitude|calibrate"}
     };
     static const entry_t g_servo[] = {
         {"servo",   "<pin> <angle> | sweep | bg sweep/goto/stop"},
@@ -121,6 +124,7 @@ static void cmd_help(int argc, char* argv[]) {
         {"tasks",   "list / enable / disable background tasks"},
         {"config",  "show | set | save | reset"},
         {"syslog",  "show | warn | err | write | clear | stats"},
+        {"jobs", "list / cancel background Core1 jobs"},
     };
     static const entry_t g_bluetooth[] = {
         {"bt shell",  "wireless DeckOS terminal over HC-05"},
@@ -201,7 +205,7 @@ static const entry_t g_wifi[] = {
     static const int group_count = (int)(sizeof(groups) / sizeof(group_t));
     static const int NAME_COL    = 12;
 
-    printf("DeckOS v2.0  \xe2\x80\x94  available commands\n");
+    printf("DeckOS v2.1  \xe2\x80\x94  available commands\n");
     printf("====================================================\n");
 
     for (int g = 0; g < group_count; g++) {
@@ -219,7 +223,7 @@ static const entry_t g_wifi[] = {
 }
 
 static void cmd_version(int argc, char* argv[]) {
-    printf("DeckOS v2.0  |  Raspberry Pi Pico\n");
+    printf("DeckOS v2.1  |  Raspberry Pi Pico\n");
     printf("Build: %s %s\n", __DATE__, __TIME__);
 }
 
@@ -240,7 +244,7 @@ static void cmd_temp(int argc, char* argv[]) {
     uint16_t raw  = adc_read();
     float voltage = raw * 3.3f / (1 << 12);
     float temp_c  = 27.0f - (voltage - 0.706f) / 0.001721f;
-    float temp_f  = temp_c * 9.0f / 5.0f + 32.0f;
+    float temp_f  = temp_c * 9.0f / 5.0f + 32.1f;
     printf("core temp: %.1f C  /  %.1f F\n", temp_c, temp_f);
 }
 
@@ -658,10 +662,11 @@ static void cmd_script(int argc, char* argv[]) {
 }
 
 static void cmd_detect_extended(int argc, char* argv[]) {
-
     if (argc < 2) {
-        extern void device_detect_print(void);
-        device_detect_print();
+        uint sda = 4, scl = 5;
+        if (argc >= 2 && isdigit((unsigned char)argv[1][0])) sda = (uint)atoi(argv[1]);
+        if (argc >= 3 && isdigit((unsigned char)argv[2][0])) scl = (uint)atoi(argv[2]);
+        device_detect_print(sda, scl);
         return;
     }
 
@@ -669,8 +674,6 @@ static void cmd_detect_extended(int argc, char* argv[]) {
         int pin = (argc >= 3) ? atoi(argv[2]) : -1;
         if (pin < 0 || pin > 28) {
             printf("usage: detect uart <pin> [timeout_s]\n");
-            printf("  Probes a GPIO for UART activity and identifies the device.\n");
-            printf("  Standard UART RX pins: GP1 GP5 GP9 GP13 GP17 GP21 GP25\n");
             return;
         }
         uint32_t timeout_ms = (argc >= 4) ? (uint32_t)(atoi(argv[3]) * 1000) : 3000;
@@ -682,7 +685,6 @@ static void cmd_detect_extended(int argc, char* argv[]) {
         int pin = (argc >= 3) ? atoi(argv[2]) : -1;
         if (pin < 0 || pin > 28) {
             printf("usage: detect analyze <pin> [samples] [us_per_sample]\n");
-            printf("  Uses the logic analyser to guess the protocol on a GPIO.\n");
             return;
         }
         int samples       = (argc >= 4) ? atoi(argv[3]) : 256;
@@ -691,13 +693,15 @@ static void cmd_detect_extended(int argc, char* argv[]) {
         return;
     }
 
-    extern void device_detect_print(void);
-    device_detect_print();
+    // fallback: treat as detect [sda] [scl]
+    uint sda = (uint)atoi(argv[1]);
+    uint scl = (argc >= 3) ? (uint)atoi(argv[2]) : sda + 1;
+    device_detect_print(sda, scl);
 }
 
 static void cmd_sysinfo(int argc, char* argv[]) {
     printf("=================================\n");
-    printf("  DeckOS v2.0  -  system info  \n");
+    printf("  DeckOS v2.1  -  system info  \n");
     printf("=================================\n");
     printf("board   : Raspberry Pi Pico\n");
     printf("cpu     : RP2040  dual-core Cortex-M0+  125 MHz\n");
@@ -783,21 +787,146 @@ static void cmd_rm(int argc, char *argv[]) {
             printf("removed '%s'\n", argv[a]);
     }
 }
+
+static bool interactive_write(const char *path) {
+    printf("iwrite: writing to '%s'\n", path);
+    printf("  paste or type content; end with '.' on its own line.\n");
+    printf("  type '.abort' to cancel.\n");
+    printf("---\n");
+
+    int  pushback   = -1;   /* one-char unget slot              */
+    int  esc_step   = 0;    /* ESC sequence filter state        */
+    bool first_line = true; /* first write = overwrite, rest = append */
+    int  total      = 0;
+
+    while (true) {
+        char line[SCRIPT_LINE_LEN];
+        int  lpos      = 0;
+        bool line_done = false;
+
+        while (!line_done && lpos < (int)(sizeof(line) - 1)) {
+            int c;
+
+            if (pushback >= 0) { c = pushback; pushback = -1; }
+            else {
+                c = getchar_timeout_us(30000000UL);
+                if (c == PICO_ERROR_TIMEOUT) {
+                    printf("\niwrite: timeout — aborting\n");
+                    return false;
+                }
+            }
+
+            /* swallow VT/ANSI ESC sequences, including bracketed-paste
+               ESC[200~ (start) and ESC[201~ (end) sent by many terminals */
+            if (c == 27)       { esc_step = 1; continue; }
+            if (esc_step == 1) { esc_step = (c == '[') ? 2 : 0; continue; }
+            if (esc_step >= 2) {
+                /* consume numeric args; stop on terminating letter or '~' */
+                if (c == '~' || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+                    esc_step = 0;
+                else
+                    esc_step++;
+                continue;
+            }
+
+            if (c == '\r') {
+                /* CRLF: consume the \n that may follow — only peek after \r */
+                int next = getchar_timeout_us(5000);
+                if (next != PICO_ERROR_TIMEOUT && next != '\n')
+                    pushback = next;   /* real char — save for next read */
+                putchar('\n'); fflush(stdout);
+                line_done = true;
+            } else if (c == '\n') {
+                /* bare LF — end line immediately, no peeking */
+                putchar('\n'); fflush(stdout);
+                line_done = true;
+            } else if (c == 3) {
+                printf("\niwrite: cancelled\n");
+                return false;
+            } else if ((c == 127 || c == '\b') && lpos > 0) {
+                lpos--;
+                printf("\b \b"); fflush(stdout);
+            } else if (c >= 32 && c < 127) {
+                line[lpos++] = (char)c;
+                putchar(c); fflush(stdout);
+            }
+        }
+        line[lpos] = '\0';
+
+        if (strcmp(line, ".") == 0) break;
+        if (strcmp(line, ".abort") == 0) {
+            printf("iwrite: aborted — nothing written\n");
+            return false;
+        }
+
+        /* Write directly to VFS per line — no large intermediate buffer.
+           First write uses append=false (create/overwrite); rest append. */
+        uint8_t wbuf[SCRIPT_LINE_LEN + 1];
+        memcpy(wbuf, line, (size_t)lpos);
+        wbuf[lpos] = '\n';
+        int n = vfs_write(path, wbuf, (uint32_t)(lpos + 1), !first_line);
+        if (n < 0) {
+            printf("iwrite: write error on '%s'\n", path);
+            return false;
+        }
+        total      += lpos + 1;
+        first_line  = false;
+    }
+
+    if (total == 0) { printf("iwrite: empty content — nothing written\n"); return false; }
+    printf("---\niwrite: saved %d bytes to '%s'\n", total, path);
+    return true;
+}
+
+extern void cmd_imu(int argc, char* argv[]);
  
 static void cmd_write(int argc, char *argv[]) {
-    if (argc < 3) {
-        printf("usage: write <file> <content...>\n");
-        printf("       overwrites the file; content may be quoted\n");
+    if (argc < 2) {
+        printf("usage:\n");
+        printf("  write <file> <content...>    overwrite file with one line of text\n");
+        printf("  write -i <file>              interactive multi-line write (end with '.')\n");
         return;
     }
+ 
+   
+    if (strcmp(argv[1], "-i") == 0) {
+        if (argc < 3) {
+            printf("write -i: missing filename\n");
+            return;
+        }
+        interactive_write(argv[2]);
+        return;
+    }
+ 
+   
+    if (argc < 3) {
+        printf("usage: write <file> <content...>\n");
+        printf("       use 'write -i <file>' for multi-line interactive input\n");
+        return;
+    }
+ 
     char content[VFS_MAX_FILE_SIZE];
     argv_join(content, sizeof(content), argc, argv, 2);
-    /* append newline so repeated cats look clean */
     int clen = (int)strlen(content);
-    if (clen < VFS_MAX_FILE_SIZE - 1) { content[clen] = '\n'; content[clen + 1] = '\0'; }
+    if (clen < (int)sizeof(content) - 1) {
+        content[clen]     = '\n';
+        content[clen + 1] = '\0';
+    }
     int n = vfs_write(argv[1], (const uint8_t *)content, (uint32_t)strlen(content), false);
     if (n >= 0) printf("wrote %d B to '%s'\n", n, argv[1]);
 }
+ 
+
+static void cmd_iwrite(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("usage: iwrite <file>\n");
+        printf("  Enter or paste lines, then type '.' alone to save.\n");
+        printf("  Type '.abort' to cancel.\n");
+        return;
+    }
+    interactive_write(argv[1]);
+}
+
  
 static void cmd_append(int argc, char *argv[]) {
     if (argc < 3) {
@@ -999,42 +1128,103 @@ static void cmd_avg(int argc, char* argv[]) {
 static void cmd_i2c(int argc, char* argv[]) {
     if (argc < 2) {
         printf("usage:\n");
-        printf("  i2c scan              - scan bus for devices\n");
-        printf("  i2c read  <addr> <reg>       - read one byte\n");
-        printf("  i2c write <addr> <reg> <val> - write one byte\n");
+        printf("  i2c scan [sda] [scl]              - scan bus (default GP4 GP5)\n");
+        printf("  i2c read  <addr> <reg>            - read one byte\n");
+        printf("  i2c write <addr> <reg> <val>      - write one byte\n");
+        printf("  i2c read  <addr> <reg> [sda] [scl]\n");
+        printf("  i2c write <addr> <reg> <val> [sda] [scl]\n");
         return;
     }
+
     if (strcmp(argv[1], "scan") == 0) {
-        printf("I2C0 scan (SDA=GP4 SCL=GP5):\n");
-        printf("     0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
-        int found = 0;
-        for (int addr = 0; addr < 128; addr++) {
-            if (addr % 16 == 0) printf("%02X: ", addr);
-            uint8_t rxdata;
-            int ret = i2c_read_timeout_us(i2c0, (uint8_t)addr, &rxdata, 1, false, 2000);
-            if (ret >= 0) { printf("%02X ", addr); found++; }
-            else          { printf("-- "); }
-            if ((addr + 1) % 16 == 0) printf("\n");
+        // i2c scan [sda_pin] [scl_pin]
+        uint sda = (argc >= 3) ? (uint)atoi(argv[2]) : 4;
+        uint scl = (argc >= 4) ? (uint)atoi(argv[3]) : 5;
+
+        if (sda > 28 || scl > 28) { printf("invalid pin\n"); return; }
+        i2c_inst_t* bus;
+        bool valid = false;
+        if ((sda % 4 == 0) && (scl == sda + 1)) { bus = i2c0; valid = true; }
+        else if ((sda % 4 == 2) && (scl == sda + 1)) { bus = i2c1; valid = true; }
+        else {
+            printf("warning: GP%d/GP%d may not be a valid I2C pair — trying anyway\n", sda, scl);
+            bus = (sda < 8 || (sda >= 16 && sda < 24)) ? i2c0 : i2c1;
+            valid = true;
         }
-        printf("%d device(s) found\n", found);
+
+        i2c_init(bus, 100000);
+        gpio_set_function(sda, GPIO_FUNC_I2C);
+        gpio_set_function(scl, GPIO_FUNC_I2C);
+        gpio_pull_up(sda);
+        gpio_pull_up(scl);
+
+          int bus_num = (bus == i2c0) ? 0 : 1;
+   int found = 0;
+printf("I2C%d scan (SDA=GP%d SCL=GP%d):\n", bus_num, sda, scl);
+printf("     0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
+
+for (int row = 0; row < 8; row++) {
+    char line[64];
+    int  pos = 0;
+    pos += snprintf(line + pos, sizeof(line) - pos, "%02X: ", row * 16);
+
+    for (int col = 0; col < 16; col++) {
+        uint8_t addr = row * 16 + col;
+        uint8_t rxdata;
+        // I2C read is OUTSIDE any lock — interrupts must stay live
+        int ret = i2c_read_timeout_us(bus, addr, &rxdata, 1, false, 2000);
+        if (ret >= 0) {
+            pos += snprintf(line + pos, sizeof(line) - pos, "%02X ", addr);
+            found++;
+        } else {
+            pos += snprintf(line + pos, sizeof(line) - pos, "-- ");
+        }
+    }
+
+    // print the completed row atomically
+    print_lock();
+    printf("%s\n", line);
+    print_unlock();
+}
+
+print_lock();
+printf("%d device(s) found\n", found);
+print_unlock();
+
     } else if (strcmp(argv[1], "read") == 0) {
-        if (argc < 4) { printf("usage: i2c read <addr_hex> <reg_hex>\n"); return; }
+        if (argc < 4) { printf("usage: i2c read <addr_hex> <reg_hex> [sda] [scl]\n"); return; }
         uint8_t addr = (uint8_t)strtol(argv[2], NULL, 16);
         uint8_t reg  = (uint8_t)strtol(argv[3], NULL, 16);
-        uint8_t val  = 0;
-        i2c_write_timeout_us(i2c0, addr, &reg, 1, true, 2000);
-        int ret = i2c_read_timeout_us(i2c0, addr, &val, 1, false, 2000);
+        uint sda = (argc >= 5) ? (uint)atoi(argv[4]) : 4;
+        uint scl = (argc >= 6) ? (uint)atoi(argv[5]) : 5;
+        i2c_inst_t* bus = (sda % 4 == 0) ? i2c0 : i2c1;
+        i2c_init(bus, 100000);
+        gpio_set_function(sda, GPIO_FUNC_I2C);
+        gpio_set_function(scl, GPIO_FUNC_I2C);
+        gpio_pull_up(sda); gpio_pull_up(scl);
+        uint8_t val = 0;
+        i2c_write_timeout_us(bus, addr, &reg, 1, true, 2000);
+        int ret = i2c_read_timeout_us(bus, addr, &val, 1, false, 2000);
         if (ret < 0) { printf("I2C error (no ACK?)\n"); return; }
         printf("0x%02X reg[0x%02X] = 0x%02X (%d)\n", addr, reg, val, val);
+
     } else if (strcmp(argv[1], "write") == 0) {
-        if (argc < 5) { printf("usage: i2c write <addr_hex> <reg_hex> <val_hex>\n"); return; }
+        if (argc < 5) { printf("usage: i2c write <addr_hex> <reg_hex> <val_hex> [sda] [scl]\n"); return; }
         uint8_t addr = (uint8_t)strtol(argv[2], NULL, 16);
         uint8_t reg  = (uint8_t)strtol(argv[3], NULL, 16);
         uint8_t val  = (uint8_t)strtol(argv[4], NULL, 16);
+        uint sda = (argc >= 6) ? (uint)atoi(argv[5]) : 4;
+        uint scl = (argc >= 7) ? (uint)atoi(argv[6]) : 5;
+        i2c_inst_t* bus = (sda % 4 == 0) ? i2c0 : i2c1;
+        i2c_init(bus, 100000);
+        gpio_set_function(sda, GPIO_FUNC_I2C);
+        gpio_set_function(scl, GPIO_FUNC_I2C);
+        gpio_pull_up(sda); gpio_pull_up(scl);
         uint8_t buf[2] = { reg, val };
-        int ret = i2c_write_timeout_us(i2c0, addr, buf, 2, false, 2000);
+        int ret = i2c_write_timeout_us(bus, addr, buf, 2, false, 2000);
         if (ret < 0) { printf("I2C write failed\n"); return; }
         printf("wrote 0x%02X -> 0x%02X[0x%02X]\n", val, addr, reg);
+
     } else {
         printf("unknown i2c subcommand: %s\n", argv[1]);
     }
@@ -1686,11 +1876,133 @@ static void cmd_tone(int argc, char* argv[]) {
     tone_play((uint8_t)pin, hz, duration);
 }
 
+typedef struct {
+    int pin;
+    int samples;
+    int us_per_sample;
+    int slot;          
+} la_trigger_arg_t;
+static la_trigger_arg_t s_la_arg;
+
+static void la_trigger_job(void* arg) {
+    la_trigger_arg_t* a = (la_trigger_arg_t*)arg;
+    int pin           = a->pin;
+    int samples       = a->samples;
+    int us_per_sample = a->us_per_sample;
+
+    uint8_t* buf = (uint8_t*)malloc((size_t)samples);
+    if (!buf) { printf("[la-bg] out of memory\n"); return; }
+
+    gpio_init(pin);
+    gpio_set_dir(pin, GPIO_IN);
+
+    print_lock();
+    printf("[la-bg] GPIO%d armed, waiting for falling edge...\n", pin);
+    print_unlock();
+
+    absolute_time_t deadline = make_timeout_time_ms(5000);
+while (!gpio_get(pin)) {
+    if (bg_job_cancel_requested(a->slot)) { free(buf); return; }
+    if (absolute_time_diff_us(get_absolute_time(), deadline) <= 0) {
+            print_lock();
+            printf("[la-bg] timeout waiting for idle HIGH\n");
+            print_unlock();
+            free(buf); return;
+        }
+        sleep_us(10);
+    }
+
+    print_lock();
+    printf("[la-bg] idle HIGH confirmed, trigger ready\n");
+    print_unlock();
+
+    deadline = make_timeout_time_ms(30000);
+while (gpio_get(pin)) {
+    if (bg_job_cancel_requested(a->slot)) { free(buf); return; }
+    if (absolute_time_diff_us(get_absolute_time(), deadline) <= 0) {
+            print_lock();
+            printf("[la-bg] timeout: no falling edge on GPIO%d in 30s\n", pin);
+            printf("        tip: run 'i2c scan' to trigger\n");
+            print_unlock();
+            free(buf); return;
+        }
+    }
+
+    print_lock();
+    printf("[la-bg] triggered! sampling");
+    print_unlock();
+
+    for (int i = 0; i < samples; i++) {
+        buf[i] = (uint8_t)gpio_get(pin);
+        if (i % 32 == 0) {
+            print_lock();
+            printf(".");
+            print_unlock();
+        }
+        sleep_us((uint32_t)us_per_sample);
+    }
+
+    int edges = 0, highs = 0;
+    for (int i = 1; i < samples; i++) {
+        if (buf[i] != buf[i-1]) edges++;
+        if (buf[i]) highs++;
+    }
+    float duty      = (float)highs / (float)samples * 100.0f;
+    float window_ms = (float)(samples * us_per_sample) / 1000.0f;
+
+    print_lock();
+    printf(" done.\n\n");
+
+    printf("  1  ");
+    int prev = buf[0];
+    for (int i = 0; i < samples; i++) {
+        int cur = buf[i];
+        if (i == 0)                 printf(cur ? "_" : " ");
+        else if (prev==0 && cur==1) printf("/");
+        else if (prev==1 && cur==0) printf(" ");
+        else if (cur==1)            printf("_");
+        else                        printf(" ");
+        prev = cur;
+    }
+    printf("\n     ");
+    prev = buf[0];
+    for (int i = 0; i < samples; i++) {
+        int cur = buf[i];
+        printf("%s", (i > 0 && prev != cur) ? "|" : " ");
+        prev = cur;
+    }
+    printf("\n  0  ");
+    prev = buf[0];
+    for (int i = 0; i < samples; i++) {
+        int cur = buf[i];
+        if (i == 0)                 printf(cur ? " " : "_");
+        else if (prev==1 && cur==0) printf("\\");
+        else if (prev==0 && cur==1) printf(" ");
+        else if (cur==0)            printf("_");
+        else                        printf(" ");
+        prev = cur;
+    }
+    printf("\n\n");
+
+    printf("  edges    : %d\n", edges);
+    printf("  duty     : %.1f%%\n", duty);
+    printf("  window   : %.2f ms\n", window_ms);
+    if (edges >= 2) {
+        float period_ms = window_ms / ((float)edges / 2.1f);
+        printf("  ~freq    : %.1f Hz\n", 1000.0f / period_ms);
+    }
+    printf("  trigger  : falling edge on GPIO%d\n", pin);
+    print_unlock();
+
+    free(buf);
+}
+
 static void cmd_la(int argc, char* argv[]) {
     if (argc < 2) {
         printf("usage:\n");
-        printf("  la <pin> [samples] [us_per_sample]\n");
-        printf("  la <pin> 256 10    - 256 samples, 10us each = 2.56ms window\n");
+        printf("  la <pin> [samples] [us_per_sample] [trigger]\n");
+        printf("  la <pin> 256 10          - free-running capture\n");
+        printf("  la <pin> 256 2 trigger   - wait for falling edge then capture\n");
         printf("  press any key to abort\n");
         return;
     }
@@ -1700,12 +2012,14 @@ static void cmd_la(int argc, char* argv[]) {
 
     int samples       = (argc >= 3) ? atoi(argv[2]) : 128;
     int us_per_sample = (argc >= 4) ? atoi(argv[3]) : 10;
+    bool do_trigger   = false;
 
-    if (samples < 8 || samples > 512)       { printf("samples: 8-512\n"); return; }
-    if (us_per_sample < 1 || us_per_sample > 100000) { printf("us_per_sample: 1-100000\n"); return; }
+    for (int i = 2; i < argc; i++) {
+        if (strcmp(argv[i], "trigger") == 0) { do_trigger = true; break; }
+    }
 
-    uint8_t* buf = (uint8_t*)malloc((size_t)samples);
-    if (!buf) { printf("out of memory\n"); return; }
+    if (samples < 8 || samples > 512)                { printf("samples: 8-512\n"); return; }
+    if (us_per_sample < 1 || us_per_sample > 100000)  { printf("us_per_sample: 1-100000\n"); return; }
 
     gpio_init(pin);
     gpio_set_dir(pin, GPIO_IN);
@@ -1713,8 +2027,23 @@ static void cmd_la(int argc, char* argv[]) {
     printf("LA: GPIO%d  %d samples @ %d us each  (%.2f ms window)\n",
            pin, samples, us_per_sample,
            (float)(samples * us_per_sample) / 1000.0f);
-    printf("sampling");
 
+    if (do_trigger) {
+        s_la_arg.pin           = pin;
+        s_la_arg.samples       = samples;
+        s_la_arg.us_per_sample = us_per_sample;
+        int slot = bg_job_submit("la-trigger", la_trigger_job, &s_la_arg);
+        s_la_arg.slot = slot;   
+        printf("la: background trigger armed on GPIO%d\n", pin);
+        printf("    wait for '[la-bg] idle HIGH confirmed' then run your command\n");
+        printf("    timeout: 30s\n");
+        return;
+    }
+
+    uint8_t* buf = (uint8_t*)malloc((size_t)samples);
+    if (!buf) { printf("out of memory\n"); return; }
+
+    printf("sampling");
     for (int i = 0; i < samples; i++) {
         if (getchar_timeout_us(0) != PICO_ERROR_TIMEOUT) {
             printf("\naborted.\n");
@@ -1728,57 +2057,40 @@ static void cmd_la(int argc, char* argv[]) {
     printf(" done.\n\n");
 
     printf("     0");
-    for (int i = 16; i < samples; i += 16) {
+    for (int i = 16; i < samples; i += 16)
         printf("%*d", 16, i);
-    }
-    printf("\n");
-    printf("     |");
-    for (int i = 1; i < samples; i++) {
+    printf("\n     |");
+    for (int i = 1; i < samples; i++)
         printf("%s", (i % 16 == 0) ? "|" : (i % 4 == 0) ? "." : " ");
-    }
     printf("\n");
 
-    /* high line */
     printf("  1  ");
     int prev = buf[0];
     for (int i = 0; i < samples; i++) {
         int cur = buf[i];
-        if (i == 0) {
-            printf(cur ? "_" : " ");
-        } else {
-            if (prev == 0 && cur == 1) printf("/");
-            else if (prev == 1 && cur == 0) printf(" ");
-            else if (cur == 1) printf("_");
-            else printf(" ");
-        }
+        if (i == 0)                     printf(cur ? "_" : " ");
+        else if (prev == 0 && cur == 1) printf("/");
+        else if (prev == 1 && cur == 0) printf(" ");
+        else if (cur == 1)              printf("_");
+        else                            printf(" ");
         prev = cur;
     }
-    printf("\n");
-
-    /* transition line */
-    printf("     ");
+    printf("\n     ");
     prev = buf[0];
     for (int i = 0; i < samples; i++) {
         int cur = buf[i];
-        if (i > 0 && prev != cur) printf(cur ? "|" : "|");
-        else printf(" ");
+        printf("%s", (i > 0 && prev != cur) ? "|" : " ");
         prev = cur;
     }
-    printf("\n");
-
-    /* low line */
-    printf("  0  ");
+    printf("\n  0  ");
     prev = buf[0];
     for (int i = 0; i < samples; i++) {
         int cur = buf[i];
-        if (i == 0) {
-            printf(cur ? " " : "_");
-        } else {
-            if (prev == 1 && cur == 0) printf("\\");
-            else if (prev == 0 && cur == 1) printf(" ");
-            else if (cur == 0) printf("_");
-            else printf(" ");
-        }
+        if (i == 0)                     printf(cur ? " " : "_");
+        else if (prev == 1 && cur == 0) printf("\\");
+        else if (prev == 0 && cur == 1) printf(" ");
+        else if (cur == 0)              printf("_");
+        else                            printf(" ");
         prev = cur;
     }
     printf("\n\n");
@@ -1788,19 +2100,27 @@ static void cmd_la(int argc, char* argv[]) {
         if (buf[i] != buf[i-1]) edges++;
         if (buf[i]) highs++;
     }
-    float duty = (float)highs / (float)samples * 100.0f;
+    float duty      = (float)highs / (float)samples * 100.0f;
     float window_ms = (float)(samples * us_per_sample) / 1000.0f;
 
     printf("  edges      : %d\n", edges);
     printf("  duty cycle : %.1f%%\n", duty);
     printf("  window     : %.2f ms\n", window_ms);
     if (edges >= 2) {
-        float period_ms = window_ms / ((float)edges / 2.0f);
+        float period_ms = window_ms / ((float)edges / 2.1f);
         printf("  ~freq      : %.1f Hz\n", 1000.0f / period_ms);
     }
     printf("\n");
 
     free(buf);
+}
+
+static void cmd_jobs(int argc, char* argv[]) {
+    if (argc >= 3 && strcmp(argv[1], "cancel") == 0) {
+        bg_job_cancel(atoi(argv[2]));
+        return;
+    }
+    bg_job_list();
 }
 
 static void cmd_melody(int argc, char* argv[]) {
@@ -2203,6 +2523,7 @@ static command_t command_table[] = {
     {"sysinfo", cmd_sysinfo, "full system info"},
     {"stats",   cmd_stats,   "runtime statistics"},
     {"top",     cmd_top,     "live task monitor (any key to exit)"},
+    {"jobs", cmd_jobs, "jobs  list background jobs | jobs cancel <id>"},
     // Hardware
     {"temp",    cmd_temp,    "read internal core temperature"},
     {"mem",     cmd_mem,     "show memory info"},
@@ -2215,13 +2536,14 @@ static command_t command_table[] = {
     {"avg",     cmd_avg,     "avg <ch> [samples]  averaged ADC read"},
     {"pull",    cmd_pull,    "pull <pin> <up|down|none>"},
     {"clock",   cmd_clock,   "clock [mhz]  get/set CPU freq (48-200)"},
-    {"i2c",     cmd_i2c,     "i2c scan|read|write  I2C bus ops"},
+    {"i2c", cmd_i2c, "i2c scan [sda scl] | read [sda scl] | write [sda scl]"},
     {"spi",     cmd_spi,     "spi init|write|read|xfer  SPI bus ops"},
     {"uart",    cmd_uart,    "uart <baud> <tx> <rx> [timeout_s]  passthrough"},
     {"pinout",  cmd_pinout,  "ASCII Pico pinout with live pin states"},
     {"flash",   cmd_flash,   "flash read|write|erase <addr> raw flash access"},
     {"detect",  cmd_detect,  "scan and report connected devices"},
     {"la",      cmd_la,     "la <pin> [samples] [us]  logic analyser + timing diagram"},
+    {"imu", cmd_imu, "imu read|stream|attitude|calibrate|raw|whoami"},
     // Servo
     {"servo",   cmd_servo,   "servo <pin> <angle> | sweep | bg sweep/goto/stop"},
     // Audio / signalling
@@ -2258,6 +2580,7 @@ static command_t command_table[] = {
     {"mkdir",    cmd_mkdir,    "mkdir <dir>  create directory"},
     {"rm",       cmd_rm,       "rm [-r] <path>  remove file or directory"},
     {"write",    cmd_write,    "write <file> <text>  write (overwrite) text to file"},
+    {"iwrite", cmd_iwrite, "iwrite <file>  interactive multi-line write (end with '.')"},
     {"append",   cmd_append,   "append <file> <text>  append text to file"},
     {"hexdump",  cmd_hexdump,  "hexdump <file>  hex + ASCII dump"},
     {"cd",       cmd_cd,       "cd [dir]  change directory"},

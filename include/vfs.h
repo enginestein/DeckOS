@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 #define VFS_MAX_NODES      32  
-#define VFS_NAME_LEN       24
+#define VFS_NAME_LEN       32
 #define VFS_MAX_FILE_SIZE  512
 #define VFS_PATH_LEN       128
 
@@ -46,5 +46,6 @@ int     vfs_grep   (const char *path, const char *pattern);
 
 void    vfs_find_all(const char *name);   
 void    vfs_df      (void);          
+void vfs_inject_tests(void);
 
 const char *vfs_cwd_path(void);  

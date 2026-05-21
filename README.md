@@ -4,16 +4,13 @@
 
 ```
   ╔══════════════════════════════════╗
-  ║           DeckOS v2.0            ║
+  ║           DeckOS v2.1            ║
   ║      Raspberry Pi Pico / RP2040  ║
   ╚══════════════════════════════════╝
 ```
 
-DeckOS is a bare-metal shell that runs directly on the Raspberry Pi Pico. Plug it in, open a serial terminal, and you get a proper interactive shell - type commands to control GPIO pins, read sensors, play tones on a buzzer, monitor the I²C bus, schedule background tasks, write and run scripts, and a lot more. No Linux, no RTOS, no host required.
+A bare metal shell OS, currently compatible for RP2040, specifically raspberry pi pico
 
-It's built around a clean kernel/driver/scheduler architecture that uses both RP2040 cores: the shell and all your commands live on Core 0, while background tasks run quietly on Core 1.
-
-> **Platform support:** Raspberry Pi Pico (RP2040) for now. Arduino and ESP32 support is planned down the road.
 
 ---
 
@@ -63,7 +60,7 @@ It's built around a clean kernel/driver/scheduler architecture that uses both RP
 ## What it can do
 
 - **Interactive shell** over USB serial - command history, arrow-key navigation, Ctrl-C/D/L
-- **50+ built-in commands** covering GPIO, ADC, PWM, I²C, SPI, UART, audio, scripting, and system info
+- **built-in commands** covering GPIO, ADC, PWM, I²C, SPI, UART, audio, scripting, and system info
 - **DeckScript** - a proper scripting language baked into the OS; variables, loops, conditionals, functions, arrays, hardware access, string manipulation, and math, all running natively on the Pico
 - **Built-in text editor** - nano-style editor for writing scripts directly on the device without a computer
 - **Dual-core scheduler** - background tasks on Core 1, shell on Core 0, completely independent
@@ -85,7 +82,7 @@ It's built around a clean kernel/driver/scheduler architecture that uses both RP
 - **Three boot modes** - normal, recovery, and USB DFU for reflashing
 - **I²C tools** - scan the bus, read and write registers
 - **WiFi via ESP8266** - scan networks, connect to WiFi, HTTP GET/POST, telnet server, and a bridge mode for running through custom firmware
-- **Bluetooth via HC-05** - wireless shell terminal, remote command execution, file transfer, syslog mirroring *(beta)*
+- **Bluetooth via HC-05** - wireless shell terminal, remote command execution, file transfer, syslog mirroring
 
 ---
 
@@ -138,7 +135,7 @@ Boot order:
 
 ### Prerequisites
 
-- [Raspberry Pi Pico SDK](https://github.com/raspberrypi/pico-sdk) v2.0 or newer
+- [Raspberry Pi Pico SDK](https://github.com/raspberrypi/pico-sdk) v2.1 or newer
 - CMake 3.13+
 - ARM GCC toolchain (`arm-none-eabi-gcc`)
 
@@ -228,7 +225,7 @@ You'll see the boot banner and a `>` prompt. You're in.
 | `wdog` | `wdog` | Check if the last reboot was caused by the watchdog |
 | `flash` | `flash read \| write \| erase <addr>` | Raw flash read/write/erase (see below) |
 | `detect` | `detect [uart <pin>] [analyze <pin>]` | Scan and report connected devices; can probe for UART baud rate or guess a protocol from logic samples |
-| `la` | `la <pin> [samples] [us_per_sample]` | Logic analyser - sample a pin and render a timing diagram |
+| `la` | `la <pin> [samples] [us_per_sample] [trigger]` | Logic analyser — sample a pin and render a timing diagram. Add trigger to arm a background falling-edge capture that fires when the pin goes low; check jobs to see it running and jobs cancel <id> to abort |
 
 #### Live GPIO monitoring
 
@@ -277,8 +274,11 @@ Addresses are XIP offsets from `0x00000000` (start of flash). The config sector 
 Samples a GPIO pin at a configurable rate and renders an ASCII timing diagram.
 
 ```bash
-> la 15                  # 128 samples at 10 µs each (1.28 ms window)
-> la 15 256 5            # 256 samples at 5 µs each (1.28 ms window)
+> la 15                    # 128 samples at 10 µs each
+> la 15 256 5              # 256 samples at 5 µs each
+> la 15 256 2 trigger      # background: wait for falling edge then capture
+> jobs                     # check trigger status
+> jobs cancel 0            # abort if needed
 ```
 
 After sampling, `la` prints a waveform diagram followed by edge count, duty cycle, window length, and an estimated frequency.
@@ -350,6 +350,8 @@ White keys: A  S  D  F  G  H  J  K  L  ;
 |---|---|---|
 | `sleep` | `sleep <ms>` | Wait for a number of milliseconds |
 | `repeat` | `repeat <n> <command>` | Run a command n times in a row |
+| `jobs` | `jobs` | lists all active background jobs on core 1 |
+| `jobs` | `jobs cancel <id>` | Cancels a specific job |
 | `watch` | `watch <ms> <command>` | Run a command repeatedly at an interval; press any key to stop |
 | `trigger` | `trigger <pin> <rise\|fall\|both> <command>` | Watch a pin and run a command the moment an edge fires (one-shot) |
 | `cron` | `cron <delay_ms> <command>` | Schedule a command to run once after a delay; returns immediately |
@@ -545,6 +547,7 @@ DeckOS includes a small in-memory virtual filesystem (VFS). It lives in SRAM and
 | `mkdir <dir>` | Create a directory |
 | `rm [-r] <path>` | Remove a file or directory |
 | `write <file> <text>` | Overwrite a file with text |
+| `iwrite <file>` | Same as write, but has an interactive multi line writing shell |
 | `append <file> <text>` | Append text to a file |
 | `hexdump <file>` | Hex + ASCII dump of a file |
 | `cd [dir]` | Change working directory |
@@ -600,25 +603,28 @@ print the value is $x
 print hello $name
 ```
 
-There's a special read-only variable `$_i` inside `repeat` blocks that holds the current iteration number (0-based). After a function call, `$$return` holds the return value.
+There are two special variables available inside scripts:
+
+- **`$_i`** — inside a `repeat` block, holds the current iteration number (0-based).
+- **`$return`** — after a `call`, holds the value returned by the function (set via `let return = ...` or `return <value>` inside the function body).
 
 ### Arithmetic
 
-Basic integer arithmetic in `let` expressions: `+`, `-`, `*`, `/`, `%`.
+Basic integer arithmetic in `let` expressions: `+`, `-`, `*`, `/`, `%`. The operator must be surrounded by spaces. Both sides can be a literal number or a `$variable` reference.
 
 ```
 let x = 10
 let y = 3
-let z = x + y
+let z = $x + $y
 print $z
 
-let r = x % y
+let r = $x % $y
 print remainder is $r
 ```
 
 ### String functions
 
-These all work as the right-hand side of a `let` statement.
+These all work as the right-hand side of a `let` statement. Variable references inside the arguments are expanded automatically.
 
 | Function | What it does |
 |---|---|
@@ -686,7 +692,7 @@ else
 endif
 ```
 
-Comparison operators: `==`, `!=`, `<`, `>`, `<=`, `>=`. These work for both integers and strings. A bare integer expression is truthy if non-zero.
+Comparison operators: `==`, `!=`, `<`, `>`, `<=`, `>=`. These work for both integers and strings (`<`, `>`, `<=`, `>=` are integer-only). A bare integer expression is truthy if non-zero; a non-empty string with no operator is always truthy.
 
 #### Switch
 
@@ -719,17 +725,19 @@ repeat 5
 endrepeat
 ```
 
+`$_i` is 0-based and counts up to `n - 1`. `repeat` is capped at 10,000 iterations.
+
 #### while
 
 ```
 let i = 0
 while $i < 10
   print $i
-  let i = i + 1
+  let i = $i + 1
 endwhile
 ```
 
-While loops are capped at 10,000 iterations as a safety net.
+While loops are capped at 100,000 iterations as a safety net.
 
 #### for (range)
 
@@ -756,6 +764,15 @@ arr_push nums 20
 arr_push nums 30
 
 for val in nums
+  print $val
+endfor
+```
+
+You can also use a variable that holds the array name:
+
+```
+let myarr = nums
+for val in $myarr
   print $val
 endfor
 ```
@@ -804,7 +821,7 @@ arr_set buffer 3 hello
 
 ### Functions
 
-Functions are defined anywhere in the script and called with `call`. Arguments arrive as `$arg0`, `$arg1`, etc. Use `return` to exit, optionally with a value.
+Functions are defined anywhere in the script and called with `call`. Arguments arrive as `$arg0`, `$arg1`, etc. The return value is written to the special variable `$return` — either by assigning `let return = <value>` inside the function, or by using `return <value>` to set it and exit immediately.
 
 ```
 def greet
@@ -813,17 +830,36 @@ enddef
 
 call greet world
 call greet DeckOS
+```
 
+```
 def add
-  let result = arg0 + arg1
-  return $result
+  let return = $arg0 + $arg1
 enddef
 
 call add 3 7
-print result: $$return
+print result: $return
 ```
 
-Functions can be defined after the code that calls them - the interpreter scans the whole script for definitions first.
+Functions can be defined after the code that calls them — the interpreter scans the whole script for definitions first. Variable arguments are expanded at the call site before being passed in, so `call myfunc $x` passes the current value of `$x`, not the literal string `$x`.
+
+#### Recursion example
+
+```
+def fact
+  if $arg0 <= 1
+    let return = 1
+    return
+  endif
+  let n = $arg0
+  let p = $arg0 - 1
+  call fact $p
+  let return = $n * $return
+enddef
+
+call fact 5
+print $return
+```
 
 ### Hardware access from scripts
 
@@ -831,13 +867,15 @@ This is where DeckScript gets useful for actual embedded work. All of these go o
 
 | Expression | What it does |
 |---|---|
-| `adc(0)` | Read ADC channel 0 (GP26), returns raw 12-bit value |
+| `adc(0)` | Read ADC channel 0–2 (GP26–28), returns raw 12-bit value |
 | `gpio(15)` | Read the current state of GP15 (0 or 1) |
 | `pwm(16, 50)` | Set GP16 to 50% PWM duty cycle, returns 1 on success |
 | `millis` | Milliseconds since boot |
 | `micros` | Microseconds since boot |
 
-GPIO write and other hardware commands just use the shell commands directly inside the script:
+> **Note:** `adc()` accepts channels 0, 1, and 2 only (GP26, GP27, GP28). Other channel numbers return 0.
+
+GPIO write and other hardware commands use the shell commands directly inside the script:
 
 ```
 gpio_write 15 1        # set GP15 high
@@ -850,11 +888,11 @@ sleep 100              # wait 100 ms
 `wait_pin` sets `$_timeout` to `1` if it times out before the pin changes.
 
 ```
-# Read temperature in a loop and blink LED faster when hot
+# Read ADC and blink LED faster when value is high
 let threshold = 2800
 
 repeat 10
-  let raw = adc(4)
+  let raw = adc(0)
   if $raw > $threshold
     gpio_write 25 1
     sleep 100
@@ -899,13 +937,17 @@ Log entries go into the system log and can be read with `syslog show`.
 
 ### Includes
 
-Scripts can include other scripts:
+Scripts can include other scripts with `include`. The included file runs in the same variable context, so any variables or functions it defines are available after the include.
 
 ```
 include /home/helpers.ds
 ```
 
-The included file runs in the same variable context, so any variables or functions it defines are available after the include.
+You can also call `run` from within a script to execute another script file. Unlike `include`, `run` creates a fresh variable context each time.
+
+```
+run /home/tests/01_vars.ds
+```
 
 ### Example scripts
 

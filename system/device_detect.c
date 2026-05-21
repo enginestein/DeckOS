@@ -31,7 +31,7 @@ static const i2c_device_sig_t known_i2c[] = {
     {0x44, "SHT31",     "humidity/temperature sensor"},
     {0x45, "SHT31",     "humidity/temperature (ADDR high)"},
     {0x60, "MCP4725",   "12-bit DAC"},
-    {0x70, "TCA9548A",  "I2C multiplexer"},
+    {0x68, "TCA9548A",  "I2C multiplexer"},
     {0x20, "PCF8574",   "I/O expander"},
     {0x27, "PCF8574",   "LCD I2C backpack (typical)"},
     {0x1E, "HMC5883L",  "magnetometer"},
@@ -55,24 +55,36 @@ static const char* i2c_desc(uint8_t addr) {
 }
 
 
-static int detect_i2c(detected_device_t* out, int max, int* count) {
+static int detect_i2c(detected_device_t* out, int max, int* count, uint sda, uint scl) {
+    // Select bus based on pin
+    i2c_inst_t* bus = (sda % 4 == 0) ? i2c0 : i2c1;
+    i2c_init(bus, 100000);
+    gpio_set_function(sda, GPIO_FUNC_I2C);
+    gpio_set_function(scl, GPIO_FUNC_I2C);
+    gpio_pull_up(sda);
+    gpio_pull_up(scl);
+
     int found = 0;
+    char bus_label[8];
+    snprintf(bus_label, sizeof(bus_label), "I2C%d", bus == i2c0 ? 0 : 1);
+
     for (uint8_t addr = 0x08; addr < 0x78 && *count < max; addr++) {
         uint8_t rxdata;
-        int ret = i2c_read_timeout_us(i2c0, addr, &rxdata, 1, false, 2000);
+        int ret = i2c_read_timeout_us(bus, addr, &rxdata, 1, false, 2000);
         if (ret >= 0) {
             detected_device_t* d = &out[(*count)++];
-            strncpy(d->bus, "I2C0", 7);
+            strncpy(d->bus, bus_label, 7);
             const char* nm = i2c_lookup(addr);
             strncpy(d->name, nm ? nm : "unknown", 23);
-            snprintf(d->detail, sizeof(d->detail), "addr=0x%02X  %s", addr, i2c_desc(addr));
+            snprintf(d->detail, sizeof(d->detail),
+                     "addr=0x%02X  SDA=GP%d SCL=GP%d  %s",
+                     addr, sda, scl, i2c_desc(addr));
             d->addr_or_pin = addr;
             found++;
         }
     }
     return found;
 }
-
 static int detect_gpio_devices(detected_device_t* out, int max, int* count) {
     int found = 0;
     for (int pin = 0; pin <= 28 && *count < max; pin++) {
@@ -113,19 +125,20 @@ static int detect_adc(detected_device_t* out, int max, int* count) {
     return found;
 }
 
-int device_detect_all(detected_device_t* out, int max) {
+int device_detect_all(detected_device_t* out, int max, uint sda, uint scl) {
     int count = 0;
-    detect_i2c(out, max, &count);
+    detect_i2c(out, max, &count, sda, scl);
     detect_gpio_devices(out, max, &count);
     detect_adc(out, max, &count);
     return count;
 }
 
-void device_detect_print(void) {
+void device_detect_print(uint sda, uint scl) {
     detected_device_t devices[MAX_DETECTED];
     printf("scanning for connected devices...\n");
+    printf("  I2C bus: SDA=GP%d  SCL=GP%d\n", sda, scl);
 
-    int n = device_detect_all(devices, MAX_DETECTED);
+    int n = device_detect_all(devices, MAX_DETECTED, sda, scl);
 
     adc_select_input(4);
     uint16_t raw = adc_read();
@@ -136,9 +149,9 @@ void device_detect_print(void) {
     if (n == 0) {
         printf("  no external devices detected\n\n");
         printf("  tips:\n");
-        printf("    I2C devices : connect to SDA=GP4, SCL=GP5\n");
-        printf("    ADC devices : connect to GP26 (ch0), GP27 (ch1), GP28 (ch2)\n");
-        printf("    Servo/buzzer: will show once a PWM slice is enabled (use 'servo' or 'tone')\n");
+        printf("    I2C devices : SDA=GP%d, SCL=GP%d (current)\n", sda, scl);
+        printf("    ADC devices : GP26 (ch0), GP27 (ch1), GP28 (ch2)\n");
+        printf("    Servo/buzzer: will show once PWM slice enabled\n");
         return;
     }
 
@@ -149,5 +162,4 @@ void device_detect_print(void) {
                devices[i].bus, devices[i].name, devices[i].detail);
     }
     printf("\n%d device(s) found.\n", n);
-    printf("(I2C scan: SDA=GP4 SCL=GP5 / ADC threshold >0.05 V)\n");
 }

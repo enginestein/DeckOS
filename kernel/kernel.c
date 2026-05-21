@@ -9,6 +9,7 @@
 #include "bootloader.h"
 #include "syslog.h"
 #include "bt.h"
+#include "print_lock.h"
 #include "heap_track.h"
 #include "hardware/gpio.h"
 #include "vfs.h"
@@ -80,9 +81,10 @@ void kernel_enqueue_command(const char* cmd) {
 void kernel_init(void) {
     stdio_init_all();
     while (!stdio_usb_connected()) sleep_ms(100);
+    print_lock_init(); 
     heap_track_init();
     syslog_init();
-    LOG_I("kernel", "booting DeckOS v2.0");
+    LOG_I("kernel", "booting DeckOS v2.1");
 
     bootloader_run();
     vfs_init();

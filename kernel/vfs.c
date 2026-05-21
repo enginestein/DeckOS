@@ -47,34 +47,32 @@ static int resolve_from(int start, const char *path) {
     char *p   = tmp;
 
     while (*p) {
-        while (*p == '/') p++;
+        while (*p == '/') p++;  
         if (!*p) break;
 
-        char *end   = p;
+        char *end = p;
         while (*end && *end != '/') end++;
-        char  saved = *end;
+        char saved = *end;
         *end = '\0';
 
         if (strcmp(p, ".") == 0) {
+            
         } else if (strcmp(p, "..") == 0) {
             if (cur != 0) cur = s_nodes[cur].parent;
         } else {
             int found = -1;
             for (int i = 0; i < VFS_MAX_NODES; i++) {
-                if (!s_nodes[i].used)                     continue;
-                if (i == cur)                             continue;
-                if (s_nodes[i].parent != (int16_t)cur)   continue;
-                if (strcmp(s_nodes[i].name, p) == 0)   { found = i; break; }
+                if (!s_nodes[i].used)                   continue;
+                if (i == cur)                           continue;
+                if (s_nodes[i].parent != (int16_t)cur) continue;
+                if (strcmp(s_nodes[i].name, p) == 0) { found = i; break; }
             }
-            *end = saved;
-            if (found < 0) return -1;
+            if (found < 0) { *end = saved; return -1; }
             cur = found;
-            p   = end;
-            continue;
         }
 
         *end = saved;
-        p    = end;
+        p = end;  
     }
     return cur;
 }
@@ -127,6 +125,7 @@ void vfs_init(void) {
 
     vfs_mkdir("/tmp");
     vfs_mkdir("/home");
+    vfs_inject_tests(); 
 
     printf("[vfs] RAM filesystem ready  %d nodes × %d B  (~%lu KB)\n",
            VFS_MAX_NODES, VFS_MAX_FILE_SIZE,
@@ -392,7 +391,7 @@ int vfs_cp(const char *src, const char *dst) {
     if (si < 0)                       { printf("cp: '%s': not found\n", src);       return -1; }
     if (s_nodes[si].type != VFS_FILE) { printf("cp: '%s': is a directory\n", src); return -1; }
 
-    /* if destination is an existing dir, copy into it with the same filename */
+   
     int di = vfs_resolve(dst);
     if (di >= 0 && s_nodes[di].type == VFS_DIR) {
         char newpath[VFS_PATH_LEN];
@@ -532,3 +531,401 @@ const char *vfs_cwd_path(void) {
     node_path(s_cwd, buf, sizeof(buf));
     return buf;
 }
+
+
+// TEST SCRIPTS INJECTOR
+
+static void inject_script(const char *path, const char *src) {
+    vfs_write(path, (const uint8_t *)src, (uint32_t)strlen(src), false);
+}
+ 
+void vfs_inject_tests(void) {
+    vfs_mkdir("/home/tests");
+ 
+   
+    inject_script("/home/tests/01_vars.ds",
+        "# 01_vars – basic vars and print\n"
+        "let name = Alice\n"
+        "let greeting = Hello\n"
+        "print $greeting $name\n"
+        "let overwrite = first\n"
+        "let overwrite = second\n"
+        "print overwrite is now: $overwrite\n"
+        "print DONE 01_vars\n"
+    );
+ 
+   
+    inject_script("/home/tests/02_arithmetic.ds",
+        "# 02_arithmetic – + - * / %\n"
+        "let a = 10\n"
+        "let b = 3\n"
+        "let add = $a + $b\n"
+        "let sub = $a - $b\n"
+        "let mul = $a * $b\n"
+        "let div = $a / $b\n"
+        "let mod = $a % $b\n"
+        "print add=$add sub=$sub mul=$mul div=$div mod=$mod\n"
+        "assert $add == 13 or fail: add\n"
+        "assert $sub == 7  or fail: sub\n"
+        "assert $mul == 30 or fail: mul\n"
+        "assert $div == 3  or fail: div\n"
+        "assert $mod == 1  or fail: mod\n"
+        "print PASS 02_arithmetic\n"
+    );
+ 
+   
+    inject_script("/home/tests/03_conditionals.ds",
+        "# 03_conditionals – if/elif/else\n"
+        "let x = 5\n"
+        "if $x == 5\n"
+        "  print branch: x is 5\n"
+        "elif $x == 6\n"
+        "  print FAIL: elif taken\n"
+        "else\n"
+        "  print FAIL: else taken\n"
+        "endif\n"
+        "let y = 20\n"
+        "if $y < 10\n"
+        "  print FAIL: y < 10\n"
+        "elif $y >= 20\n"
+        "  print branch: y >= 20 correct\n"
+        "else\n"
+        "  print FAIL: else taken\n"
+        "endif\n"
+        "let s = hello\n"
+        "if $s == hello\n"
+        "  print string eq works\n"
+        "else\n"
+        "  print FAIL: string eq\n"
+        "endif\n"
+        "print PASS 03_conditionals\n"
+    );
+ 
+   
+    inject_script("/home/tests/04_while.ds",
+        "# 04_while – while / break / continue\n"
+        "let i = 0\n"
+        "let sum = 0\n"
+        "while $i < 5\n"
+        "  let i = $i + 1\n"
+        "  let sum = $sum + $i\n"
+        "endwhile\n"
+        "assert $sum == 15 or fail: sum wrong\n"
+        "let j = 0\n"
+        "let odds = 0\n"
+        "while $j < 10\n"
+        "  let j = $j + 1\n"
+        "  let rem = $j % 2\n"
+        "  if $rem == 0\n"
+        "    continue\n"
+        "  endif\n"
+        "  let odds = $odds + 1\n"
+        "endwhile\n"
+        "assert $odds == 5 or fail: continue broken\n"
+        "let k = 0\n"
+        "while $k < 100\n"
+        "  let k = $k + 1\n"
+        "  if $k == 7\n"
+        "    break\n"
+        "  endif\n"
+        "endwhile\n"
+        "assert $k == 7 or fail: break broken\n"
+        "print PASS 04_while\n"
+    );
+ 
+   
+    inject_script("/home/tests/05_repeat.ds",
+        "# 05_repeat – repeat loop\n"
+        "let total = 0\n"
+        "repeat 5\n"
+        "  let total = $total + 1\n"
+        "endrepeat\n"
+        "assert $total == 5 or fail: repeat count\n"
+        "let last_i = -1\n"
+        "repeat 4\n"
+        "  let last_i = $_i\n"
+        "endrepeat\n"
+        "assert $last_i == 3 or fail: _i counter\n"
+        "print PASS 05_repeat\n"
+    );
+ 
+   
+    inject_script("/home/tests/06_for_range.ds",
+        "# 06_for_range – for from/to/step\n"
+        "let acc = 0\n"
+        "for n from 1 to 10\n"
+        "  let acc = $acc + $n\n"
+        "endfor\n"
+        "assert $acc == 55 or fail: for sum\n"
+        "let evens = 0\n"
+        "for n from 2 to 10 step 2\n"
+        "  let evens = $evens + $n\n"
+        "endfor\n"
+        "assert $evens == 30 or fail: step 2\n"
+        "let cd = 0\n"
+        "for n from 5 to 1 step -1\n"
+        "  let cd = $cd + $n\n"
+        "endfor\n"
+        "assert $cd == 15 or fail: countdown\n"
+        "print PASS 06_for_range\n"
+    );
+ 
+   
+    inject_script("/home/tests/07a_arrays.ds",
+        "# 07a_arrays – new/set/get/len\n"
+        "arr_new a 3\n"
+        "arr_set a 0 alpha\n"
+        "arr_set a 1 beta\n"
+        "arr_set a 2 gamma\n"
+        "let v0 = arr_get(a, 0)\n"
+        "let v2 = arr_get(a, 2)\n"
+        "assert $v0 == alpha or fail: get0\n"
+        "assert $v2 == gamma or fail: get2\n"
+        "let al = arr_len(a)\n"
+        "assert $al == 3 or fail: len\n"
+        "print PASS 07a_arrays\n"
+    );
+ 
+   
+    inject_script("/home/tests/07b_arrays.ds",
+        "# 07b_arrays – push/pop/for..in\n"
+        "arr_new a 3\n"
+        "arr_set a 0 alpha\n"
+        "arr_set a 1 beta\n"
+        "arr_set a 2 gamma\n"
+        "arr_push a delta\n"
+        "let al2 = arr_len(a)\n"
+        "assert $al2 == 4 or fail: push\n"
+        "arr_pop a pp\n"
+        "assert $pp == delta or fail: pop\n"
+        "let al3 = arr_len(a)\n"
+        "assert $al3 == 3 or fail: shrink\n"
+        "let cat = \n"
+        "for item in a\n"
+        "  let cat = $cat$item-\n"
+        "endfor\n"
+        "assert $cat == alpha-beta-gamma- or fail: forin\n"
+        "print PASS 07b_arrays\n"
+    );
+ 
+   
+    inject_script("/home/tests/08a_strings.ds",
+        "# 08a_strings – upper/lower/len/substr\n"
+        "let s = Hello World\n"
+        "let up = upper($s)\n"
+        "assert $up == HELLO WORLD or fail: upper\n"
+        "let lo = lower($s)\n"
+        "assert $lo == hello world or fail: lower\n"
+        "let n = len($s)\n"
+        "assert $n == 11 or fail: len\n"
+        "let sub = substr($s, 6, 5)\n"
+        "assert $sub == World or fail: substr\n"
+        "print PASS 08a_strings\n"
+    );
+ 
+   
+    inject_script("/home/tests/08b_strings.ds",
+        "# 08b_strings – contains/trim/replace\n"
+        "let s = Hello World\n"
+        "let h1 = contains($s, World)\n"
+        "assert $h1 == 1 or fail: has World\n"
+        "let h0 = contains($s, Foo)\n"
+        "assert $h0 == 0 or fail: no Foo\n"
+        "let t = trim(  hi  )\n"
+        "assert $t == hi or fail: trim\n"
+        "let rp = replace($s, World, DeckOS)\n"
+        "assert $rp == Hello DeckOS or fail: replace\n"
+        "print PASS 08b_strings\n"
+    );
+ 
+   
+    inject_script("/home/tests/09_math.ds",
+        "# 09_math – math builtins\n"
+        "let a = abs(-7)\n"
+        "assert $a == 7 or fail: abs\n"
+        "let mn = min(3, 9)\n"
+        "assert $mn == 3 or fail: min\n"
+        "let mx = max(3, 9)\n"
+        "assert $mx == 9 or fail: max\n"
+        "let cl = clamp(15, 0, 10)\n"
+        "assert $cl == 10 or fail: clamp hi\n"
+        "let cl2 = clamp(-5, 0, 10)\n"
+        "assert $cl2 == 0 or fail: clamp lo\n"
+        "let sq = sqrt(9)\n"
+        "print sqrt9=$sq\n"
+        "let pw = pow(2, 10)\n"
+        "print pow2x10=$pw\n"
+        "let av = avg(2, 4, 6, 8, 10)\n"
+        "print avg=$av\n"
+        "let r = rand(1, 100)\n"
+        "assert $r >= 1 or fail: rand lo\n"
+        "assert $r <= 100 or fail: rand hi\n"
+        "print PASS 09_math\n"
+    );
+ 
+   
+    inject_script("/home/tests/10_format.ds",
+        "# 10_format – format() builtin\n"
+        "let pi_str = format(%0.4f, 3.14159265)\n"
+        "print pi=$pi_str\n"
+        "let hex = format(%X, 255)\n"
+        "print hex=$hex\n"
+        "let pad = format(%05d, 42)\n"
+        "print pad=$pad\n"
+        "let greet = format(Hello %s age %d, Alice, 30)\n"
+        "print $greet\n"
+        "print PASS 10_format\n"
+    );
+ 
+   
+    inject_script("/home/tests/11_functions.ds",
+        "# 11_functions – def/call/return\n"
+        "def double\n"
+        "  let return = $arg0 * 2\n"
+        "enddef\n"
+        "def add\n"
+        "  let return = $arg0 + $arg1\n"
+        "enddef\n"
+        "def fact\n"
+        "  let n = $arg0\n"
+        "  if $arg0 <= 1\n"
+        "    let return = 1\n"
+        "    return\n"
+        "  endif\n"
+        "  let p = $arg0 - 1\n"
+        "  call fact $p\n"
+        "  let return = $n * $return\n"
+        "enddef\n"
+        "call double 7\n"
+        "assert $return == 14 or fail: double\n"
+        "call add 8 9\n"
+        "assert $return == 17 or fail: add\n"
+        "call fact 5\n"
+        "assert $return == 120 or fail: fact\n"
+        "print PASS 11_functions\n"
+    );
+ 
+   
+    inject_script("/home/tests/12_switch.ds",
+        "# 12_switch – switch/case/default\n"
+        "let colour = green\n"
+        "switch $colour\n"
+        "case red\n"
+        "  print FAIL: red\n"
+        "case green\n"
+        "  print matched green correct\n"
+        "case blue\n"
+        "  print FAIL: blue\n"
+        "default:\n"
+        "  print FAIL: default\n"
+        "endswitch\n"
+        "let val = unknown\n"
+        "let hit = none\n"
+        "switch $val\n"
+        "case foo\n"
+        "  let hit = foo\n"
+        "default:\n"
+        "  let hit = default\n"
+        "endswitch\n"
+        "assert $hit == default or fail: default branch\n"
+        "print PASS 12_switch\n"
+    );
+ 
+   
+    inject_script("/home/tests/13_assert.ds",
+        "# 13_assert – all comparison ops\n"
+        "let x = 42\n"
+        "assert $x == 42 or fail: ==\n"
+        "assert $x != 0  or fail: !=\n"
+        "assert $x >= 10 or fail: >=\n"
+        "assert $x <= 50 or fail: <=\n"
+        "assert $x > 41  or fail: >\n"
+        "assert $x < 43  or fail: <\n"
+        "let s = deck\n"
+        "assert $s == deck or fail: str ==\n"
+        "assert $s != foo  or fail: str !=\n"
+        "print PASS 13_assert\n"
+    );
+ 
+   
+    inject_script("/home/tests/14_timing.ds",
+        "# 14_timing – millis/sleep\n"
+        "let t0 = millis\n"
+        "sleep 50\n"
+        "let t1 = millis\n"
+        "let elapsed = $t1 - $t0\n"
+        "print elapsed=$elapsed ms\n"
+        "assert $elapsed >= 40 or fail: too short\n"
+        "assert $elapsed <= 300 or fail: too long\n"
+        "print PASS 14_timing\n"
+    );
+ 
+   
+    inject_script("/home/tests/15_nested_loops.ds",
+        "# 15_nested – nested loops\n"
+        "let oc = 0\n"
+        "let is = 0\n"
+        "for i from 1 to 3\n"
+        "  let oc = $oc + 1\n"
+        "  for j from 1 to 4\n"
+        "    if $j == 3\n"
+        "      break\n"
+        "    endif\n"
+        "    let is = $is + $j\n"
+        "  endfor\n"
+        "endfor\n"
+        "assert $oc == 3 or fail: outer count\n"
+        "assert $is == 9 or fail: inner sum\n"
+        "print PASS 15_nested_loops\n"
+    );
+ 
+   
+    inject_script("/home/tests/16_scope.ds",
+        "# 16_scope – args reset between calls\n"
+        "def greet\n"
+        "  let return = Hello $arg0\n"
+        "enddef\n"
+        "call greet Alice\n"
+        "let r1 = $return\n"
+        "call greet Bob\n"
+        "let r2 = $return\n"
+        "assert $r1 == Hello Alice or fail: call 1\n"
+        "assert $r2 == Hello Bob   or fail: call 2\n"
+        "print PASS 16_scope\n"
+    );
+ 
+   
+    inject_script("/home/tests/run_a.ds",
+        "# run_a – tests 01-10\n"
+        "print === DeckScript tests 01-10 ===\n"
+        "run /home/tests/01_vars.ds\n"
+        "run /home/tests/02_arithmetic.ds\n"
+        "run /home/tests/03_conditionals.ds\n"
+        "run /home/tests/04_while.ds\n"
+        "run /home/tests/05_repeat.ds\n"
+        "run /home/tests/06_for_range.ds\n"
+        "run /home/tests/07a_arrays.ds\n"
+        "run /home/tests/07b_arrays.ds\n"
+        "run /home/tests/08a_strings.ds\n"
+        "run /home/tests/08b_strings.ds\n"
+        "run /home/tests/09_math.ds\n"
+        "run /home/tests/10_format.ds\n"
+        "print === done 01-10 – now run run_b.ds ===\n"
+    );
+ 
+   
+    inject_script("/home/tests/run_b.ds",
+        "# run_b – tests 11-16\n"
+        "print === DeckScript tests 11-16 ===\n"
+        "run /home/tests/11_functions.ds\n"
+        "run /home/tests/12_switch.ds\n"
+        "run /home/tests/13_assert.ds\n"
+        "run /home/tests/14_timing.ds\n"
+        "run /home/tests/15_nested_loops.ds\n"
+        "run /home/tests/16_scope.ds\n"
+        "print === all tests done ===\n"
+    );
+ 
+    printf("[vfs] injected 20 test scripts into /home/tests/\n");
+}
+ 

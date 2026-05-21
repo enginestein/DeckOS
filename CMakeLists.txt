@@ -20,6 +20,7 @@ add_executable(DeckOS
     kernel/morse.c           # Morse code LED blinker
     kernel/tone.c            # PWM tone / melody generator
     kernel/vfs.c
+    kernel/bg_job.c
 
     # Shell
     shell/shell.c
@@ -27,11 +28,13 @@ add_executable(DeckOS
 
     # Commands
     commands/commands.c
+    commands/cmd_imu.c
 
     # System tools
     system/bench.c
     system/device_detect.c
     system/heap_track.c
+    system/print_lock.c
     scripting/dscript.c
 
     # Hardware tools
@@ -47,6 +50,7 @@ add_executable(DeckOS
     # Drivers
     drivers/drivers.c
     drivers/spi_bus.c
+    drivers/mpu6050.c 
 )
 
 target_link_libraries(DeckOS
@@ -64,6 +68,7 @@ target_link_libraries(DeckOS
     hardware_irq
     pico_unique_id
     pico_bootrom
+    m
 )
 
 pico_enable_stdio_usb(DeckOS 1)

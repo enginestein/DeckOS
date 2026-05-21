@@ -3,6 +3,7 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "hardware/sync.h"
+#include "bg_job.h"
 #include "scheduler.h"
 #include "spinlock_util.h"
 #include "servo.h"
@@ -48,7 +49,7 @@ static void core1_entry(void) {
 
         // Tick background servos (very fast, just updates PWM levels)
         servo_bg_tick();
-
+        bg_job_tick();
         sleep_us(100);
     }
 }
