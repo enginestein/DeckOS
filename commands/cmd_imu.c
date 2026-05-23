@@ -17,11 +17,14 @@ static i2c_inst_t* bus_for_pin(uint sda) {
 
 static bool ensure_init(uint sda, uint scl, uint8_t addr) {
     i2c_inst_t* bus = bus_for_pin(sda);
-    i2c_init(bus, 400000);  
-    gpio_set_function(sda, GPIO_FUNC_I2C);
-    gpio_set_function(scl, GPIO_FUNC_I2C);
-    gpio_pull_up(sda);
-    gpio_pull_up(scl);
+    
+    if (!s_inited) {  
+        i2c_init(bus, 100000);
+        gpio_set_function(sda, GPIO_FUNC_I2C);
+        gpio_set_function(scl, GPIO_FUNC_I2C);
+        gpio_pull_up(sda);
+        gpio_pull_up(scl);
+    }
 
     if (mpu6050_whoami(bus, addr) != 0x68) {
         printf("mpu6050: no device at 0x%02X (check wiring / AD0 pin)\n", addr);
@@ -61,7 +64,7 @@ void cmd_imu(int argc, char* argv[]) {
         uint8_t addr = (argc >= 5) ? (uint8_t)strtol(argv[4], NULL, 16)
                                    : MPU6050_ADDR_LOW;
         i2c_inst_t* bus = bus_for_pin(sda);
-        i2c_init(bus, 400000);
+        i2c_init(bus, 100000);
         gpio_set_function(sda, GPIO_FUNC_I2C);
         gpio_set_function(scl, GPIO_FUNC_I2C);
         gpio_pull_up(sda); gpio_pull_up(scl);

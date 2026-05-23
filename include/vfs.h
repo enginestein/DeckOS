@@ -21,6 +21,9 @@ typedef struct {
     uint8_t     data[VFS_MAX_FILE_SIZE];
 } vfs_node_t;
 
+extern vfs_node_t s_nodes[VFS_MAX_NODES];
+extern int        s_cwd;
+
 void    vfs_init(void);
 
 int     vfs_resolve(const char *path);

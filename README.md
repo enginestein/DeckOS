@@ -4,7 +4,7 @@
 
 ```
   ╔══════════════════════════════════╗
-  ║           DeckOS v2.1            ║
+  ║           DeckOS v3.0            ║
   ║      Raspberry Pi Pico / RP2040  ║
   ╚══════════════════════════════════╝
 ```
@@ -24,12 +24,15 @@ A bare metal shell OS, currently compatible for RP2040, specifically raspberry p
 - [Commands](#commands)
   - [Core / Info](#core--info)
   - [Hardware](#hardware)
+  - [OLED / SSD1306](#oled--ssd1306)
   - [Servo](#servo)
   - [Audio & Signalling](#audio--signalling)
   - [Scripting & Automation](#scripting--automation)
   - [System](#system)
   - [Subsystems](#subsystems)
   - [WiFi / ESP8266](#wifi--esp8266)
+  - [MQTT](#mqtt)
+  - [Swarm / ESP-NOW](#swarm--esp-now)
   - [Bluetooth / HC-05](#bluetooth--hc-05)
   - [Filesystem](#filesystem)
 - [DeckScript](#deckscript)
@@ -135,7 +138,7 @@ Boot order:
 
 ### Prerequisites
 
-- [Raspberry Pi Pico SDK](https://github.com/raspberrypi/pico-sdk) v2.1 or newer
+- [Raspberry Pi Pico SDK](https://github.com/raspberrypi/pico-sdk) v3.0 or newer
 - CMake 3.13+
 - ARM GCC toolchain (`arm-none-eabi-gcc`)
 
@@ -226,6 +229,8 @@ You'll see the boot banner and a `>` prompt. You're in.
 | `flash` | `flash read \| write \| erase <addr>` | Raw flash read/write/erase (see below) |
 | `detect` | `detect [uart <pin>] [analyze <pin>]` | Scan and report connected devices; can probe for UART baud rate or guess a protocol from logic samples |
 | `la` | `la <pin> [samples] [us_per_sample] [trigger]` | Logic analyser — sample a pin and render a timing diagram. Add trigger to arm a background falling-edge capture that fires when the pin goes low; check jobs to see it running and jobs cancel <id> to abort |
+| `imu` | `imu <read\|stream\|attitude\|calibrate\|raw\|whoami>MPU6050` | accelerometer/gyro on I²C (GP4/GP5) |
+| `oled` | `oled <init\|text\|rect\|circle\|progress\|splash\|notify\|scroll\|boot ...>` | SSD1306 128×64 I²C display (GP4/GP5) |
 
 #### Live GPIO monitoring
 
@@ -292,6 +297,39 @@ After sampling, `la` prints a waveform diagram followed by edge count, duty cycl
 > detect analyze 15          # sample GP15 and guess the protocol
 > detect analyze 15 256 5    # 256 samples at 5 µs each
 ```
+
+### OLED / SSD1306
+
+| Command | Usage | What it does |
+|---|---|---|
+| `oled init` | `oled init` | Initialise display on GP4 (SDA) / GP5 (SCL) |
+| `oled on / off` | `oled on` | Power display on or off |
+| `oled clear` | `oled clear` | Blank framebuffer and flush |
+| `oled fill` | `oled fill <hex>` | Fill framebuffer with a pattern byte (e.g. `AA`) |
+| `oled flush` | `oled flush` | Push framebuffer to screen |
+| `oled contrast` | `oled contrast <0–255>` | Set brightness |
+| `oled invert` | `oled invert <0\|1>` | Invert display colours |
+| `oled flip` | `oled flip <h:0\|1> <v:0\|1>` | Mirror display horizontally or vertically |
+| `oled text` | `oled text <col> <row> <str>` | Draw text at a character-grid cell |
+| `oled textxy` | `oled textxy <x> <y> <str>` | Draw text at pixel coordinates |
+| `oled printf` | `oled printf <col> <row> <fmt...>` | Formatted text at a grid cell |
+| `oled pixel` | `oled pixel <x> <y> <0\|1>` | Set or clear a single pixel |
+| `oled line` | `oled line <x0> <y0> <x1> <y1>` | Draw a line |
+| `oled hline` | `oled hline <x0> <x1> <y>` | Horizontal line |
+| `oled vline` | `oled vline <x> <y0> <y1>` | Vertical line |
+| `oled rect` | `oled rect <x> <y> <w> <h>` | Rectangle outline |
+| `oled rectfill` | `oled rectfill <x> <y> <w> <h>` | Filled rectangle |
+| `oled circle` | `oled circle <cx> <cy> <r>` | Circle outline |
+| `oled circlefill` | `oled circlefill <cx> <cy> <r>` | Filled circle |
+| `oled progress` | `oled progress <x> <y> <w> <h> <%>` | Progress bar |
+| `oled title` | `oled title <text>` | Title bar at row 0 (inverted) |
+| `oled status` | `oled status <left> <right>` | Status bar on bottom row |
+| `oled splash` | `oled splash <line1> <line2>` | Splash screen and flush |
+| `oled notify` | `oled notify <msg> <ms>` | Timed notification overlay |
+| `oled scroll` | `oled scroll <right\|left> <sp> <ep>` | Hardware scroll between pages sp–ep |
+| `oled scroll stop` | `oled scroll stop` | Stop hardware scroll |
+| `oled spinner` | `oled spinner <x> <y> <frame 0–7>` | Spinner glyph |
+| `oled boot` | `oled boot` | Animated boot sequence |
 
 ### Servo
 
@@ -483,6 +521,72 @@ The bridge starts in auto-detect mode and responds to `@`-prefixed control comma
 > wifi post http://example.com/log "temp=27.3"
 ```
 
+### Working with MQTT
+
+```bash
+> wifi init
+> wifi bridge connect
+> mqtt server 192.168.1.100
+> mqtt connect
+> mqtt pub deck/temp 23.4
+> mqtt sub deck/cmd/#
+
+```
+### MQTT
+
+| Command | What it does |
+|---|---|
+| `mqtt server <host>` | Set broker address |
+| `mqtt port <n>` | Set broker port (default 1883) |
+| `mqtt id <name>` | Set client ID |
+| `mqtt connect` | Connect to broker |
+| `mqtt disconnect` | Disconnect from broker |
+| `mqtt status` | Show connection state |
+| `mqtt pub <topic> <msg>` | Publish a message |
+| `mqtt sub <topic>` | Subscribe to a topic |
+| `mqtt unsub <topic>` | Unsubscribe from a topic |
+
+```bash
+> wifi init
+> wifi bridge connect
+> mqtt server 192.168.1.100
+> mqtt connect
+> mqtt pub deck/temp 23.4
+> mqtt sub deck/cmd/#
+```
+
+### Swarm / ESP-NOW
+
+Lets multiple Picos communicate peer-to-peer without a router, useful for drone swarms or sensor meshes.
+
+| Command | What it does |
+|---|---|
+| `swarm init` | Start ESP-NOW mesh |
+| `swarm id <name>` | Set this node's name |
+| `swarm mac` | Show this node's MAC address |
+| `swarm peer <MAC>` | Register a peer node |
+| `swarm pub <lat> <lon> <alt> <hdg> <state>` | Broadcast position telemetry |
+| `swarm list` | Show all known peers |
+| `swarm stop` | Stop the mesh |
+
+```bash
+# Node 1
+> wifi init
+> swarm init
+> swarm mac          # note MAC: AA:BB:CC:DD:EE:01
+> swarm id drone1
+
+# Node 2
+> wifi init
+> swarm init
+> swarm mac          # note MAC: AA:BB:CC:DD:EE:02
+> swarm id drone2
+> swarm peer AA:BB:CC:DD:EE:01   # register node 1
+
+# Broadcast from node 1
+> swarm pub 28.6139 77.2090 100.0 180.0 1
+```
+
 ---
 
 ## Bluetooth / HC-05
@@ -561,6 +665,7 @@ DeckOS includes a small in-memory virtual filesystem (VFS). It lives in SRAM and
 | `find [name]` | Recursive name search |
 | `df` | Filesystem usage summary |
 | `tree` | Print the full directory tree |
+| `save` | Persist the current VFS to flash so it survives reboots |
 
 ---
 

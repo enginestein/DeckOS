@@ -21,6 +21,7 @@ add_executable(DeckOS
     kernel/tone.c            # PWM tone / melody generator
     kernel/vfs.c
     kernel/bg_job.c
+    kernel/file_persist.c
 
     # Shell
     shell/shell.c
@@ -51,6 +52,7 @@ add_executable(DeckOS
     drivers/drivers.c
     drivers/spi_bus.c
     drivers/mpu6050.c 
+    drivers/oled.c
 )
 
 target_link_libraries(DeckOS

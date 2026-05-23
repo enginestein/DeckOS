@@ -36,3 +36,5 @@ void esp8266_scan(void);
 void esp8266_join(const char* ssid, const char* password);
 void esp8266_ip(void);
 void esp8266_shell(void);
+void esp8266_send_raw(const char *cmd);
+void esp8266_drain_response(void);

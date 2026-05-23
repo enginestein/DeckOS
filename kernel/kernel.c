@@ -3,6 +3,7 @@
 #include "pico/multicore.h"
 #include <string.h>
 #include "kernel.h"
+#include "file_persist.h"
 #include "shell.h"
 #include "drivers.h"
 #include "scheduler.h"
@@ -17,12 +18,10 @@
 
 static void (*s_core1_fn)(void) = NULL;
 
-// Called by scheduler.c - sets the Core1 function pointer.
 void kernel_set_core1_fn(void (*fn)(void)) {
     s_core1_fn = fn;
 }
 
-// Called by config.c after flash write.
 void core1_restart(void) {
     if (s_core1_fn) {
         multicore_launch_core1(s_core1_fn);
@@ -84,10 +83,10 @@ void kernel_init(void) {
     print_lock_init(); 
     heap_track_init();
     syslog_init();
-    LOG_I("kernel", "booting DeckOS v2.1");
+    LOG_I("kernel", "booting DeckOS v3.0");
 
     bootloader_run();
-    vfs_init();
+    vfs_load();
     drivers_init_all();
     bt_init(BT_DEFAULT_BAUD);
     LOG_I("kernel", "drivers ready");

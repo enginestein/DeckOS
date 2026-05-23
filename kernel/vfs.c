@@ -5,8 +5,8 @@
 #include "vfs.h"
 
 
-static vfs_node_t s_nodes[VFS_MAX_NODES];
-static int        s_cwd = 0;
+vfs_node_t s_nodes[VFS_MAX_NODES];
+int        s_cwd = 0;
 
 
 static uint32_t now_ms(void) {

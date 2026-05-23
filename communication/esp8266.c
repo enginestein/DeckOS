@@ -33,6 +33,23 @@ static bool contains_ok(const char * s) {
   return s && (strstr(s, "OK") != NULL || strstr(s, "ready") != NULL);
 }
 
+void esp8266_send_raw(const char *cmd) {
+    if (!s_ready) { printf("[wifi] not initialised\n"); return; }
+    esp8266_bridge_send(cmd, 3000);
+}
+
+void esp8266_drain_response(void) {
+    if (!s_ready) return;
+    uint32_t start = to_ms_since_boot(get_absolute_time());
+    while (to_ms_since_boot(get_absolute_time()) - start < 500) {
+        if (uart_is_readable(ESP8266_UART)) {
+            putchar((char)uart_getc(ESP8266_UART));
+        } else {
+            sleep_us(200);
+        }
+    }
+}
+
 void esp8266_init(uint32_t baud) {
   uint32_t use_baud = baud ? baud : ESP8266_DEFAULT_BAUD;
 
@@ -114,7 +131,7 @@ void esp8266_print_status(void) {
   printf("  boot pins  : EN/CH_PD=HIGH, RST=HIGH, GPIO0=HIGH, GPIO2=HIGH for normal boot\n");
 }
 
-static void esp8266_bridge_send(const char *at_cmd, uint32_t timeout_ms) {
+void esp8266_bridge_send(const char *at_cmd, uint32_t timeout_ms) {
     if (!s_ready) { printf("[wifi] not initialised\n"); return; }
 
     esp8266_flush_rx();

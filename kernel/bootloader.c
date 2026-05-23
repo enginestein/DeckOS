@@ -44,7 +44,7 @@ static void apply_config(void) {
 static void print_banner(boot_mode_t mode) {
     printf("\n");
     printf("  ╔══════════════════════════════════╗\n");
-    printf("  ║           DeckOS v2.1            ║\n");
+    printf("  ║           DeckOS v3.0            ║\n");
     printf("  ║           Built: %s              ║\n", __DATE__);
     printf("  ╚══════════════════════════════════╝\n");
     printf("  mode   : %s\n", bootloader_mode_str(mode));

@@ -5,9 +5,11 @@
 #include "pico/stdlib.h"
 #include "pico/time.h"
 #include "bg_job.h"
+#include "file_persist.h"
 #include "pico/unique_id.h"
 #include "editor.h"
 #include "pico/multicore.h"
+#include "oled.h"
 #include "print_lock.h"
 #include "hardware/adc.h"
 #include "hardware/gpio.h"
@@ -86,6 +88,7 @@ static void cmd_help(int argc, char* argv[]) {
         {"pinout",  "ASCII Pico pinout with live states"},
         {"uid",     "unique board ID"},
         {"wdog",    "watchdog status"},
+        {"oled", "SSD1306 128x64 I2C display (GP4/GP5)"},
     };
     static const entry_t g_buses[] = {
         {"i2c", "scan [sda scl] | read | write  (default SDA=GP4 SCL=GP5)"},
@@ -205,7 +208,7 @@ static const entry_t g_wifi[] = {
     static const int group_count = (int)(sizeof(groups) / sizeof(group_t));
     static const int NAME_COL    = 12;
 
-    printf("DeckOS v2.1  \xe2\x80\x94  available commands\n");
+    printf("DeckOS v3.0  \xe2\x80\x94  available commands\n");
     printf("====================================================\n");
 
     for (int g = 0; g < group_count; g++) {
@@ -223,7 +226,7 @@ static const entry_t g_wifi[] = {
 }
 
 static void cmd_version(int argc, char* argv[]) {
-    printf("DeckOS v2.1  |  Raspberry Pi Pico\n");
+    printf("DeckOS v3.0  |  Raspberry Pi Pico\n");
     printf("Build: %s %s\n", __DATE__, __TIME__);
 }
 
@@ -485,6 +488,359 @@ static void cmd_bt(int argc, char* argv[]) {
     printf("bt: unknown subcommand '%s'  (type 'bt' for help)\n", argv[1]);
 }
 
+static void cmd_swarm(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage:\n");
+        printf("  swarm init                       - start ESP-NOW mesh\n");
+        printf("  swarm id <name>                  - set this node's name\n");
+        printf("  swarm peer <MAC>                 - add a peer drone\n");
+        printf("  swarm pub <lat> <lon> <alt> <hdg> <state> - broadcast position\n");
+        printf("  swarm list                       - show known peers\n");
+        printf("  swarm mac                        - show this ESP MAC address\n");
+        printf("  swarm stop                       - stop mesh\n");
+        return;
+    }
+
+    if (!esp8266_is_ready()) {
+        printf("swarm: wifi not initialised - run 'wifi init' first\n");
+        return;
+    }
+
+    char cmd[128];
+
+    if (strcmp(argv[1], "init") == 0) {
+        esp8266_send_raw("@swarm init");
+    } else if (strcmp(argv[1], "id") == 0 && argc >= 3) {
+        snprintf(cmd, sizeof(cmd), "@swarm id %s", argv[2]);
+        esp8266_send_raw(cmd);
+    } else if (strcmp(argv[1], "peer") == 0 && argc >= 3) {
+        snprintf(cmd, sizeof(cmd), "@swarm peer %s", argv[2]);
+        esp8266_send_raw(cmd);
+    } else if (strcmp(argv[1], "pub") == 0 && argc >= 7) {
+        snprintf(cmd, sizeof(cmd), "@swarm pub %s %s %s %s %s",
+                 argv[2], argv[3], argv[4], argv[5], argv[6]);
+        esp8266_send_raw(cmd);
+    } else if (strcmp(argv[1], "list") == 0) {
+        esp8266_send_raw("@swarm list");
+    } else if (strcmp(argv[1], "mac") == 0) {
+        esp8266_send_raw("@swarm mac");
+    } else if (strcmp(argv[1], "stop") == 0) {
+        esp8266_send_raw("@swarm stop");
+    } else {
+        printf("swarm: unknown subcommand '%s'\n", argv[1]);
+        return;
+    }
+
+    sleep_ms(300);
+    esp8266_drain_response();
+}
+
+static void cmd_mqtt(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage:\n");
+        printf("  mqtt server <host>        - set broker address\n");
+        printf("  mqtt port <n>             - set broker port (default 1883)\n");
+        printf("  mqtt id <name>            - set client ID\n");
+        printf("  mqtt connect              - connect to broker\n");
+        printf("  mqtt disconnect           - disconnect\n");
+        printf("  mqtt status               - show connection state\n");
+        printf("  mqtt pub <topic> <msg>    - publish message\n");
+        printf("  mqtt sub <topic>          - subscribe to topic\n");
+        printf("  mqtt unsub <topic>        - unsubscribe\n");
+        return;
+    }
+
+    if (!esp8266_is_ready()) {
+        printf("mqtt: wifi not initialised - run 'wifi init' first\n");
+        return;
+    }
+
+    char cmd[128];
+
+    if (strcmp(argv[1], "server") == 0 && argc >= 3) {
+        snprintf(cmd, sizeof(cmd), "@mqtt server %s", argv[2]);
+        esp8266_send_raw(cmd);
+    } else if (strcmp(argv[1], "port") == 0 && argc >= 3) {
+        snprintf(cmd, sizeof(cmd), "@mqtt port %s", argv[2]);
+        esp8266_send_raw(cmd);
+    } else if (strcmp(argv[1], "id") == 0 && argc >= 3) {
+        snprintf(cmd, sizeof(cmd), "@mqtt id %s", argv[2]);
+        esp8266_send_raw(cmd);
+    } else if (strcmp(argv[1], "connect") == 0) {
+        esp8266_send_raw("@mqtt connect");
+    } else if (strcmp(argv[1], "disconnect") == 0) {
+        esp8266_send_raw("@mqtt disconnect");
+    } else if (strcmp(argv[1], "status") == 0) {
+        esp8266_send_raw("@mqtt status");
+    } else if (strcmp(argv[1], "pub") == 0 && argc >= 4) {
+        snprintf(cmd, sizeof(cmd), "@mqtt pub %s %s", argv[2], argv[3]);
+        esp8266_send_raw(cmd);
+    } else if (strcmp(argv[1], "sub") == 0 && argc >= 3) {
+        snprintf(cmd, sizeof(cmd), "@mqtt sub %s", argv[2]);
+        esp8266_send_raw(cmd);
+    } else if (strcmp(argv[1], "unsub") == 0 && argc >= 3) {
+        snprintf(cmd, sizeof(cmd), "@mqtt unsub %s", argv[2]);
+        esp8266_send_raw(cmd);
+    } else {
+        printf("mqtt: unknown subcommand '%s'\n", argv[1]);
+    }
+
+    sleep_ms(300);
+    esp8266_drain_response();
+}
+
+
+static void cmd_oled(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("usage:\n");
+        printf("  oled init                          - init display (GP4=SDA GP5=SCL)\n");
+        printf("  oled off | on                      - power display\n");
+        printf("  oled clear                         - blank framebuffer\n");
+        printf("  oled fill <hex>                    - fill fb with pattern (e.g. AA)\n");
+        printf("  oled flush                         - push framebuffer to screen\n");
+        printf("  oled contrast <0-255>              - set brightness\n");
+        printf("  oled invert <0|1>                  - invert display\n");
+        printf("  oled flip <h:0|1> <v:0|1>          - mirror display\n");
+        printf("  oled text <col> <row> <str>        - draw text at grid cell\n");
+        printf("  oled textxy <x> <y> <str>          - draw text at pixel coords\n");
+        printf("  oled printf <col> <row> <fmt...>   - formatted text\n");
+        printf("  oled pixel <x> <y> <0|1>           - set/clear pixel\n");
+        printf("  oled line <x0> <y0> <x1> <y1>      - draw line\n");
+        printf("  oled hline <x0> <x1> <y>           - horizontal line\n");
+        printf("  oled vline <x> <y0> <y1>           - vertical line\n");
+        printf("  oled rect <x> <y> <w> <h>          - rectangle outline\n");
+        printf("  oled rectfill <x> <y> <w> <h>      - filled rectangle\n");
+        printf("  oled circle <cx> <cy> <r>          - circle outline\n");
+        printf("  oled circlefill <cx> <cy> <r>      - filled circle\n");
+        printf("  oled progress <x> <y> <w> <h> <%%> - progress bar\n");
+        printf("  oled title <text>                  - title bar (row 0, inverted)\n");
+        printf("  oled status <left> <right>         - status bar (bottom row)\n");
+        printf("  oled splash <line1> <line2>        - splash screen + flush\n");
+        printf("  oled notify <msg> <ms>             - timed notification overlay\n");
+        printf("  oled scroll right|left <sp> <ep>   - hardware scroll pages sp-ep\n");
+        printf("  oled scroll stop                   - stop hardware scroll\n");
+        printf("  oled spinner <x> <y> <frame>       - spinner glyph (frame 0-7)\n");
+        printf("  oled boot                          - animated boot sequence\n");
+        return;
+    }
+
+    const char* sub = argv[1];
+
+   
+    if (strcmp(sub, "init") == 0) {
+        bool ok = oled_init();
+        printf("oled: %s\n", ok ? "ready" : "not found (check wiring / address)");
+        return;
+    }
+
+   
+    if (strcmp(sub, "on")  == 0) { oled_on();  printf("oled: on\n");  return; }
+    if (strcmp(sub, "off") == 0) { oled_off(); printf("oled: off\n"); return; }
+
+   
+    if (strcmp(sub, "clear") == 0) { oled_clear(); oled_flush(); printf("oled: cleared\n"); return; }
+    if (strcmp(sub, "flush") == 0) { oled_flush(); printf("oled: flushed\n"); return; }
+
+    if (strcmp(sub, "fill") == 0) {
+        if (argc < 3) { printf("usage: oled fill <hex_pattern>\n"); return; }
+        uint8_t pat = (uint8_t)strtol(argv[2], NULL, 16);
+        oled_fill(pat);
+        oled_flush();
+        printf("oled: filled 0x%02X\n", pat);
+        return;
+    }
+
+   
+    if (strcmp(sub, "contrast") == 0) {
+        if (argc < 3) { printf("usage: oled contrast <0-255>\n"); return; }
+        uint8_t l = (uint8_t)atoi(argv[2]);
+        oled_contrast(l);
+        printf("oled: contrast %d\n", l);
+        return;
+    }
+
+    if (strcmp(sub, "invert") == 0) {
+        if (argc < 3) { printf("usage: oled invert <0|1>\n"); return; }
+        oled_invert(atoi(argv[2]) != 0);
+        printf("oled: invert %s\n", atoi(argv[2]) ? "on" : "off");
+        return;
+    }
+
+    if (strcmp(sub, "flip") == 0) {
+        if (argc < 4) { printf("usage: oled flip <h:0|1> <v:0|1>\n"); return; }
+        oled_flip(atoi(argv[2]) != 0, atoi(argv[3]) != 0);
+        printf("oled: flip h=%d v=%d\n", atoi(argv[2]), atoi(argv[3]));
+        return;
+    }
+
+   
+    if (strcmp(sub, "text") == 0) {
+        if (argc < 5) { printf("usage: oled text <col> <row> <string>\n"); return; }
+       
+        char buf[128] = "";
+        for (int i = 4; i < argc; i++) {
+            if (i > 4) strncat(buf, " ", sizeof(buf) - strlen(buf) - 1);
+            strncat(buf, argv[i], sizeof(buf) - strlen(buf) - 1);
+        }
+        oled_text(atoi(argv[2]), atoi(argv[3]), buf, false);
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "textxy") == 0) {
+        if (argc < 5) { printf("usage: oled textxy <x> <y> <string>\n"); return; }
+        char buf[128] = "";
+        for (int i = 4; i < argc; i++) {
+            if (i > 4) strncat(buf, " ", sizeof(buf) - strlen(buf) - 1);
+            strncat(buf, argv[i], sizeof(buf) - strlen(buf) - 1);
+        }
+        oled_textxy(atoi(argv[2]), atoi(argv[3]), buf, false);
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "printf") == 0) {
+        if (argc < 5) { printf("usage: oled printf <col> <row> <fmt...>\n"); return; }
+        char buf[128] = "";
+        for (int i = 4; i < argc; i++) {
+            if (i > 4) strncat(buf, " ", sizeof(buf) - strlen(buf) - 1);
+            strncat(buf, argv[i], sizeof(buf) - strlen(buf) - 1);
+        }
+        oled_text(atoi(argv[2]), atoi(argv[3]), buf, false);
+        oled_flush();
+        return;
+    }
+
+   
+    if (strcmp(sub, "pixel") == 0) {
+        if (argc < 5) { printf("usage: oled pixel <x> <y> <0|1>\n"); return; }
+        oled_pixel(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]) != 0);
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "hline") == 0) {
+        if (argc < 5) { printf("usage: oled hline <x0> <x1> <y>\n"); return; }
+        oled_hline(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), true);
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "vline") == 0) {
+        if (argc < 5) { printf("usage: oled vline <x> <y0> <y1>\n"); return; }
+        oled_vline(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), true);
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "line") == 0) {
+        if (argc < 6) { printf("usage: oled line <x0> <y0> <x1> <y1>\n"); return; }
+        oled_line(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), true);
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "rect") == 0) {
+        if (argc < 6) { printf("usage: oled rect <x> <y> <w> <h>\n"); return; }
+        oled_rect(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), true);
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "rectfill") == 0) {
+        if (argc < 6) { printf("usage: oled rectfill <x> <y> <w> <h>\n"); return; }
+        oled_rect_fill(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), true);
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "circle") == 0) {
+        if (argc < 5) { printf("usage: oled circle <cx> <cy> <r>\n"); return; }
+        oled_circle(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), true);
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "circlefill") == 0) {
+        if (argc < 5) { printf("usage: oled circlefill <cx> <cy> <r>\n"); return; }
+        oled_circle_fill(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), true);
+        oled_flush();
+        return;
+    }
+
+   
+    if (strcmp(sub, "progress") == 0) {
+        if (argc < 7) { printf("usage: oled progress <x> <y> <w> <h> <pct>\n"); return; }
+        oled_progress_bar(atoi(argv[2]), atoi(argv[3]),
+                          atoi(argv[4]), atoi(argv[5]), atoi(argv[6]));
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "title") == 0) {
+        if (argc < 3) { printf("usage: oled title <text>\n"); return; }
+        char buf[128] = "";
+        for (int i = 2; i < argc; i++) {
+            if (i > 2) strncat(buf, " ", sizeof(buf) - strlen(buf) - 1);
+            strncat(buf, argv[i], sizeof(buf) - strlen(buf) - 1);
+        }
+        oled_title_bar(buf);
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "status") == 0) {
+        if (argc < 4) { printf("usage: oled status <left> <right>\n"); return; }
+        oled_status_bar(argv[2], argv[3]);
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "splash") == 0) {
+        if (argc < 4) { printf("usage: oled splash <line1> <line2>\n"); return; }
+        oled_splash(argv[2], argv[3]);  
+        return;
+    }
+
+    if (strcmp(sub, "notify") == 0) {
+        if (argc < 4) { printf("usage: oled notify <msg> <ms>\n"); return; }
+        uint32_t ms = (uint32_t)atoi(argv[3]);
+        if (ms < 100 || ms > 30000) ms = 2000;
+        oled_notification(argv[2], ms);
+        return;
+    }
+
+   
+    if (strcmp(sub, "scroll") == 0) {
+        if (argc < 3) { printf("usage: oled scroll right|left <sp> <ep>  |  oled scroll stop\n"); return; }
+        if (strcmp(argv[2], "stop") == 0)  { oled_scroll_stop();  printf("oled: scroll stopped\n"); return; }
+        if (argc < 5) { printf("usage: oled scroll right|left <start_page> <end_page>\n"); return; }
+        uint8_t sp = (uint8_t)atoi(argv[3]);
+        uint8_t ep = (uint8_t)atoi(argv[4]);
+        if (strcmp(argv[2], "right") == 0) oled_scroll_right(sp, ep);
+        else if (strcmp(argv[2], "left") == 0) oled_scroll_left(sp, ep);
+        else { printf("oled scroll: direction must be right|left\n"); return; }
+        printf("oled: scrolling %s pages %d-%d\n", argv[2], sp, ep);
+        return;
+    }
+
+   
+    if (strcmp(sub, "spinner") == 0) {
+        if (argc < 5) { printf("usage: oled spinner <x> <y> <frame 0-7>\n"); return; }
+        oled_spinner(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
+        oled_flush();
+        return;
+    }
+
+    if (strcmp(sub, "boot") == 0) {
+        oled_animate_boot();
+        return;
+    }
+
+    printf("oled: unknown subcommand '%s'  (type 'oled' for help)\n", sub);
+}
+
+
 static void cmd_wifi(int argc, char* argv[]) {
     if (argc < 2) {
         printf("usage:\n");
@@ -620,6 +976,12 @@ static void cmd_wifi_bridge(int argc, char* argv[]) {
     else printf("unknown bridge command: %s\n", argv[1]);
 }
 
+static void cmd_save(int argc, char *argv[]) {
+    (void)argc; (void)argv;
+    printf("saving VFS to flash...\n");
+    vfs_save();
+}
+
 static void cmd_run(int argc, char* argv[]) {
     if (argc < 2) {
         printf("usage: run <vfs_script_path>\n");
@@ -701,7 +1063,7 @@ static void cmd_detect_extended(int argc, char* argv[]) {
 
 static void cmd_sysinfo(int argc, char* argv[]) {
     printf("=================================\n");
-    printf("  DeckOS v2.1  -  system info  \n");
+    printf("  DeckOS v3.0  -  system info  \n");
     printf("=================================\n");
     printf("board   : Raspberry Pi Pico\n");
     printf("cpu     : RP2040  dual-core Cortex-M0+  125 MHz\n");
@@ -1752,6 +2114,8 @@ static void cmd_repeat(int argc, char* argv[]) {
 }
 
 static void cmd_reboot(int argc, char* argv[]) {
+    printf("saving VFS...\n");
+    vfs_save();
     printf("rebooting in 1s...\n");
     sleep_ms(1000);
     watchdog_enable(1, 1);
@@ -2544,6 +2908,7 @@ static command_t command_table[] = {
     {"detect",  cmd_detect,  "scan and report connected devices"},
     {"la",      cmd_la,     "la <pin> [samples] [us]  logic analyser + timing diagram"},
     {"imu", cmd_imu, "imu read|stream|attitude|calibrate|raw|whoami"},
+    {"oled", cmd_oled, "oled init|text|rect|circle|progress|splash|notify|scroll|boot ..."},
     // Servo
     {"servo",   cmd_servo,   "servo <pin> <angle> | sweep | bg sweep/goto/stop"},
     // Audio / signalling
@@ -2566,7 +2931,9 @@ static command_t command_table[] = {
     {"pin",     cmd_pin,     "dump all GPIO pin states"},
     {"bt", cmd_bt, "bt shell|log|exec|top|send|recv|sniff|at|name|pin|baud|status"},
     {"wifi",        cmd_wifi,        "wifi init|status|ping|scan|join|ip|shell|deinit"},
+    {"mqtt", cmd_mqtt, "mqtt server|port|id|connect|pub|sub|unsub"},
     {"run",    cmd_run,    "run <file>  execute a DeckScript file from VFS"},
+    {"swarm", cmd_swarm, "swarm init|id|peer|pub|list|mac|stop  ESP-NOW drone mesh"},
     {"script", cmd_script, "script run|test  DeckScript interpreter"},
     // Subsystems
     {"drivers", cmd_drivers, "list loaded drivers"},
@@ -2594,6 +2961,7 @@ static command_t command_table[] = {
     {"find",     cmd_find,     "find [name]  recursive name search"},
     {"df",       cmd_df,       "df  filesystem usage summary"},
     {"tree",     cmd_tree,     "tree  print directory tree"},
+    {"save", cmd_save, "save VFS to flash (persist across reboots)"},
 
 };
 
