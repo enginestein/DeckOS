@@ -60,33 +60,6 @@ A bare metal shell OS, currently compatible for RP2040, specifically raspberry p
 
 ---
 
-## What it can do
-
-- **Interactive shell** over USB serial - command history, arrow-key navigation, Ctrl-C/D/L
-- **built-in commands** covering GPIO, ADC, PWM, I²C, SPI, UART, audio, scripting, and system info
-- **DeckScript** - a proper scripting language baked into the OS; variables, loops, conditionals, functions, arrays, hardware access, string manipulation, and math, all running natively on the Pico
-- **Built-in text editor** - nano-style editor for writing scripts directly on the device without a computer
-- **Dual-core scheduler** - background tasks on Core 1, shell on Core 0, completely independent
-- **Persistent config** - save your hostname, CPU speed, and boot settings to flash; they survive reboots
-- **Ring syslog** - 64-entry in-memory log with DEBUG/INFO/WARN/ERR levels and colour output
-- **GPIO IRQ monitor** - watch a pin in real time, get timestamped edge events
-- **Logic analyser** - sample a GPIO pin and render a timing diagram with edge count, duty cycle, and frequency estimate
-- **Tone and melody engine** - drive a passive buzzer with musical note names or raw Hz values; built-in Für Elise and Canon in D presets
-- **Interactive piano** - play the buzzer live from the keyboard
-- **Servo control** - set angle, blocking sweep, or background sweep/goto
-- **SPI and UART** - raw SPI transfers and a USB-to-UART passthrough bridge
-- **Raw flash access** - read, erase, and program flash sectors directly
-- **Device detection** - scan and report connected peripherals, identify UART baud rates, guess protocols
-- **Heap tracker** - live allocator stats and outstanding allocation list
-- **Benchmark tool** - measure how fast any command runs
-- **Live top** - real-time task monitor with CPU usage per Core 1 task
-- **Morse code** - blink the onboard LED in morse at any WPM
-- **ADC averaging** - clean up noisy readings with configurable sample counts
-- **Three boot modes** - normal, recovery, and USB DFU for reflashing
-- **I²C tools** - scan the bus, read and write registers
-- **WiFi via ESP8266** - scan networks, connect to WiFi, HTTP GET/POST, telnet server, and a bridge mode for running through custom firmware
-- **Bluetooth via HC-05** - wireless shell terminal, remote command execution, file transfer, syslog mirroring
-
 ---
 
 ## What you need

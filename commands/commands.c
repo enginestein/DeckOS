@@ -56,6 +56,7 @@ static void print_uptime(void) {
     printf("%02uh %02um %02us", s / 3600, (s % 3600) / 60, s % 60);
 }
 
+
 static void cmd_help(int argc, char* argv[]) {
     (void)argc; (void)argv;
 
@@ -192,14 +193,14 @@ static const entry_t g_wifi[] = {
         {"core",              g_core,      COUNT(g_core)},
         {"hardware",          g_hardware,  COUNT(g_hardware)},
         {"buses",             g_buses,     COUNT(g_buses)},
-        {"sensors & probes",  g_probes,    COUNT(g_probes)},
+        {"probes",  g_probes,    COUNT(g_probes)},
         {"servo",             g_servo,     COUNT(g_servo)},
-        {"audio & signalling",g_audio,     COUNT(g_audio)},
+        {"audio",g_audio,     COUNT(g_audio)},
         {"scripting",         g_scripting, COUNT(g_scripting)},
         {"flash",             g_flash,     COUNT(g_flash)},
         {"system",            g_system,    COUNT(g_system)},
         {"bluetooth",         g_bluetooth, COUNT(g_bluetooth)},
-        {"wifi / esp8266",    g_wifi,      COUNT(g_wifi)},
+        {"wifi",    g_wifi,      COUNT(g_wifi)},
         {"filesystem",        g_fs,        COUNT(g_fs)},
     };
 
@@ -208,23 +209,47 @@ static const entry_t g_wifi[] = {
     static const int group_count = (int)(sizeof(groups) / sizeof(group_t));
     static const int NAME_COL    = 12;
 
-    printf("DeckOS v3.0  \xe2\x80\x94  available commands\n");
-    printf("====================================================\n");
+
+    if (argc > 1) {
+        const char* wanted = argv[1];
+
+        for (int g = 0; g < group_count; g++) {
+
+            if (strcmp(wanted, groups[g].group) == 0) {
+
+                printf("\n[%s]\n", groups[g].group);
+                printf("----------------------------------------------------\n");
+
+                for (int i = 0; i < groups[g].count; i++) {
+                    printf("  %-*s %s\n",
+                           NAME_COL,
+                           groups[g].cmds[i].name,
+                           groups[g].cmds[i].desc);
+                }
+
+                printf("----------------------------------------------------\n");
+                return;
+            }
+        }
+
+        printf("unknown help group: %s\n", wanted);
+        return;
+    }
+
+
+
+    printf("DeckOS v3.0  —  command groups\n");
+    printf("====================================================\n\n");
 
     for (int g = 0; g < group_count; g++) {
-        printf("\n  \xe2\x96\xb8 %s\n", groups[g].group);
-        for (int i = 0; i < groups[g].count; i++) {
-            printf("    %-*s %s\n",
-                   NAME_COL,
-                   groups[g].cmds[i].name,
-                   groups[g].cmds[i].desc);
-        }
+        printf("  %-20s help %s\n",
+               groups[g].group,
+               groups[g].group);
     }
 
     printf("\n----------------------------------------------------\n");
-    printf("  type <command> without args for usage details\n");
+    printf("example: help core\n");
 }
-
 static void cmd_version(int argc, char* argv[]) {
     printf("DeckOS v3.0  |  Raspberry Pi Pico\n");
     printf("Build: %s %s\n", __DATE__, __TIME__);
