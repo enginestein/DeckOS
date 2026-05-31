@@ -125,7 +125,8 @@ void vfs_init(void) {
 
     vfs_mkdir("/tmp");
     vfs_mkdir("/home");
-    vfs_inject_tests(); 
+    // Enable if you want to inject tests
+    // vfs_inject_tests(); 
 
     printf("[vfs] RAM filesystem ready  %d nodes × %d B  (~%lu KB)\n",
            VFS_MAX_NODES, VFS_MAX_FILE_SIZE,

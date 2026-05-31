@@ -1,8 +1,8 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-#define MAX_ARGS   300
-#define INPUT_SIZE 2048
+#define MAX_ARGS   32
+#define INPUT_SIZE 256
 #define MAX_CRON_JOBS 8
 #define MAX_PENDING_CMDS 16
 

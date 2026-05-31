@@ -8,27 +8,18 @@
 #include "bootloader.h"
 #include "config.h"
 
-#define RECOVERY_PIN  15
 #define WD_SCRATCH_REG  0
 #define WD_DFU_COOKIE   0xDFDFDFDF
 flash_config_t g_config;
 
 static boot_mode_t detect_mode(void) {
     if (watchdog_caused_reboot() &&
-        watchdog_hw->scratch[WD_SCRATCH_REG] == WD_DFU_COOKIE) {
+            watchdog_hw->scratch[WD_SCRATCH_REG] == WD_DFU_COOKIE) {
         return BOOT_DFU;
     }
 
-    // Recovery pin held low
-    gpio_init(RECOVERY_PIN);
-    gpio_set_dir(RECOVERY_PIN, GPIO_IN);
-    gpio_pull_up(RECOVERY_PIN);
-    sleep_ms(5);   // debounce
-    if (!gpio_get(RECOVERY_PIN)) return BOOT_RECOVERY;
-
     return BOOT_NORMAL;
 }
-
 static void apply_config(void) {
     if (g_config.boot_cpu_mhz >= 48 && g_config.boot_cpu_mhz <= 200) {
         set_sys_clock_khz(g_config.boot_cpu_mhz * 1000, false);
@@ -43,10 +34,10 @@ static void apply_config(void) {
 
 static void print_banner(boot_mode_t mode) {
     printf("\n");
-    printf("  ╔══════════════════════════════════╗\n");
-    printf("  ║           DeckOS v3.0            ║\n");
-    printf("  ║           Built: %s              ║\n", __DATE__);
-    printf("  ╚══════════════════════════════════╝\n");
+    printf("  ╔══════════════════════════════════════╗\n");
+    printf("  ║           DeckOS v5.0                ║\n");
+    printf("  ║           Built: %s                  ║\n", __DATE__);
+    printf("  ╚══════════════════════════════════════╝\n");
     printf("  mode   : %s\n", bootloader_mode_str(mode));
     printf("  host   : %s\n", g_config.hostname);
     printf("\n");
@@ -58,6 +49,7 @@ boot_mode_t bootloader_run(void) {
     if (!had_valid)
         printf("[boot] flash config blank - using defaults\n");
 
+    
     boot_mode_t mode = detect_mode();
 
     if (mode == BOOT_DFU) {
@@ -70,7 +62,7 @@ boot_mode_t bootloader_run(void) {
     print_banner(mode);
 
     if (mode == BOOT_RECOVERY) {
-        printf("  *** RECOVERY MODE - only built-in commands available ***\n\n");
+        printf("[boot] RECOVERY MODE\n\n");
     }
 
     return mode;

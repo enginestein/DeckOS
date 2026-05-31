@@ -1,13 +1,3 @@
-/**
- * oled.c  –  SSD1306 128×64 I2C OLED driver for DeckOS
- *
- * Wire:  SDA = GP4   SCL = GP5   (I2C0, matches existing i2c commands)
- * Addr:  0x3C  (jumper / SA0 LOW)
- *
- * All drawing goes into a 1-KB software framebuffer; call oled_flush()
- * to push it to the display in a single DMA-like I2C burst.
- */
-
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -512,7 +502,7 @@ void oled_animate_boot(void) {
     oled_clear();
 
     
-    oled_text(3, 1, "  DeckOS v3.0", false);
+    oled_text(3, 1, "  DeckOS v5.0", false);
     oled_hline(0, 127, 10, true);
     oled_hline(0, 127, 11, true);
     oled_flush(); sleep_ms(120);

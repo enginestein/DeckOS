@@ -10,7 +10,7 @@
 
 #include "hardware/uart.h"
 
-#include "esp8266.h"
+#include "esp.h"
 
 #define ESP_RX_BUF 512
 

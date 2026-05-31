@@ -65,7 +65,7 @@ void vfs_save(void)
     uint32_t fw_end_offset = (uint32_t)&__flash_binary_end - XIP_BASE;
     if (fw_end_offset > FLASH_TARGET_OFFSET) {
         printf("[vfs] ERROR: firmware ends at 0x%05lX, VFS store starts at "
-               "0x%05lX — they overlap!\n",
+               "0x%05lX -- they overlap!\n",
                (unsigned long)fw_end_offset,
                (unsigned long)FLASH_TARGET_OFFSET);
         printf("[vfs] Reduce VFS_MAX_NODES or VFS_MAX_FILE_SIZE.\n");

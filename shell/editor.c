@@ -10,22 +10,24 @@
 
 #include "vfs.h"
 
+#include "file_persist.h"
 
-#define ED_W 80
-#define ED_H 24
-#define ED_ROWS (ED_H - 3)
-#define ED_LINELEN 512
-#define ED_MAXLINES 64
+#define ED_W_MAX 220
+#define ED_H_MAX 60
 #define GUTTER 5
-#define TW (ED_W - GUTTER)
 #define MSG_PERSIST 8
+
+static int ED_W = 80;
+static int ED_H = 24;
+#define ED_ROWS (ED_H - 3)
+#define TW (ED_W - GUTTER)
 
 typedef struct {
   char b[ED_LINELEN];
 }
 Line;
 
-static Line s_L[ED_MAXLINES];
+static Line * s_L = NULL;
 static int s_n;
 static int s_row, s_col;
 static int s_top;
@@ -35,14 +37,14 @@ static char s_fname[64];
 static char s_msg[84];
 static int s_msg_ttl;
 
-static Line s_undo_L[ED_MAXLINES];
+static Line * s_undo_L = NULL;
 static int s_undo_n, s_undo_row, s_undo_col;
 static bool s_undo_valid;
 
 static char s_kill[ED_LINELEN];
 static bool s_kill_valid;
 
-static Line s_prev_L[ED_MAXLINES];
+static Line * s_prev_L = NULL;
 static int s_prev_top, s_prev_left, s_prev_n;
 static int s_prev_row, s_prev_col;
 static bool s_prev_dirty;
@@ -104,6 +106,42 @@ static void t_bp_off(void) {
 }
 static void t_bp_on(void) {
   fputs("\033[?2004h", stdout);
+}
+static void t_wrap_off(void) {
+  fputs("\033[?7l", stdout);
+}
+static void t_wrap_on(void) {
+  fputs("\033[?7h", stdout);
+}
+
+static void ed_query_size(void) {
+
+  while (getchar_timeout_us(0) != PICO_ERROR_TIMEOUT) {}
+
+  fputs("\033[999;999H\033[6n", stdout);
+  fflush(stdout);
+
+  int c = getchar_timeout_us(120000);
+  if (c != 27) return;
+  c = getchar_timeout_us(50000);
+  if (c != '[') return;
+
+  int rows = 0, cols = 0;
+  c = getchar_timeout_us(50000);
+  while (c >= '0' && c <= '9') {
+    rows = rows * 10 + (c - '0');
+    c = getchar_timeout_us(50000);
+  }
+  if (c != ';') return;
+  c = getchar_timeout_us(50000);
+  while (c >= '0' && c <= '9') {
+    cols = cols * 10 + (c - '0');
+    c = getchar_timeout_us(50000);
+  }
+  if (c != 'R') return;
+
+  if (rows >= 8 && rows <= ED_H_MAX) ED_H = rows;
+  if (cols >= 20 && cols <= ED_W_MAX) ED_W = cols;
 }
 
 static void fixed(const char * s, int len, int w) {
@@ -317,7 +355,7 @@ static void redraw(void) {
     t_goto(1, 1);
     t_rev();
     t_bold();
-    char tb[ED_W + 2];
+    char tb[ED_W_MAX + 2];
     int pos = 0;
     const char * pfx = " DeckOS Editor | ";
     int pl = (int) strlen(pfx);
@@ -400,7 +438,7 @@ static void redraw(void) {
   if (msg_dirty) {
     t_goto(ED_ROWS + 3, 1);
     if (s_msg_ttl > 0) {
-      char mb[ED_W + 2];
+      char mb[ED_W_MAX + 2];
       int mbl = snprintf(mb, sizeof(mb), " %s", s_msg);
       t_bold();
       fixed(mb, mbl, ED_W);
@@ -600,6 +638,7 @@ static void load(void) {
     int len = nl ? (int)(nl - p) : (int) strlen(p);
     if (len > 0 && p[len - 1] == '\r') len--;
     if (len > ED_LINELEN - 1) len = ED_LINELEN - 1;
+    if (len < 0) len = 0;
     strncpy(s_L[s_n].b, p, (size_t) len);
     s_L[s_n].b[len] = '\0';
     s_n++;
@@ -634,6 +673,7 @@ static bool save(void) {
     setmsg("ERROR: save failed");
     return false;
   }
+  vfs_save();
   s_dirty = false;
   char tmp[48];
   snprintf(tmp, sizeof(tmp), "saved %d bytes", pos);
@@ -814,12 +854,42 @@ static bool handle_key(int k) {
   return false;
 }
 
+bool editor_is_loaded(void) {
+  return s_L != NULL;
+}
+
+bool editor_module_load(void) {
+  if (s_L) return true;
+  s_L = (Line * ) malloc(sizeof(Line) * ED_MAXLINES);
+  s_undo_L = (Line * ) malloc(sizeof(Line) * ED_MAXLINES);
+  s_prev_L = (Line * ) malloc(sizeof(Line) * ED_MAXLINES);
+  if (!s_L || !s_undo_L || !s_prev_L) {
+    editor_module_unload();
+    return false;
+  }
+  return true;
+}
+
+void editor_module_unload(void) {
+  free(s_L);
+  s_L = NULL;
+  free(s_undo_L);
+  s_undo_L = NULL;
+  free(s_prev_L);
+  s_prev_L = NULL;
+}
+
 void editor_run(const char * vfs_path) {
 
-  s_ungot = -1;
-  memset(s_L, 0, sizeof(s_L));
+  if (!s_L) {
+    printf("editor: module not loaded -- run 'module load editor' first\n");
+    return;
+  }
 
-  memset(s_prev_L, 0xFF, sizeof(s_prev_L));
+  s_ungot = -1;
+  memset(s_L, 0, sizeof(Line) * ED_MAXLINES);
+
+  memset(s_prev_L, 0xFF, sizeof(Line) * ED_MAXLINES);
   s_n = 1;
   s_row = s_col = s_top = s_left = 0;
   s_dirty = false;
@@ -839,10 +909,15 @@ void editor_run(const char * vfs_path) {
   strncpy(s_fname, vfs_path, sizeof(s_fname) - 1);
   s_fname[sizeof(s_fname) - 1] = '\0';
 
+  ED_W = 80;
+  ED_H = 24;
+  ed_query_size();
+
   load();
 
   t_cls();
   t_bp_off();
+  t_wrap_off();
   fflush(stdout);
   sleep_ms(20);
 
@@ -857,7 +932,8 @@ void editor_run(const char * vfs_path) {
   }
 
   done:
-    t_bp_on();
+    t_wrap_on();
+  t_bp_on();
   t_cls();
   t_show();
   fflush(stdout);

@@ -14,6 +14,8 @@
 #include "heap_track.h"
 #include "hardware/gpio.h"
 #include "vfs.h"
+#include "fat_disk.h"
+#include "module.h"
 #include "commands.h"
 
 static void (*s_core1_fn)(void) = NULL;
@@ -32,14 +34,6 @@ void core1_restart(void) {
 }
 
 
-
-static void task_heartbeat(void) {
-    static bool state = false;
-    gpio_init(25);
-    gpio_set_dir(25, GPIO_OUT);
-    state = !state;
-    gpio_put(25, state);
-}
 
 static char pending_cmds[MAX_PENDING_CMDS][INPUT_SIZE];
 static int pending_head = 0;
@@ -78,12 +72,13 @@ void kernel_enqueue_command(const char* cmd) {
 }
 
 void kernel_init(void) {
+    fat_disk_init();
     stdio_init_all();
     while (!stdio_usb_connected()) sleep_ms(100);
     print_lock_init(); 
     heap_track_init();
     syslog_init();
-    LOG_I("kernel", "booting DeckOS v3.0");
+    LOG_I("kernel", "booting DeckOS v5.0");
 
     bootloader_run();
     vfs_load();
@@ -92,8 +87,10 @@ void kernel_init(void) {
     LOG_I("kernel", "drivers ready");
 
     sched_init();
-    sched_register("heartbeat", task_heartbeat, 1000);
     LOG_I("kernel", "scheduler ready");
+
+    modules_init();
+    LOG_I("kernel", "modules registered");
 
     printf("[kernel] initialized\n");
     shell_init();
@@ -101,15 +98,10 @@ void kernel_init(void) {
 }
 
 void kernel_run(void) {
-
-    while (true) {
-
+    while (true) {  
         cron_poll();
-
         pending_commands_poll();
-
-        shell_run();
-
+        shell_run();        
         tight_loop_contents();
     }
 }

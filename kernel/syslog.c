@@ -46,7 +46,6 @@ void syslog_init(void) {
     s_head  = 0;
     s_count = 0;
     s_total = 0;
-    // Plain runtime message - avoids macro-in-string-literal issues
     char init_msg[32];
     snprintf(init_msg, sizeof(init_msg), "ring log ready (%d slots)", SYSLOG_SLOTS);
     syslog_write(LOG_INFO, "syslog", init_msg);

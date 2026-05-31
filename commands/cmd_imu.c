@@ -70,7 +70,7 @@ void cmd_imu(int argc, char* argv[]) {
         gpio_pull_up(sda); gpio_pull_up(scl);
         uint8_t id = mpu6050_whoami(bus, addr);
         printf("WHO_AM_I = 0x%02X  (%s)\n", id,
-               id == 0x68 ? "MPU6050 confirmed" : "unexpected — check wiring");
+               id == 0x68 ? "MPU6050 confirmed" : "unexpected -- check wiring");
         return;
     }
 
@@ -102,7 +102,7 @@ void cmd_imu(int argc, char* argv[]) {
         uint     scl = (argc >= 5) ? (uint)atoi(argv[4]) : 5;
         if (n < 10 || n > 2000) { printf("samples: 10-2000\n"); return; }
         if (!ensure_init(sda, scl, MPU6050_ADDR_LOW)) return;
-        printf("calibrating with %d samples — keep sensor still and level...\n", n);
+        printf("calibrating with %d samples -- keep sensor still and level...\n", n);
         if (!mpu6050_calibrate(s_bus, s_addr,
                                MPU6050_ACCEL_2G, MPU6050_GYRO_250DPS,
                                n, &s_cal)) {
@@ -114,7 +114,7 @@ void cmd_imu(int argc, char* argv[]) {
                s_cal.ax_bias, s_cal.ay_bias, s_cal.az_bias);
         printf("  gyro  bias : gx=%.3f  gy=%.3f  gz=%.3f  deg/s\n",
                s_cal.gx_bias, s_cal.gy_bias, s_cal.gz_bias);
-        printf("  (bias stored in RAM — will be applied to all subsequent reads)\n");
+        printf("  (bias stored in RAM -- will be applied to all subsequent reads)\n");
         return;
     }
 

@@ -50,8 +50,7 @@ void script_ctx_init(script_ctx_t * ctx) {
   memset(ctx, 0, sizeof( * ctx));
 }
 
-static
-const char * var_get(script_ctx_t * ctx,
+static const char * var_get(script_ctx_t * ctx,
   const char * name) {
   for (int i = 0; i < ctx -> var_count; i++)
     if (strcmp(ctx -> vars[i].name, name) == 0)
@@ -114,8 +113,7 @@ static bool eval_cond(script_ctx_t * ctx,
   expand_vars(ctx, expr, buf, sizeof(buf));
   trim_inplace(buf);
 
-  /* BUG FIX: check operators longest-first to avoid "==" matching "=" in ">=" etc.
-     Order: ==, !=, <=, >=, <, >  (same as before, which is correct) */
+ 
   const char * ops[] = {
     "==",
     "!=",
@@ -152,16 +150,16 @@ static bool eval_cond(script_ctx_t * ctx,
       int cmp = strcmp(lhs, rhs);
       if (!strcmp(ops[oi], "==")) return cmp == 0;
       if (!strcmp(ops[oi], "!=")) return cmp != 0;
-      /* For string comparisons, < > <= >= are not defined here — treat as false */
+     
       return false;
     }
   }
-  /* No operator found: treat as truthy if non-empty and non-zero */
+ 
   if (buf[0] == '\0') return false;
   char *end;
   long v = strtol(buf, &end, 10);
-  if (*end == '\0') return v != 0;        /* pure number */
-  return true;                            /* non-empty string */
+  if (*end == '\0') return v != 0;       
+  return true;                           
 }
 
 static void builtin_upper(script_ctx_t * ctx,
@@ -672,9 +670,7 @@ static int find_elif_else_end(
     return -1;
 }
 
-/* -----------------------------------------------------------------------
- * try_builtin_val: recognise special RHS expressions and handle them
- * ---------------------------------------------------------------------- */
+
 static bool try_builtin_val(script_ctx_t * ctx,
   const char * vname,
     const char * valexpr,
@@ -854,37 +850,39 @@ static bool try_builtin_val(script_ctx_t * ctx,
 
 static int do_include(script_ctx_t * ctx,
   const char * path) {
-  uint8_t buf[VFS_MAX_FILE_SIZE];
+ 
+  uint8_t *buf = (uint8_t *)malloc(VFS_MAX_FILE_SIZE);
+  if (!buf) {
+    printf("include: out of memory\n");
+    return RC_ERROR;
+  }
   uint32_t flen = 0;
-  if (vfs_read(path, buf, sizeof(buf) - 1, & flen) < 0) {
+  if (vfs_read(path, buf, VFS_MAX_FILE_SIZE - 1, & flen) < 0) {
     printf("include: file not found: %s\n", path);
+    free(buf);
     return RC_ERROR;
   }
   buf[flen] = '\0';
-  return script_run_string(ctx, (const char * ) buf);
+  int rc = script_run_string(ctx, (const char * ) buf);
+  free(buf);
+  return rc;
 }
 
-/* -----------------------------------------------------------------------
- * Helper: parse arithmetic expression from an already-expanded string.
- * Handles:  <num>  |  <num> op <num>  where op is + - * / %
- * Returns true and sets *result if it looks like arithmetic;
- * returns false if it's a plain string assignment.
- * ---------------------------------------------------------------------- */
+
 static bool eval_arith(script_ctx_t *ctx, const char *expr, long *result) {
-  /* expr is already fully expanded by the caller */
+ 
   char tmp[SCRIPT_LINE_LEN];
   strncpy(tmp, expr, SCRIPT_LINE_LEN - 1);
   tmp[SCRIPT_LINE_LEN - 1] = '\0';
   trim_inplace(tmp);
 
-  /* Try to split on operator.  Scan left-to-right for first +-*\/% that
-     is not at position 0 (to allow negative numbers as first token). */
+ 
   int op_pos = -1;
   char op_ch = 0;
   for (int i = 1; tmp[i]; i++) {
     if (tmp[i] == '+' || tmp[i] == '-' ||
         tmp[i] == '*' || tmp[i] == '/' || tmp[i] == '%') {
-      /* make sure it's surrounded by spaces so "-5" doesn't split on the minus */
+     
       if (i > 0 && tmp[i-1] == ' ' && tmp[i+1] == ' ') {
         op_pos = i;
         op_ch  = tmp[i];
@@ -894,15 +892,15 @@ static bool eval_arith(script_ctx_t *ctx, const char *expr, long *result) {
   }
 
   if (op_pos < 0) {
-    /* No operator — just a single value */
+   
     char *end;
     long v = strtol(tmp, &end, 10);
     if (*end == '\0') { *result = v; return true; }
-    /* non-numeric string — not arithmetic */
+   
     return false;
   }
 
-  /* Split at operator */
+ 
   char lhs_s[SCRIPT_LINE_LEN], rhs_s[SCRIPT_LINE_LEN];
   strncpy(lhs_s, tmp, (size_t)op_pos);
   lhs_s[op_pos] = '\0';
@@ -910,7 +908,7 @@ static bool eval_arith(script_ctx_t *ctx, const char *expr, long *result) {
   strncpy(rhs_s, tmp + op_pos + 1, SCRIPT_LINE_LEN - 1);
   trim_inplace(rhs_s);
 
-  /* Each side can be a literal number or a variable name */
+ 
   char *le, *re;
   long lv = strtol(lhs_s, &le, 10);
   if (*le != '\0') lv = atol(var_get(ctx, lhs_s));
@@ -1050,7 +1048,7 @@ static int run_lines(script_ctx_t * ctx,
         tok = strtok(NULL, " ");
       }
 
-      /* BUG FIX: expand variables in arguments before passing them */
+     
       for (int a = 0; a < nargs; a++) {
         char akey[16];
         snprintf(akey, sizeof(akey), "arg%d", a);
@@ -1071,32 +1069,24 @@ static int run_lines(script_ctx_t * ctx,
       continue;
     }
 
-    /* ----------------------------------------------------------------
-     * let <var> = <expr>
-     *
-     * Evaluation order:
-     *  1. Try builtin functions (adc, gpio, math, string ops, etc.)
-     *  2. Fully expand $vars in the RHS, then:
-     *     a. Try arithmetic: "num op num"
-     *     b. Fall back to plain string assignment
-     * ---------------------------------------------------------------- */
+   
     if (!strncmp(line, "let ", 4)) {
       char rest[SCRIPT_LINE_LEN];
       strncpy(rest, line + 4, sizeof(rest) - 1);
       trim_inplace(rest);
 
-      /* Parse:  varname = expr  */
+     
       char vname[SCRIPT_VAR_NAME_LEN] = { 0 };
       char eq[4]                      = { 0 };
       char valexpr[SCRIPT_LINE_LEN]   = { 0 };
 
-      /* Use strchr so the RHS can contain spaces (arithmetic, strings) */
+     
       char *eq_pos = strchr(rest, '=');
       if (!eq_pos) {
         printf("script: bad let syntax (no '='): %s\n", rest);
         continue;
       }
-      /* Extract variable name (everything before '=', trimmed) */
+     
       int namelen = (int)(eq_pos - rest);
       if (namelen <= 0 || namelen >= SCRIPT_VAR_NAME_LEN) {
         printf("script: bad let syntax (name): %s\n", rest);
@@ -1106,7 +1096,7 @@ static int run_lines(script_ctx_t * ctx,
       vname[namelen] = '\0';
       trim_inplace(vname);
 
-      /* Extract value expression (everything after '=', trimmed) */
+     
       strncpy(valexpr, eq_pos + 1, sizeof(valexpr) - 1);
       trim_inplace(valexpr);
 
@@ -1115,23 +1105,23 @@ static int run_lines(script_ctx_t * ctx,
         continue;
       }
 
-      /* 1. Check for builtin function calls first (they handle expansion) */
+     
       if (try_builtin_val(ctx, vname, valexpr, lines, total))
         continue;
 
-      /* 2. Fully expand variables in the RHS */
+     
       char expanded[SCRIPT_LINE_LEN] = { 0 };
       expand_vars(ctx, valexpr, expanded, sizeof(expanded));
       trim_inplace(expanded);
 
-      /* 3. Try arithmetic evaluation */
+     
       long arith_result;
       if (eval_arith(ctx, expanded, &arith_result)) {
         char numbuf[32];
         snprintf(numbuf, sizeof(numbuf), "%ld", arith_result);
         var_set(ctx, vname, numbuf);
       } else {
-        /* 4. Plain string assignment (already expanded) */
+       
         var_set(ctx, vname, expanded);
       }
       continue;
@@ -1257,7 +1247,7 @@ static int run_lines(script_ctx_t * ctx,
       }
 
       if (!strcmp(keyword, "in")) {
-        /* BUG FIX: expand source variable name (it could be $arrayname) */
+       
         char aname[SCRIPT_VAR_NAME_LEN] = { 0 };
         expand_vars(ctx, source, aname, sizeof(aname));
         trim_inplace(aname);
@@ -1309,7 +1299,7 @@ static int run_lines(script_ctx_t * ctx,
       continue;
     }
 
-    /* println is an alias for print (both append newline) */
+   
     if (!strncmp(line, "println ", 8)) {
       char out[SCRIPT_LINE_LEN];
       expand_vars(ctx, line + 8, out, sizeof(out));
@@ -1442,7 +1432,7 @@ static int run_lines(script_ctx_t * ctx,
         return RC_ERROR;
       }
 
-      /* BUG FIX: raised iteration limit from 10000 to 100000 */
+     
       int iter = 0;
       while (true) {
         char ce[SCRIPT_LINE_LEN];
@@ -1468,7 +1458,7 @@ static int run_lines(script_ctx_t * ctx,
         printf("script: missing endrepeat\n");
         return RC_ERROR;
       }
-      /* BUG FIX: raised max repeat from 1000 to 10000 */
+     
       for (int r = 0; r < n && r < 10000; r++) {
         char buf[8];
         snprintf(buf, sizeof(buf), "%d", r);
@@ -1591,18 +1581,33 @@ int script_run_string(script_ctx_t *ctx, const char *source) {
 
 
 int script_run_file(const char * vfs_path) {
-  uint8_t buf[VFS_MAX_FILE_SIZE];
+ 
+  uint8_t *buf = (uint8_t *)malloc(VFS_MAX_FILE_SIZE);
+  if (!buf) {
+    printf("script: out of memory\n");
+    return -1;
+  }
+
   uint32_t flen = 0;
-  if (vfs_read(vfs_path, buf, sizeof(buf) - 1, & flen) < 0) {
+  if (vfs_read(vfs_path, buf, VFS_MAX_FILE_SIZE - 1, & flen) < 0) {
     printf("script: file not found: %s\n", vfs_path);
+    free(buf);
     return -1;
   }
   buf[flen] = '\0';
   printf("[script] running '%s'  (%lu bytes)\n", vfs_path, flen);
 
-  script_ctx_t ctx;
-  script_ctx_init( & ctx);
-  int rc = script_run_string( & ctx, (const char * ) buf);
+  script_ctx_t *ctx = (script_ctx_t *)malloc(sizeof(*ctx));
+  if (!ctx) {
+    printf("script: out of memory\n");
+    free(buf);
+    return -1;
+  }
+  script_ctx_init(ctx);
+  int rc = script_run_string(ctx, (const char * ) buf);
   printf("[script] done (rc=%d)\n", rc);
+
+  free(ctx);
+  free(buf);
   return rc;
 }
