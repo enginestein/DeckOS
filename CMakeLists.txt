@@ -44,6 +44,7 @@ drivers/drivers.c
 drivers/spi_bus.c
 drivers/mpu6050.c
 drivers/oled.c
+drivers/nrf24l01.c
 )
 
 pico_set_linker_script(DeckOS ${CMAKE_CURRENT_SOURCE_DIR}/memmap_deckos.ld)

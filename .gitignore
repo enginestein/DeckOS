@@ -1,1 +1,9 @@
-build
+build/
+*.uf2
+*.elf
+*.hex
+compile_commands.json
+.vscode/
+.cache/
+CMakeFiles/
+cmake_install.cmake

@@ -714,7 +714,7 @@ static void cmd_help(int argc, char * argv[]) {
     return;
   }
 
-  printf("DeckOS v5.0  --  command groups\n");
+  printf("DeckOS v6.0  --  command groups\n");
   printf("====================================================\n\n");
   fflush(stdout);
   for (int g = 0; g < group_count; g++) {
@@ -727,7 +727,7 @@ static void cmd_help(int argc, char * argv[]) {
 
 static void cmd_version(int argc, char * argv[]) {
   board_info_t b = board_detect();
-  printf("DeckOS v5.0  |  %s\n", b.name);
+  printf("DeckOS v6.0  |  %s\n", b.name);
   printf("CPU: RP2040 dual-core Cortex-M0+ @ %lu MHz\n", b.cpu_mhz);
   printf("Build: %s %s\n", __DATE__, __TIME__);
 }
@@ -1758,7 +1758,7 @@ static void cmd_sysinfo(int argc, char * argv[]) {
   (void) argv;
   board_info_t b = board_detect();
   printf("=================================\n");
-  printf("  DeckOS v5.0  -  system info  \n");
+  printf("  DeckOS v6.0  -  system info  \n");
   printf("=================================\n");
   printf("board   : %s\n", b.name);
   printf("cpu     : RP2040  dual-core Cortex-M0+  %lu MHz\n", b.cpu_mhz);

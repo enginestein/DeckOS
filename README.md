@@ -2,6 +2,8 @@
 
 A bare metal shell OS, currently compatible for RP2040.
 
+> **ESP32 port also available** — see [DeckOS_ESP32](https://github.com/enginestein/DeckOS_ESP32) for the ESP32 (ESP-IDF / FreeRTOS) port with native WiFi, ESP-NOW, camera support, NRF24L01 radio, and SPIFFS file persistence. See the [ESP32 Port](#esp32-port) section below for details.
+
 
 ---
 
@@ -1507,6 +1509,50 @@ Drivers are registered and initialised in order at boot. Each one reports OK or 
 ```bash
 > drivers
 ```
+
+---
+
+---
+
+## ESP32 Port
+
+[DeckOS_ESP32](https://github.com/enginestein/DeckOS_ESP32) is a port of DeckOS from the **RP2040 (bare metal)** to the **ESP32 (ESP-IDF / FreeRTOS)**. It introduces a Hardware Abstraction Layer (HAL) that decouples the kernel, shell, scripting, and command logic from the MCU hardware, allowing the same codebase to target both platforms.
+
+### What's different in the ESP32 port
+
+| Aspect | RP2040 (this repo) | ESP32 Port |
+|--------|-------------------|------------|
+| **SDK** | Pico SDK (bare metal) | ESP-IDF 5.1 (FreeRTOS) |
+| **CPU** | Dual-core Cortex-M0+ @ 125 MHz | Dual-core Xtensa LX6 @ 240 MHz |
+| **WiFi** | External ESP8266 bridge | Native ESP-IDF WiFi |
+| **ESP-NOW** | Via ESP8266 bridge | Native ESP-NOW |
+| **Bluetooth** | External HC-05 (UART) | Stubbed (BT disabled for DRAM) |
+| **USB** | TinyUSB (CDC + MSC + HID) | ESP-IDF USB CDC only |
+| **Filesystem** | VFS persisted to raw flash | VFS persisted to SPIFFS (2 MB partition) |
+| **Config** | Last 4 KB of flash | NVS (Non-Volatile Storage) |
+| **Camera** | External ESP32-CAM bridge | Native esp32-camera driver |
+
+### New features in the ESP32 port
+
+- **Native WiFi** — station + AP mode, HTTP server, event-driven
+- **Native ESP-NOW** — peer-to-peer mesh without a router
+- **ESP32-CAM support** — full camera init/capture
+- **NRF24L01 radio driver** — 2.4 GHz SPI radio
+- **SPIFFS persistence** — 2 MB partition for VFS files
+- **NVS config** — key-value storage via ESP-IDF NVS
+- **PSRAM support** — auto-detected and used for heap
+- **Board auto-detection** — ESP32-WROOM vs CAM vs S3
+
+### Building the ESP32 port
+
+```bash
+git clone https://github.com/enginestein/DeckOS_ESP32
+cd DeckOS_ESP32
+idf.py build
+idf.py flash monitor
+```
+
+Requires ESP-IDF 5.1 or newer and the appropriate xtensa toolchain.
 
 ---
 
