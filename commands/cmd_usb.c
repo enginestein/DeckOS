@@ -1,6 +1,4 @@
 /*
- * DeckOS shell commands for the USB "portable OS" features:
- *
    usb      - manage the FAT12 USB mass-storage disk and bridge to the VFS
    hid      - act as a USB keyboard and type into the connected host
    console  - mirror shell output to the OLED (standalone handheld mode)
@@ -20,6 +18,7 @@
 #include "oled.h"
 #include "vfs.h"
 
+extern void msc_disk_mark_changed(void);
 
 static void usb_print_status(void) {
     uint32_t blk  = fat_disk_block_count();
@@ -55,9 +54,12 @@ static void usb_export_one(const char *vfspath, const char *diskname) {
 
     const char *name = diskname ? diskname : vfspath;
     int rc = fat_disk_add_file(name, buf, len);
-    if (rc == 0)        printf("exported '%s' -> disk (%lu B)\n", vfspath, (unsigned long)len);
-    else if (rc == -1)  printf("usb: disk directory full\n");
-    else                printf("usb: disk out of space\n");
+    if (rc == 0) {
+        printf("exported '%s' -> disk (%lu B)\n", vfspath, (unsigned long)len);
+        msc_disk_mark_changed();
+    } else if (rc == -1)  printf("usb: disk directory full\n");
+    else                  printf("usb: disk out of space\n");
+    fflush(stdout);
 }
 
 /* Copy one USB-disk file into the VFS. */
@@ -70,8 +72,10 @@ static void usb_import_one(const char *name, const char *vfsdir) {
     }
     char path[VFS_PATH_LEN];
     snprintf(path, sizeof(path), "%s/%s", vfsdir ? vfsdir : "/home", name);
-    if (vfs_write(path, buf, len, false) >= 0)
+    if (vfs_write(path, buf, len, false) >= 0) {
         printf("imported '%s' -> %s (%lu B)\n", name, path, (unsigned long)len);
+        fflush(stdout);
+    }
 }
 
 void cmd_usb(int argc, char *argv[]) {
@@ -81,11 +85,14 @@ void cmd_usb(int argc, char *argv[]) {
         usb_list();
     } else if (strcmp(argv[1], "format") == 0) {
         fat_disk_format();
+        msc_disk_mark_changed();
         printf("usb: disk reformatted\n");
     } else if (strcmp(argv[1], "rm") == 0) {
         if (argc < 3) { printf("usage: usb rm <NAME>\n"); return; }
-        if (fat_disk_delete_file(argv[2]) == 0) printf("deleted '%s' from disk\n", argv[2]);
-        else printf("usb: '%s' not found\n", argv[2]);
+        if (fat_disk_delete_file(argv[2]) == 0) {
+            msc_disk_mark_changed();
+            printf("deleted '%s' from disk\n", argv[2]);
+        } else printf("usb: '%s' not found\n", argv[2]);
     } else if (strcmp(argv[1], "export") == 0) {
         if (argc < 3) { printf("usage: usb export <vfspath> [diskname]\n"); return; }
         usb_export_one(argv[2], argc >= 4 ? argv[3] : NULL);

@@ -17,6 +17,7 @@
 #include "fat_disk.h"
 #include "module.h"
 #include "commands.h"
+#include "tusb.h"
 
 static void (*s_core1_fn)(void) = NULL;
 
@@ -105,7 +106,8 @@ void kernel_init(void) {
 
 void kernel_run(void) {
     static uint64_t last_tick = 0;
-    while (true) {  
+    while (true) {
+        tud_task();
         cron_poll();
         pending_commands_poll();
         shell_run();

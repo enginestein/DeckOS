@@ -2,6 +2,12 @@
 #include "fat_disk.h"
 #include "class/msc/msc.h"
 
+static bool s_media_changed = false;
+
+void msc_disk_mark_changed(void) {
+    s_media_changed = true;
+}
+
 void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8],
                         uint8_t product_id[16], uint8_t product_rev[4]) {
     (void) lun;
@@ -14,7 +20,11 @@ void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8],
 }
 
 bool tud_msc_test_unit_ready_cb(uint8_t lun) {
-    (void) lun;
+    if (s_media_changed) {
+        tud_msc_set_sense(lun, SCSI_SENSE_UNIT_ATTENTION, 0x28, 0x00);
+        s_media_changed = false;
+        return false;
+    }
     return true;
 }
 
