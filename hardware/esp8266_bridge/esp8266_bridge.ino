@@ -36,14 +36,16 @@ String wifi_password = "decko";
 
 String responseBuffer = "";
 
-typedef struct {
-    char     node_id[16];
+#define SWARM_PKT_TELEM 0x01
+
+typedef struct __attribute__((packed)) {
+    uint8_t  type;
+    char     name[32];
     float    lat;
     float    lon;
     float    alt;
-    float    heading;
+    float    hdg;
     uint8_t  state;
-    uint32_t timestamp;
 } swarm_packet_t;
 
 static swarm_packet_t s_peers[SWARM_MAX_PEERS];
@@ -55,13 +57,14 @@ static void espnow_recv_cb(uint8_t *mac, uint8_t *data, uint8_t len) {
     if (len != sizeof(swarm_packet_t)) return;
     swarm_packet_t pkt;
     memcpy(&pkt, data, sizeof(pkt));
-    pkt.node_id[sizeof(pkt.node_id) - 1] = '\0';
+    pkt.name[sizeof(pkt.name) - 1] = '\0';
+    if (pkt.type != SWARM_PKT_TELEM) return;
 
     for (int i = 0; i < s_peer_count; i++) {
-        if (strcmp(s_peers[i].node_id, pkt.node_id) == 0) {
+        if (strcmp(s_peers[i].name, pkt.name) == 0) {
             memcpy(&s_peers[i], &pkt, sizeof(pkt));
             Serial.print("[SWARM] update ");
-            Serial.print(pkt.node_id);
+            Serial.print(pkt.name);
             Serial.print(" lat="); Serial.print(pkt.lat, 6);
             Serial.print(" lon="); Serial.print(pkt.lon, 6);
             Serial.print(" alt="); Serial.println(pkt.alt);
@@ -71,7 +74,7 @@ static void espnow_recv_cb(uint8_t *mac, uint8_t *data, uint8_t len) {
     if (s_peer_count < SWARM_MAX_PEERS) {
         memcpy(&s_peers[s_peer_count++], &pkt, sizeof(pkt));
         Serial.print("[SWARM] new peer ");
-        Serial.println(pkt.node_id);
+        Serial.println(pkt.name);
     }
 }
 
@@ -759,8 +762,13 @@ void handleBridgeCommand(String cmd) {
     }
     WiFi.scanDelete();
   } else if (cmd == "@swarm init") {
+    if (s_espnow_active) {
+        esp_now_deinit();
+        s_espnow_active = false;
+    }
     if (WiFi.status() == WL_CONNECTED) WiFi.disconnect();
     WiFi.mode(WIFI_STA);
+    delay(100);
     if (esp_now_init() != 0) {
         Serial.println("[SWARM] init failed");
         return;
@@ -783,8 +791,11 @@ void handleBridgeCommand(String cmd) {
     String mac_str = cmd.substring(12);
     mac_str.trim();
     uint8_t mac[6];
-    sscanf(mac_str.c_str(), "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
-           &mac[0],&mac[1],&mac[2],&mac[3],&mac[4],&mac[5]);
+    if (sscanf(mac_str.c_str(), "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
+               &mac[0],&mac[1],&mac[2],&mac[3],&mac[4],&mac[5]) != 6) {
+        Serial.println("[SWARM] bad MAC format");
+        return;
+    }
     esp_now_add_peer(mac, ESP_NOW_ROLE_COMBO, SWARM_CHANNEL, NULL, 0);
     Serial.print("[SWARM] peer added ");
     Serial.println(mac_str);
@@ -792,12 +803,21 @@ void handleBridgeCommand(String cmd) {
 } else if (cmd.startsWith("@swarm pub ")) {
     if (!s_espnow_active) { Serial.println("[SWARM] not initialised"); return; }
     String rest = cmd.substring(11);
+    float lat, lon, alt, hdg;
+    unsigned int state;
+    if (sscanf(rest.c_str(), "%f %f %f %f %u", &lat, &lon, &alt, &hdg, &state) != 5) {
+        Serial.println("[SWARM] pub: bad arguments");
+        return;
+    }
     swarm_packet_t pkt;
     memset(&pkt, 0, sizeof(pkt));
-    strncpy(pkt.node_id, s_node_id, 15);
-    pkt.timestamp = millis();
-    sscanf(rest.c_str(), "%f %f %f %f %hhu",
-           &pkt.lat, &pkt.lon, &pkt.alt, &pkt.heading, &pkt.state);
+    pkt.type = SWARM_PKT_TELEM;
+    strncpy(pkt.name, s_node_id, sizeof(pkt.name) - 1);
+    memcpy(&pkt.lat, &lat, sizeof(float));
+    memcpy(&pkt.lon, &lon, sizeof(float));
+    memcpy(&pkt.alt, &alt, sizeof(float));
+    memcpy(&pkt.hdg, &hdg, sizeof(float));
+    pkt.state = (uint8_t)state;
     swarm_broadcast(&pkt);
     Serial.println("[SWARM] broadcast sent");
 
@@ -806,11 +826,11 @@ void handleBridgeCommand(String cmd) {
     Serial.println(s_peer_count);
     for (int i = 0; i < s_peer_count; i++) {
         Serial.print("  ");
-        Serial.print(s_peers[i].node_id);
+        Serial.print(s_peers[i].name);
         Serial.print(" lat="); Serial.print(s_peers[i].lat, 6);
         Serial.print(" lon="); Serial.print(s_peers[i].lon, 6);
         Serial.print(" alt="); Serial.print(s_peers[i].alt);
-        Serial.print(" hdg="); Serial.print(s_peers[i].heading);
+        Serial.print(" hdg="); Serial.print(s_peers[i].hdg);
         Serial.print(" state="); Serial.println(s_peers[i].state);
     }
 

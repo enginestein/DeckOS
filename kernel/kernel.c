@@ -71,6 +71,10 @@ void kernel_enqueue_command(const char* cmd) {
     }
 }
 
+extern void commands_api_register(const char *name, const char *desc, void (*handler)(int, char**));
+extern void commands_api_unregister(const char *name);
+extern void cron_schedule(const char *cmd, uint32_t delay_ms);
+
 void kernel_init(void) {
     fat_disk_init();
     stdio_init_all();
@@ -83,25 +87,33 @@ void kernel_init(void) {
     bootloader_run();
     vfs_load();
     drivers_init_all();
-    bt_init(BT_DEFAULT_BAUD);
     LOG_I("kernel", "drivers ready");
 
     sched_init();
     LOG_I("kernel", "scheduler ready");
 
     modules_init();
+    module_set_cmd_api(commands_api_register, commands_api_unregister);
     LOG_I("kernel", "modules registered");
 
     printf("[kernel] initialized\n");
     shell_init();
     LOG_I("kernel", "shell ready");
+
+    module_fire_event(MODULE_EVENT_BOOT_COMPLETE, NULL);
 }
 
 void kernel_run(void) {
+    static uint64_t last_tick = 0;
     while (true) {  
         cron_poll();
         pending_commands_poll();
-        shell_run();        
+        shell_run();
+        uint64_t now = time_us_64();
+        if (now - last_tick >= 1000000) {
+            module_fire_event(MODULE_EVENT_TICK, NULL);
+            last_tick = now;
+        }
         tight_loop_contents();
     }
 }

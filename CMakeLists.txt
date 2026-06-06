@@ -22,6 +22,16 @@ kernel/module.c
 shell/shell.c
 shell/editor.c
 commands/commands.c
+modules/mod_wifi.c
+modules/mod_bt.c
+modules/mod_servo.c
+modules/mod_oled.c
+modules/mod_swarm.c
+modules/mod_mqtt.c
+modules/mod_imu.c
+modules/mod_tone.c
+modules/mod_morse.c
+modules/plugin_example.c
 commands/cmd_imu.c
 system/bench.c
 system/device_detect.c

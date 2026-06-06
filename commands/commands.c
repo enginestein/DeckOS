@@ -3583,12 +3583,12 @@ static void cmd_watch(int argc, char * argv[]) {
 
 static void cmd_module(int argc, char * argv[]) {
   if (argc < 2 || strcmp(argv[1], "list") == 0) {
-    int n = module_count();
+    int n = module_total_count();
     printf("modules:\n");
     printf("  %-10s %-6s %-7s  %s\n", "name", "state", "ram", "description");
     uint32_t loaded_ram = 0;
     for (int i = 0; i < n; i++) {
-      const module_t * m = module_get(i);
+      const module_t * m = module_total_get(i);
       if (!m) continue;
       printf("  %-10s %-6s %4lu KB  %s\n",
         m -> name,
@@ -5141,43 +5141,7 @@ static command_t command_table[] = {
     cmd_scope,
     "scope <pin> <hz> <ms>  clean waveform viewer"
   },
-  {
-    "imu",
-    cmd_imu,
-    "imu read|stream|attitude|calibrate|raw|whoami"
-  },
-  {
-    "oled",
-    cmd_oled,
-    "oled init|text|rect|circle|progress|splash|notify|scroll|boot ..."
-  },
 
-  {
-    "servo",
-    cmd_servo,
-    "servo <pin> <angle> | sweep | bg sweep/goto/stop"
-  },
-
-  {
-    "tone",
-    cmd_tone,
-    "tone <pin> <note|hz> [ms]  (connect buzzer to pin+GND)"
-  },
-  {
-    "melody",
-    cmd_melody,
-    "melody <pin> <C4:200 E4:200 ...>"
-  },
-  {
-    "morse",
-    cmd_morse,
-    "morse <text> [wpm]  blink LED in morse"
-  },
-  {
-    "piano",
-    cmd_piano,
-    "piano <pin>  play buzzer like a keyboard (a-k keys)"
-  },
 
   {
     "sleep",
@@ -5275,31 +5239,13 @@ static command_t command_table[] = {
     cmd_rand,
     "rand [min] [max]  hardware random number"
   },
-  {
-    "bt",
-    cmd_bt,
-    "bt shell|log|exec|top|send|recv|sniff|at|name|pin|baud|status"
-  },
-  {
-    "wifi",
-    cmd_wifi,
-    "wifi init|status|ping|scan|join|ip|shell|deinit"
-  },
-  {
-    "mqtt",
-    cmd_mqtt,
-    "mqtt server|port|id|connect|pub|sub|unsub"
-  },
+
   {
     "run",
     cmd_run,
     "run <file>  execute a DeckScript file from VFS"
   },
-  {
-    "swarm",
-    cmd_swarm,
-    "swarm init|id|peer|pub|list|mac|stop  ESP-NOW drone mesh"
-  },
+
   {
     "script",
     cmd_script,
@@ -5456,19 +5402,49 @@ static command_t command_table[] = {
 
 };
 
+#define MAX_DYNAMIC_CMDS 32
+static command_t s_dynamic_cmds[MAX_DYNAMIC_CMDS];
+static int s_dynamic_cmd_count = 0;
+
+void commands_api_register(const char *name, const char *desc, void (*handler)(int, char**)) {
+    if (s_dynamic_cmd_count >= MAX_DYNAMIC_CMDS) {
+        printf("cmd_api: max dynamic commands (%d) reached\n", MAX_DYNAMIC_CMDS);
+        return;
+    }
+    s_dynamic_cmds[s_dynamic_cmd_count].name = name;
+    s_dynamic_cmds[s_dynamic_cmd_count].handler = handler;
+    s_dynamic_cmds[s_dynamic_cmd_count].description = desc;
+    s_dynamic_cmd_count++;
+}
+
+void commands_api_unregister(const char *name) {
+    for (int i = 0; i < s_dynamic_cmd_count; i++) {
+        if (strcmp(s_dynamic_cmds[i].name, name) == 0) {
+            s_dynamic_cmds[i] = s_dynamic_cmds[--s_dynamic_cmd_count];
+            return;
+        }
+    }
+}
+
 static
 const int command_count = sizeof(command_table) / sizeof(command_t);
 
 void commands_init(void) {
   s_boot_us = time_us_64();
   s_cmd_count = 0;
-  printf("[commands] %d commands registered\n", command_count);
+  module_set_cmd_api(commands_api_register, commands_api_unregister);
+  printf("[commands] %d commands + %d dynamic slots registered\n", command_count, MAX_DYNAMIC_CMDS);
 }
 
 void commands_list(void) {
   printf("available commands:\n");
   for (int i = 0; i < command_count; i++)
     printf("  %-10s - %s\n", command_table[i].name, command_table[i].description);
+  if (s_dynamic_cmd_count > 0) {
+    printf("\nloaded module commands:\n");
+    for (int i = 0; i < s_dynamic_cmd_count; i++)
+      printf("  %-10s - %s\n", s_dynamic_cmds[i].name, s_dynamic_cmds[i].description);
+  }
 }
 
 void commands_execute(char * input) {
@@ -5514,6 +5490,16 @@ void commands_execute(char * input) {
       return;
     }
   }
+
+  for (int i = 0; i < s_dynamic_cmd_count; i++) {
+    if (strcmp(argv[0], s_dynamic_cmds[i].name) == 0) {
+      s_cmd_count++;
+      LOG_D("shell", argv[0]);
+      s_dynamic_cmds[i].handler(argc, argv);
+      return;
+    }
+  }
+
   s_unknown_count++;
   char logbuf[64];
   snprintf(logbuf, sizeof(logbuf), "unknown: %s", argv[0]);

@@ -23,11 +23,21 @@ A bare metal shell OS, currently compatible for RP2040.
   - [Scripting & Automation](#scripting--automation)
   - [System](#system)
   - [Subsystems](#subsystems)
-  - [WiFi / ESP8266](#wifi--esp8266)
-  - [MQTT](#mqtt)
-  - [Swarm / ESP-NOW](#swarm--esp-now)
-  - [Bluetooth / HC-05](#bluetooth--hc-05)
-  - [Filesystem](#filesystem)
+- [WiFi / ESP8266](#wifi--esp8266)
+  - [What WiFi lets you do](#what-wifi-lets-you-do)
+  - [Wiring](#wiring)
+  - [Bridge firmware setup](#bridge-firmware-setup)
+  - [WiFi commands](#wifi-commands)
+  - [Typical workflow](#typical-workflow)
+- [MQTT](#mqtt)
+- [Swarm / ESP-NOW](#swarm--esp-now)
+- [Bluetooth / HC-05](#bluetooth--hc-05)
+  - [What Bluetooth lets you do](#what-bluetooth-lets-you-do)
+  - [Wiring](#wiring-1)
+  - [Bluetooth commands](#bluetooth-commands)
+  - [Typical workflow](#typical-workflow-1)
+- [Filesystem](#filesystem)
+  - [Text editor (`edit`)](#text-editor-edit)
 - [Modules (on-demand RAM)](#modules-on-demand-ram)
 - [USB portable OS](#usb-portable-os)
   - [USB mass storage (portable disk)](#usb-mass-storage-portable-disk)
@@ -40,21 +50,37 @@ A bare metal shell OS, currently compatible for RP2040.
   - [String functions](#string-functions)
   - [Math functions](#math-functions)
   - [Control flow](#control-flow)
+    - [Switch](#switch)
+    - [Assert](#assert)
   - [Loops](#loops)
+    - [repeat](#repeat)
+    - [while](#while)
+    - [for (range)](#for-range)
+    - [for (array)](#for-array)
+    - [break and continue](#break-and-continue)
   - [Arrays](#arrays)
   - [Functions](#functions)
-  - [Hardware access](#hardware-access-from-scripts)
+    - [Recursion example](#recursion-example)
+  - [Hardware access from scripts](#hardware-access-from-scripts)
   - [I/O](#io)
   - [Logging and assertions](#logging-and-assertions)
   - [Includes](#includes)
   - [Example scripts](#example-scripts)
+    - [Blink the LED](#blink-the-led)
+    - [Read ADC and classify](#read-adc-and-classify)
+    - [Servo sweep with timing](#servo-sweep-with-timing)
+    - [Simple function library](#simple-function-library)
 - [Buzzer setup](#buzzer-setup)
 - [Config system](#config-system)
 - [Syslog](#syslog)
 - [Scheduler](#scheduler)
 - [Boot modes](#boot-modes)
 - [Drivers](#drivers)
-- [Project layout](#project-layout)
+- [ESP32 Port](#esp32-port)
+  - [What's different in the ESP32 port](#whats-different-in-the-esp32-port)
+  - [New features in the ESP32 port](#new-features-in-the-esp32-port)
+  - [Building the ESP32 port](#building-the-esp32-port)
+- [Demo](#demo)
 
 ---
 
@@ -94,7 +120,10 @@ Boot order:
     ├── bootloader_run()   (mode detect, config load, banner)
     ├── drivers_init_all() (adc, gpio, pwm, i2c0)
     ├── sched_init()       (launches Core 1)
+    ├── modules_init()     (register module table)
+    ├── module_set_cmd_api() (inject command registration)
     └── shell_init()       (registers commands, prints prompt)
+    └── module_fire_event(BOOT_COMPLETE)
 
   kernel_run()  [infinite loop]
     └── shell_run()        (non-blocking input → parse → dispatch)
@@ -467,6 +496,7 @@ Up to 16 aliases can be defined. Aliases live in RAM and are cleared on reboot.
 | `date` | `date set <Y> <M> <D> <h> <m> <s>` | Set the real-time clock |
 | `history` | `history` | List the command history (last 16 commands) |
 | `history` | `history clear` | Clear the command history |
+| `module` | `module <list\|load\|unload> [name]` | Manage loadable modules (list, load, unload) |
 | `uname` | `uname [-a]` | Print the OS name; `-a` shows full system identity |
 | `rand` | `rand [min] [max]` | Generate a hardware random number |
 
@@ -789,43 +819,145 @@ Files are limited to 64 lines of up to 511 characters each.
 
 ---
 
-## Modules (on-demand RAM)
+## Module & Plugin System
 
-Some subsystems carry a large RAM footprint that most sessions never touch. The
-text editor, for example, needs three line buffers of ~32 KB each (~96 KB) --
-more than half of all static RAM -- yet it sits idle unless you actually edit a
-file.
+DeckOS uses a loadable module architecture. Features that carry a RAM footprint
+(editor, WiFi, Bluetooth, servo, OLED, swarm, IMU, tone, morse, MQTT) are
+packaged as **modules** that allocate memory only when loaded. Community
+extensions are supported through the **plugin API** — third-party code can
+register commands, listen to events, and participate in the module lifecycle
+without modifying the core firmware.
 
-DeckOS packages such subsystems as **modules**. A module's buffers are
-`malloc()`-ed from the heap only when you explicitly load it, and freed when you
-unload it. A module that isn't loaded costs essentially nothing (just a small
-registry entry), and its commands refuse to run until it is loaded.
+A module that isn't loaded costs essentially nothing (just a small registry
+entry), and its commands refuse to run until loaded.
+
+### Commands
 
 | Command | What it does |
 |---|---|
-| `module` / `module list` | List modules, their load state, and RAM cost |
+| `module list` | List all modules, their load state, and RAM cost |
 | `module load <name>` | Allocate the module's buffers and enable it |
 | `module unload <name>` | Free the module's buffers |
+
+### Usage
 
 ```bash
 > module list
 modules:
   name       state  ram      description
   editor     -        96 KB  nano-style text editor (edit command)
+  wifi       -         8 KB  ESP8266 WiFi control
+  bluetooth  -         4 KB  HC-05 Bluetooth shell
+  servo      -         2 KB  Servo control
+  oled       -        16 KB  SSD1306 OLED display
+  swarm      -         6 KB  ESP-NOW mesh network
+  imu        -         4 KB  MPU6050 accelerometer/gyro
+  tone       -         1 KB  Audio tone generation
+  morse      -         1 KB  Morse code signalling
+  mqtt       -         4 KB  MQTT client
+  plugin-example -     1 KB  Example community plugin
   ----
   loaded RAM: 0 KB
-> module load editor       # ~96 KB allocated from heap
-> edit /home/blink.ds
-> module unload editor      # ~96 KB returned to heap
+  usage: module load <name> | module unload <name> | module list
+
+> module load wifi       # allocate WiFi buffers and register commands
+> wifi scan              # commands available now
+> module unload wifi     # free WiFi buffers
 ```
 
-**Why it matters:** with the editor unloaded, idle free heap is ~162 KB; loading
-it brings that down to ~66 KB only while you need it. This keeps the DeckScript
-interpreter (which `malloc()`s a 16 KB line buffer per nesting level) from
-running out of memory during normal use.
+The editor needs three ~32 KB line buffers (~96 KB total), so it benefits
+most from being loaded only while editing. Other modules are lighter but
+following the same pattern keeps heap fragmentation low.
 
-Currently the **editor** is the one bundled module; the framework is built to
-host more RAM-heavy subsystems the same way.
+### Plugin API (for community code)
+
+Community plugins register themselves with the module system at boot via
+`module_register_plugin()`. Plugins can:
+
+- Register shell commands (registered/unregistered automatically on load/unload)
+- Listen for lifecycle events (BOOT_COMPLETE, TICK, PRE_COMMAND, POST_COMMAND)
+- Declare their own load/unload hooks
+- Report their version (semver) and estimated RAM usage
+
+**Writing a plugin:**
+
+```c
+// modules/my_plugin.c
+#include "module.h"
+#include "commands.h"
+
+static void cmd_hello(int argc, char *argv[]) {
+    printf("Hello from my plugin!\n");
+}
+
+static module_cmd_t s_cmds[] = {
+    {"hello", "My plugin greeting", cmd_hello},
+};
+
+static bool my_load(void) { printf("my_plugin: loaded\n"); return true; }
+static void my_unload(void) { printf("my_plugin: unloaded\n"); }
+
+plugin_api_t MY_PLUGIN = {
+    .init   = my_load,
+    .deinit = my_unload,
+    .commands     = s_cmds,
+    .command_count = 1,
+    .on_event = NULL,
+};
+```
+
+Then add a `module_t` entry in `kernel/module.c`:
+
+```c
+extern plugin_api_t MY_PLUGIN;
+// In s_modules[]:
+{
+    .name        = "my-plugin",
+    .description = "My awesome plugin",
+    .ram_bytes   = 4096,
+    .load        = MY_PLUGIN.init,
+    .unload      = MY_PLUGIN.deinit,
+    .loaded      = false,
+    .version     = "1.0.0",
+    .commands    = MY_PLUGIN.commands,
+    .command_count = MY_PLUGIN.command_count,
+    .is_builtin  = false,
+},
+```
+
+Users can now `module load my-plugin` and run `hello`.
+
+### Event System
+
+Loaded modules can receive system events through their `.on_event` callback:
+
+| Event | When fired |
+|---|---|
+| `MODULE_EVENT_BOOT_COMPLETE` | After kernel_init() completes |
+| `MODULE_EVENT_TICK` | Roughly once per second |
+| `MODULE_EVENT_PRE_COMMAND` | Before a CLI command executes |
+| `MODULE_EVENT_POST_COMMAND` | After a CLI command executes |
+| `MODULE_EVENT_PEER_DISCOVERED` | When a swarm mesh peer is found |
+| `MODULE_EVENT_CUSTOM_START` | Base for user-defined events (100+) |
+
+### Architecture
+
+```
+┌──────────────────────────────────────────┐
+│  Shell / Commands / DeckScript / VFS     │
+│  command_table[] (built-in) + s_dynamic[]│
+│  (dynamic commands from loaded modules)  │
+├──────────────────────────────────────────┤
+│  Module Registry (s_modules[] + plugins) │
+│  load/unload lifecycle, event dispatch   │
+├──────────────────────────────────────────┤
+│  Kernel / Scheduler / HAL / Drivers      │
+└──────────────────────────────────────────┘
+```
+
+Commands from loaded modules are registered through `commands_api_register()`
+and work identically to built-in commands. They are removed automatically on
+module unload.
 
 ---
 
@@ -1534,14 +1666,15 @@ Drivers are registered and initialised in order at boot. Each one reports OK or 
 
 ### New features in the ESP32 port
 
-- **Native WiFi** — station + AP mode, HTTP server, event-driven
-- **Native ESP-NOW** — peer-to-peer mesh without a router
-- **ESP32-CAM support** — full camera init/capture
-- **NRF24L01 radio driver** — 2.4 GHz SPI radio
+- **Native WiFi** — station + AP mode, HTTP server, event-driven (loadable module)
+- **Native ESP-NOW** — peer-to-peer mesh without a router (loadable module)
+- **ESP32-CAM support** — full camera init/capture (loadable module)
+- **NRF24L01 radio driver** — 2.4 GHz SPI radio (loadable module)
 - **SPIFFS persistence** — 2 MB partition for VFS files
 - **NVS config** — key-value storage via ESP-IDF NVS
 - **PSRAM support** — auto-detected and used for heap
 - **Board auto-detection** — ESP32-WROOM vs CAM vs S3
+- **All RP2040 commands ported** — `edit`, `module`, `save`, `script`, `run`, `flash`, `stack`, `clock`, `uid`, `fault` and all others work identically
 
 ### Building the ESP32 port
 
@@ -1553,6 +1686,14 @@ idf.py flash monitor
 ```
 
 Requires ESP-IDF 5.1 or newer and the appropriate xtensa toolchain.
+
+---
+
+---
+
+## Demo
+
+https://github.com/user-attachments/assets/29c5ad36-af89-499c-b757-9b31cec9b44c
 
 ---
 

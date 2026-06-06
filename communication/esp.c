@@ -141,18 +141,13 @@ void esp8266_bridge_send(const char *at_cmd, uint32_t timeout_ms) {
     char line[256];
     int pos = 0;
     uint32_t start = to_ms_since_boot(get_absolute_time());
-    uint32_t last_byte_ms = start;
 
     while (true) {
         uint32_t now = to_ms_since_boot(get_absolute_time());
         if (now - start >= timeout_ms) break;
 
-        if ((now - last_byte_ms) >= 2000 &&
-            last_byte_ms != start) break;
-
         if (uart_is_readable(ESP8266_UART)) {
             char c = (char)uart_getc(ESP8266_UART);
-            last_byte_ms = now;
 
             if (pos < (int)sizeof(line) - 1) {
                 line[pos++] = c;

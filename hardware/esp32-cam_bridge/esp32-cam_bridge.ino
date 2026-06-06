@@ -37,11 +37,16 @@ bool       telnetRunning           = false;
 WiFiClient telnetClient;
 bool       telnetPassthroughActive = false;
 
-typedef struct {
-    char     node_id[16];
-    float    lat, lon, alt, heading;
+#define SWARM_PKT_TELEM 0x01
+
+typedef struct __attribute__((packed)) {
+    uint8_t  type;
+    char     name[32];
+    float    lat;
+    float    lon;
+    float    alt;
+    float    hdg;
     uint8_t  state;
-    uint32_t timestamp;
 } swarm_packet_t;
 
 static swarm_packet_t s_peers[SWARM_MAX_PEERS];
@@ -54,17 +59,20 @@ static void espnow_recv_cb(const esp_now_recv_info_t *recv_info, const uint8_t *
     if (len != (int)sizeof(swarm_packet_t)) return;
     swarm_packet_t pkt;
     memcpy(&pkt, data, sizeof(pkt));
+    pkt.name[sizeof(pkt.name) - 1] = '\0';
+    if (pkt.type != SWARM_PKT_TELEM) return;
+
     for (int i = 0; i < s_peer_count; i++) {
-        if (strcmp(s_peers[i].node_id, pkt.node_id) == 0) {
+        if (strcmp(s_peers[i].name, pkt.name) == 0) {
             memcpy(&s_peers[i], &pkt, sizeof(pkt));
             Serial.printf("[SWARM] update %s lat=%.6f lon=%.6f alt=%.1f\n",
-                          pkt.node_id, pkt.lat, pkt.lon, pkt.alt);
+                          pkt.name, pkt.lat, pkt.lon, pkt.alt);
             return;
         }
     }
     if (s_peer_count < SWARM_MAX_PEERS) {
         memcpy(&s_peers[s_peer_count++], &pkt, sizeof(pkt));
-        Serial.printf("[SWARM] new peer %s\n", pkt.node_id);
+        Serial.printf("[SWARM] new peer %s\n", pkt.name);
     }
 }
 
@@ -444,8 +452,10 @@ void handleBridgeCommand(String cmd) {
     if (cmd.startsWith("@mqtt unsub ")) { String t=cmd.substring(12); t.trim(); if (!mqttClient.connected()){Serial.println("[MQTT] not connected");return;} mqttClient.unsubscribe(t.c_str()); Serial.println("[MQTT] unsubscribed from "+t); return; }
 
     if (cmd == "@swarm init") {
+        if (s_espnow_active) { esp_now_deinit(); s_espnow_active = false; }
         WiFi.mode(WIFI_STA);
         WiFi.disconnect();
+        delay(100);
         if (esp_now_init() != ESP_OK) { Serial.println("[SWARM] init failed"); return; }
         esp_now_register_recv_cb(espnow_recv_cb);
         esp_now_register_send_cb(espnow_send_cb);
@@ -469,10 +479,20 @@ void handleBridgeCommand(String cmd) {
     if (cmd.startsWith("@swarm pub ")) {
         if (!s_espnow_active) { Serial.println("[SWARM] not initialised"); return; }
         String rest = cmd.substring(11);
+        float lat, lon, alt, hdg;
+        unsigned int state;
+        if (sscanf(rest.c_str(), "%f %f %f %f %u", &lat, &lon, &alt, &hdg, &state) != 5) {
+            Serial.println("[SWARM] pub: bad arguments");
+            return;
+        }
         swarm_packet_t pkt; memset(&pkt, 0, sizeof(pkt));
-        strncpy(pkt.node_id, s_node_id, 15);
-        pkt.timestamp = millis();
-        sscanf(rest.c_str(), "%f %f %f %f %hhu", &pkt.lat,&pkt.lon,&pkt.alt,&pkt.heading,&pkt.state);
+        pkt.type = SWARM_PKT_TELEM;
+        strncpy(pkt.name, s_node_id, sizeof(pkt.name) - 1);
+        memcpy(&pkt.lat, &lat, sizeof(float));
+        memcpy(&pkt.lon, &lon, sizeof(float));
+        memcpy(&pkt.alt, &alt, sizeof(float));
+        memcpy(&pkt.hdg, &hdg, sizeof(float));
+        pkt.state = (uint8_t)state;
         swarm_broadcast(&pkt);
         Serial.println("[SWARM] broadcast sent");
         return;
@@ -481,8 +501,8 @@ void handleBridgeCommand(String cmd) {
         Serial.printf("[SWARM] peers: %d\n", s_peer_count);
         for (int i = 0; i < s_peer_count; i++)
             Serial.printf("  %s lat=%.6f lon=%.6f alt=%.1f hdg=%.1f state=%d\n",
-                          s_peers[i].node_id,s_peers[i].lat,s_peers[i].lon,
-                          s_peers[i].alt,s_peers[i].heading,s_peers[i].state);
+                          s_peers[i].name,s_peers[i].lat,s_peers[i].lon,
+                          s_peers[i].alt,s_peers[i].hdg,s_peers[i].state);
         return;
     }
     if (cmd == "@swarm mac")  { Serial.println(WiFi.macAddress()); return; }
