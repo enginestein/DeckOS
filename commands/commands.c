@@ -714,7 +714,7 @@ static void cmd_help(int argc, char * argv[]) {
     return;
   }
 
-  printf("DeckOS v7.0  --  command groups\n");
+  printf("DeckOS v8.0  --  command groups\n");
   printf("====================================================\n\n");
   fflush(stdout);
   for (int g = 0; g < group_count; g++) {
@@ -727,7 +727,7 @@ static void cmd_help(int argc, char * argv[]) {
 
 static void cmd_version(int argc, char * argv[]) {
   board_info_t b = board_detect();
-  printf("DeckOS v7.0  |  %s\n", b.name);
+  printf("DeckOS v8.0  |  %s\n", b.name);
   printf("CPU: RP2040 dual-core Cortex-M0+ @ %lu MHz\n", b.cpu_mhz);
   printf("Build: %s %s\n", __DATE__, __TIME__);
 }
@@ -1758,7 +1758,7 @@ static void cmd_sysinfo(int argc, char * argv[]) {
   (void) argv;
   board_info_t b = board_detect();
   printf("=================================\n");
-  printf("  DeckOS v7.0  -  system info  \n");
+  printf("  DeckOS v8.0  -  system info  \n");
   printf("=================================\n");
   printf("board   : %s\n", b.name);
   printf("cpu     : RP2040  dual-core Cortex-M0+  %lu MHz\n", b.cpu_mhz);
@@ -1991,6 +1991,7 @@ extern void cmd_imu(int argc, char * argv[]);
 extern void cmd_usb(int argc, char * argv[]);
 extern void cmd_hid(int argc, char * argv[]);
 extern void cmd_console(int argc, char * argv[]);
+extern void cmd_ota(int argc, char * argv[]);
 
 static void cmd_write(int argc, char * argv[]) {
   if (argc < 2) {
@@ -5398,6 +5399,11 @@ static command_t command_table[] = {
     "console",
     cmd_console,
     "console oled on|off  mirror shell output to OLED"
+  },
+  {
+    "ota",
+    cmd_ota,
+    "ota update <file>|status|cancel  firmware update from VFS file"
   },
 
 };

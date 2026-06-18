@@ -39,12 +39,14 @@ system/heap_track.c
 system/print_lock.c
 system/board_detect.c
 system/oled_console.c
+system/ota.c
 scripting/dscript.c
 usb/usb_descriptors.c
 usb/fat_disk.c
 usb/msc_disk.c
 usb/usb_hid.c
 commands/cmd_usb.c
+commands/cmd_ota.c
 hardware/servo.c
 communication/uart_pass.c
 communication/bt.c

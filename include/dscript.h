@@ -1,12 +1,12 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
-#define SCRIPT_MAX_VARS     16
+#define SCRIPT_MAX_VARS     32
 #define SCRIPT_VAR_NAME_LEN 16
-#define SCRIPT_VAR_VAL_LEN  32
-#define SCRIPT_MAX_LINES    128
-#define SCRIPT_LINE_LEN     128
-#define SCRIPT_MAX_CALL_DEPTH 4
+#define SCRIPT_VAR_VAL_LEN  64
+#define SCRIPT_MAX_LINES    256
+#define SCRIPT_LINE_LEN     256
+#define SCRIPT_MAX_CALL_DEPTH 8
 
 typedef struct {
     char name[SCRIPT_VAR_NAME_LEN];

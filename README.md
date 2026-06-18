@@ -20,6 +20,10 @@ A bare metal shell OS, currently compatible for RP2040.
   - [OLED / SSD1306](#oled--ssd1306)
   - [Servo](#servo)
   - [Audio & Signalling](#audio--signalling)
+  - [Audio Player](#audio-player)
+  - [PPM Remote Control Decoder](#ppm-remote-control-decoder)
+  - [RC Command System](#rc-command-system)
+  - [Python Companion Dashboard](#python-companion-dashboard)
   - [Scripting & Automation](#scripting--automation)
   - [System](#system)
   - [Subsystems](#subsystems)
@@ -1570,6 +1574,143 @@ Any GPIO pin works. GP16 is a good default. The 100 Ω resistor is optional but 
 
 ---
 
+## Audio Player
+
+The `player` command plays melodies from `.pls` playlist files stored on the VFS. Use the `edit` command to create playlists.
+
+```
+# /home/jams.pls
+# playlist format: <filename> [transpose]
+elise:200   # built-in: Fur Elise, 200 ms per note
+canon:150   # built-in: Canon in D, 150 ms per note
+/home/my_song.txt:250
+```
+
+**Note transpose** shifts all notes by semitones. `+5` transposes up a fifth, `-12` drops an octave.
+
+```bash
+> player /home/jams.pls          # play the whole playlist
+> player /home/jams.pls 2        # play track 2 (0-indexed)
+> player list /home/jams.pls     # list tracks
+```
+
+### DeckScript API
+
+Scripts can access the player too:
+
+```
+playlist /home/jams.pls       # load playlist
+play 0                        # play track 0 (blocks)
+playlist_stop                 # stop current playback
+```
+
+---
+
+## PPM Remote Control Decoder
+
+DeckOS can decode **PPM (Pulse Position Modulation)** signals from an RC receiver. PPM encodes 4-8 servo channels in a single pulse train using the standard 1-2 ms pulse width convention (neutral = 1.5 ms, centre gap = +4 ms idle).
+
+```bash
+> ppm init 16                        # start decoding on GP16
+> ppm init 16 6                      # 6 channels (default: 8)
+> ppm status                         # show all channel values (1000-2000 µs)
+  ch0: 1500  ch1: 1500  ch2: 1000  ch3: 2000
+> ppm ch 2                           # read a single channel
+> ppm calibrate                      # auto-detect min/centre/max per channel
+> ppm monitor                        # live channel display
+> ppm deinit                         # stop decoder
+```
+
+The decoder runs as a background Core 1 job triggered by the PPM frame sync pulse. It tracks min/centre/max per channel for calibration, and each channel value is stored in the `ppm_channels[]` array — accessible from DeckScript.
+
+### DeckScript API
+
+```
+let throttle = ppm(2)          # read PPM channel 2 (1000-2000)
+if $throttle > 1750
+  print throttle HIGH
+endif
+```
+
+---
+
+## RC Command System
+
+The `ev_rc_command` event system maps PPM channel values to named RC commands with configurable thresholds and hysteresis. Commands fire once per state transition (not continuously) so you can hold a stick high and get one command, not a flood.
+
+```bash
+# Define RC commands (persistent across reboots)
+> rc set throttle high 1700       # fire when ch0 ≥ 1700
+> rc set throttle mid 1400 1600   # fire when ch0 1400-1600
+> rc set throttle low 1200        # fire when ch0 ≤ 1200
+> rc set arm high 1500            # ch1 ≥ 1500
+> rc set disarm low 1200          # ch1 ≤ 1200
+> rc set mode_auto mid 1400 1600  # ch2 centre region
+
+# Control
+> rc enable             # start monitoring
+> rc disable            # stop monitoring
+> rc status             # show all RC commands and current states
+  throttle: low       arm: disarmed   mode_auto: inactive
+> rc clear             # delete all RC commands
+```
+
+Commands are persisted in flash config and restored on boot.
+
+### Available actions per command
+
+Each command executes on state **entry** (transition from inactive → active):
+
+| Action | When triggered |
+|--------|---------------|
+| `rc set <name> high <threshold>` | Channel rises above threshold |
+| `rc set <name> low <threshold>` | Channel falls below threshold |
+| `rc set <name> mid <low> <high>` | Channel is between low and high |
+
+### DeckScript integration
+
+The RC state is readable from scripts:
+
+```
+if rc_state("arm") == "active"
+  print ARMED
+endif
+if rc_state("throttle") == "active"
+  print throttle is $throttle_value
+endif
+```
+
+### ESP-NOW RC Bridge
+
+In the [ESP32 port](#esp32-port), RC commands can be bridged over ESP-NOW, allowing a receiver ESP32 connected to an RC receiver to relay PPM channel data to a remote ESP32 running DeckOS.
+
+```
+[RC Receiver] → PPM → [ESP32 Receiver] ──ESP-NOW──→ [ESP32 DeckOS]
+                        (swarm bridge)              (rc commands fire)
+```
+
+---
+
+## Python Companion Dashboard
+
+A Python script (`tools/deckos-dashboard.py`) provides a real-time terminal dashboard over the board's USB serial connection.
+
+Requirements: Python 3.7+ and `pyserial` (`pip install pyserial`).
+
+```bash
+# Auto-detect (Linux):
+python3 tools/deckos-dashboard.py
+
+# Specify port:
+python3 tools/deckos-dashboard.py /dev/ttyACM0
+```
+
+The dashboard shows live system info, files, and lets you send commands.
+
+![ ](https://img.shields.io/badge/python-%3E%3D3.7-blue)
+
+---
+
 ## Config system
 
 Settings live in the **last 4 KB of flash** (`0x101FF000` on a 2 MB board; the offset scales with the detected flash size on larger parts), protected by a CRC32 checksum. On a fresh board, the checksum won't match so DeckOS falls back to defaults quietly. Nothing breaks, it just uses sensible starting values.
@@ -1674,6 +1815,8 @@ Drivers are registered and initialised in order at boot. Each one reports OK or 
 - **NVS config** — key-value storage via ESP-IDF NVS
 - **PSRAM support** — auto-detected and used for heap
 - **Board auto-detection** — ESP32-WROOM vs CAM vs S3
+- **Web dashboard** — built-in HTTP server with real-time system monitoring, file browser, GPIO control, and DeckScript execution via browser UI
+- **ESP-NOW RC bridge** — relay PPM RC commands over ESP-NOW between ESP32 nodes
 - **All RP2040 commands ported** — `edit`, `module`, `save`, `script`, `run`, `flash`, `stack`, `clock`, `uid`, `fault` and all others work identically
 
 ### Building the ESP32 port

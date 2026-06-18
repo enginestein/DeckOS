@@ -25,6 +25,10 @@
 #include "hardware/pwm.h"
 
 #include "hardware/clocks.h"
+#include "hardware/i2c.h"
+#include "hardware/spi.h"
+#include "module.h"
+#include "esp.h"
 
 
 #define RC_OK 0
@@ -671,6 +675,131 @@ static int find_elif_else_end(
 }
 
 
+// --- New builtins ---
+
+static void builtin_usleep(script_ctx_t *ctx, const char *dest, const char *args) {
+    int us = eval_int(ctx, args);
+    if (us > 0 && us <= 1000000) sleep_us((uint32_t)us);
+    var_set(ctx, dest, "1");
+}
+
+static void builtin_temp_c(script_ctx_t *ctx, const char *dest, const char *args) {
+    adc_set_temp_sensor_enabled(true);
+    adc_select_input(4);
+    uint16_t raw = adc_read();
+    float volt = raw * 3.3f / 4096.0f;
+    float temp = 27.0f - (volt - 0.706f) / 0.001721f;
+    char buf[16];
+    snprintf(buf, sizeof(buf), "%.1f", temp);
+    var_set(ctx, dest, buf);
+}
+
+static void builtin_file_read(script_ctx_t *ctx, const char *dest, const char *args) {
+    char path[VFS_PATH_LEN];
+    expand_vars(ctx, args, path, sizeof(path));
+    trim_inplace(path);
+    uint8_t *buf = (uint8_t *)malloc(VFS_MAX_FILE_SIZE);
+    if (!buf) { var_set(ctx, dest, ""); return; }
+    uint32_t flen = 0;
+    if (vfs_read(path, buf, VFS_MAX_FILE_SIZE - 1, &flen) < 0) { free(buf); var_set(ctx, dest, ""); return; }
+    buf[flen] = '\0';
+    char out[SCRIPT_VAR_VAL_LEN];
+    snprintf(out, sizeof(out), "%s", (const char *)buf);
+    free(buf);
+    var_set(ctx, dest, out);
+}
+
+static void builtin_file_write(script_ctx_t *ctx, const char *dest, const char *args) {
+    char tmp[SCRIPT_LINE_LEN];
+    expand_vars(ctx, args, tmp, sizeof(tmp));
+    char path[VFS_PATH_LEN] = {0};
+    char content[SCRIPT_VAR_VAL_LEN] = {0};
+    sscanf(tmp, "%[^,],%[^\n]", path, content);
+    trim_inplace(path);
+    trim_inplace(content);
+    int ret = vfs_write(path, (const uint8_t *)content, (uint32_t)strlen(content), false);
+    var_set(ctx, dest, ret > 0 ? "1" : "0");
+}
+
+static void builtin_i2c_read(script_ctx_t *ctx, const char *dest, const char *args) {
+    char tmp[SCRIPT_LINE_LEN];
+    expand_vars(ctx, args, tmp, sizeof(tmp));
+    // Replace commas with spaces for parsing
+    for (char *p = tmp; *p; p++) if (*p == ',') *p = ' ';
+    int addr = 0, reg = 0;
+    sscanf(tmp, "%i %i", &addr, &reg);
+    if (addr < 1 || addr > 127) { var_set(ctx, dest, "0"); return; }
+    uint8_t val = 0;
+    uint8_t reg_b = (uint8_t)reg;
+    i2c_write_blocking(i2c_default, (uint8_t)addr, &reg_b, 1, false);
+    i2c_read_blocking(i2c_default, (uint8_t)addr, &val, 1, false);
+    char buf[16];
+    snprintf(buf, sizeof(buf), "%d", val);
+    var_set(ctx, dest, buf);
+}
+
+static void builtin_i2c_write(script_ctx_t *ctx, const char *dest, const char *args) {
+    char tmp[SCRIPT_LINE_LEN];
+    expand_vars(ctx, args, tmp, sizeof(tmp));
+    for (char *p = tmp; *p; p++) if (*p == ',') *p = ' ';
+    int addr = 0, reg = 0, val = 0;
+    sscanf(tmp, "%i %i %i", &addr, &reg, &val);
+    if (addr < 1 || addr > 127 || val < 0 || val > 255) { var_set(ctx, dest, "0"); return; }
+    uint8_t reg_b = (uint8_t)reg;
+    uint8_t val_b = (uint8_t)val;
+    uint8_t buf[2] = {reg_b, val_b};
+    i2c_write_blocking(i2c_default, (uint8_t)addr, buf, 2, false);
+    var_set(ctx, dest, "1");
+}
+
+static void builtin_i2c_scan(script_ctx_t *ctx, const char *dest, const char *args) {
+    char found[64] = {0};
+    int n = 0;
+    for (int addr = 1; addr < 127; addr++) {
+        uint8_t tx = 0;
+        int ret = i2c_write_blocking(i2c_default, (uint8_t)addr, &tx, 1, true);
+        if (ret >= 0) {
+            if (n > 0) strncat(found, ",", sizeof(found) - 1 - strlen(found));
+            char a[8];
+            snprintf(a, sizeof(a), "0x%02X", addr);
+            strncat(found, a, sizeof(found) - 1 - strlen(found));
+            n++;
+        }
+    }
+    var_set(ctx, dest, n > 0 ? found : "(none)");
+}
+
+static void builtin_wifi_status(script_ctx_t *ctx, const char *dest, const char *args) {
+    // On RP2040, check ESP8266 bridge via module
+    if (module_is_loaded("wifi")) {
+        var_set(ctx, dest, "initialized");
+    } else {
+        var_set(ctx, dest, "not_init");
+    }
+}
+
+static void builtin_http_get(script_ctx_t *ctx, const char *dest, const char *args) {
+    char url[SCRIPT_VAR_VAL_LEN];
+    expand_vars(ctx, args, url, sizeof(url));
+    trim_inplace(url);
+    // Use the module's wifi_http_get if available
+    // For now, return empty since HTTP from scripts needs the wifi module
+    printf("script: http_get requires the wifi module (module load wifi)\n");
+    var_set(ctx, dest, "");
+}
+
+static void builtin_http_post(script_ctx_t *ctx, const char *dest, const char *args) {
+    char tmp[SCRIPT_LINE_LEN];
+    expand_vars(ctx, args, tmp, sizeof(tmp));
+    char url[SCRIPT_VAR_VAL_LEN] = {0};
+    char body[SCRIPT_VAR_VAL_LEN] = {0};
+    sscanf(tmp, "%[^,],%[^\n]", url, body);
+    trim_inplace(url);
+    trim_inplace(body);
+    printf("script: http_post requires the wifi module (module load wifi)\n");
+    var_set(ctx, dest, "");
+}
+
 static bool try_builtin_val(script_ctx_t * ctx,
   const char * vname,
     const char * valexpr,
@@ -712,6 +841,20 @@ static bool try_builtin_val(script_ctx_t * ctx,
     var_set(ctx, vname, buf);
     return true;
   }
+
+  if (!strncmp(valexpr, "temp_c", 6) && valexpr[6] == '(') {
+    builtin_temp_c(ctx, vname, "");
+    return true;
+  }
+  if (!strncmp(valexpr, "usleep(", 7)) { char arg[32]={0}; sscanf(valexpr+7,"%31[^)]",arg); builtin_usleep(ctx, vname, arg); return true; }
+  if (!strncmp(valexpr, "file_read(", 10)) { char arg[VFS_PATH_LEN]={0}; sscanf(valexpr+10,"%[^)]",arg); builtin_file_read(ctx, vname, arg); return true; }
+  if (!strncmp(valexpr, "file_write(", 11)) { char arg[SCRIPT_LINE_LEN]={0}; sscanf(valexpr+11,"%[^)]",arg); builtin_file_write(ctx, vname, arg); return true; }
+  if (!strncmp(valexpr, "i2c_read(", 9)) { char arg[SCRIPT_LINE_LEN]={0}; sscanf(valexpr+9,"%[^)]",arg); builtin_i2c_read(ctx, vname, arg); return true; }
+  if (!strncmp(valexpr, "i2c_write(", 10)) { char arg[SCRIPT_LINE_LEN]={0}; sscanf(valexpr+10,"%[^)]",arg); builtin_i2c_write(ctx, vname, arg); return true; }
+  if (!strncmp(valexpr, "i2c_scan", 8)) { builtin_i2c_scan(ctx, vname, ""); return true; }
+  if (!strncmp(valexpr, "wifi_status", 11)) { builtin_wifi_status(ctx, vname, ""); return true; }
+  if (!strncmp(valexpr, "http_get(", 9)) { char arg[SCRIPT_VAR_VAL_LEN]={0}; sscanf(valexpr+9,"%[^)]",arg); builtin_http_get(ctx, vname, arg); return true; }
+  if (!strncmp(valexpr, "http_post(", 10)) { char arg[SCRIPT_LINE_LEN]={0}; sscanf(valexpr+10,"%[^)]",arg); builtin_http_post(ctx, vname, arg); return true; }
 
   struct {
     const char * fn;
@@ -869,38 +1012,35 @@ static int do_include(script_ctx_t * ctx,
 }
 
 
-static bool eval_arith(script_ctx_t *ctx, const char *expr, long *result) {
- 
+// Returns: 1 = numeric result in *num_out, 2 = string concat in str_out, 0 = not arithmetic
+static int eval_arith(script_ctx_t *ctx, const char *expr, double *num_out,
+                      char *str_out, int str_len) {
   char tmp[SCRIPT_LINE_LEN];
   strncpy(tmp, expr, SCRIPT_LINE_LEN - 1);
   tmp[SCRIPT_LINE_LEN - 1] = '\0';
   trim_inplace(tmp);
 
- 
   int op_pos = -1;
   char op_ch = 0;
   for (int i = 1; tmp[i]; i++) {
+    if (tmp[i] == '.' && i > 0 && tmp[i-1] == ' ' && tmp[i+1] == ' ') {
+      op_pos = i; op_ch = '.'; break;
+    }
     if (tmp[i] == '+' || tmp[i] == '-' ||
         tmp[i] == '*' || tmp[i] == '/' || tmp[i] == '%') {
-     
       if (i > 0 && tmp[i-1] == ' ' && tmp[i+1] == ' ') {
-        op_pos = i;
-        op_ch  = tmp[i];
-        break;
+        op_pos = i; op_ch = tmp[i]; break;
       }
     }
   }
 
   if (op_pos < 0) {
-   
     char *end;
-    long v = strtol(tmp, &end, 10);
-    if (*end == '\0') { *result = v; return true; }
-   
-    return false;
+    double v = strtod(tmp, &end);
+    if (*end == '\0') { *num_out = v; return 1; }
+    return 0;
   }
 
- 
   char lhs_s[SCRIPT_LINE_LEN], rhs_s[SCRIPT_LINE_LEN];
   strncpy(lhs_s, tmp, (size_t)op_pos);
   lhs_s[op_pos] = '\0';
@@ -908,23 +1048,40 @@ static bool eval_arith(script_ctx_t *ctx, const char *expr, long *result) {
   strncpy(rhs_s, tmp + op_pos + 1, SCRIPT_LINE_LEN - 1);
   trim_inplace(rhs_s);
 
- 
-  char *le, *re;
-  long lv = strtol(lhs_s, &le, 10);
-  if (*le != '\0') lv = atol(var_get(ctx, lhs_s));
+  // String concatenation
+  if (op_ch == '.') {
+    char lval[SCRIPT_LINE_LEN] = {0}, rval[SCRIPT_LINE_LEN] = {0};
+    expand_vars(ctx, lhs_s, lval, sizeof(lval));
+    expand_vars(ctx, rhs_s, rval, sizeof(rval));
+    trim_inplace(lval);
+    trim_inplace(rval);
+    strncpy(str_out, lval, (size_t)(str_len - 1));
+    strncat(str_out, rval, (size_t)(str_len - 1 - strlen(str_out)));
+    return 2;
+  }
 
-  long rv = strtol(rhs_s, &re, 10);
-  if (*re != '\0') rv = atol(var_get(ctx, rhs_s));
+  char *le, *re;
+  double lv = strtod(lhs_s, &le);
+  if (*le != '\0') {
+    const char *v = var_get(ctx, lhs_s);
+    lv = v[0] ? atof(v) : 0.0;
+  }
+
+  double rv = strtod(rhs_s, &re);
+  if (*re != '\0') {
+    const char *v = var_get(ctx, rhs_s);
+    rv = v[0] ? atof(v) : 0.0;
+  }
 
   switch (op_ch) {
-    case '+': *result = lv + rv; break;
-    case '-': *result = lv - rv; break;
-    case '*': *result = lv * rv; break;
-    case '/': *result = rv ? lv / rv : 0; break;
-    case '%': *result = rv ? lv % rv : 0; break;
-    default:  *result = lv; break;
+    case '+': *num_out = lv + rv; break;
+    case '-': *num_out = lv - rv; break;
+    case '*': *num_out = lv * rv; break;
+    case '/': *num_out = rv ? lv / rv : 0; break;
+    case '%': *num_out = rv ? (long)lv % (long)rv : 0; break;
+    default:  *num_out = lv; break;
   }
-  return true;
+  return 1;
 }
 
 static int run_lines(script_ctx_t * ctx,
@@ -979,7 +1136,7 @@ static int run_lines(script_ctx_t * ctx,
       trim_inplace(rest);
 
       if (!eval_cond(ctx, rest)) {
-        printf("script: ASSERT FAILED: %s\n", msg);
+        printf("script:%d: ASSERT FAILED: %s\n", i, msg);
         return RC_ERROR;
       }
       continue;
@@ -1013,8 +1170,20 @@ static int run_lines(script_ctx_t * ctx,
       continue;
     }
 
-    if (!strcmp(line, "break")) return RC_BREAK;
-    if (!strcmp(line, "continue")) return RC_CONTINUE;
+    if (!strncmp(line, "break", 5)) {
+      int d = 1;
+      if (line[5] == ' ') d = atoi(line + 6);
+      if (d < 1) d = 1; if (d > 8) d = 8;
+      if (d == 1) return RC_BREAK;
+      return -30 - d; // encode depth: -32..-38
+    }
+    if (!strncmp(line, "continue", 8)) {
+      int d = 1;
+      if (line[8] == ' ') d = atoi(line + 9);
+      if (d < 1) d = 1; if (d > 8) d = 8;
+      if (d == 1) return RC_CONTINUE;
+      return -40 - d; // encode depth: -42..-48
+    }
 
     if (!strncmp(line, "return", 6)) {
       if (line[6] == ' ') {
@@ -1060,7 +1229,7 @@ static int run_lines(script_ctx_t * ctx,
 
       int bs, be;
       if (find_def(lines, total, fname, & bs, & be) < 0) {
-        printf("script: undefined function '%s'\n", fname);
+        printf("script:%d: undefined function '%s'\n", i, fname);
         continue;
       }
       int rc = run_lines(ctx, lines, total, bs, be);
@@ -1083,13 +1252,13 @@ static int run_lines(script_ctx_t * ctx,
      
       char *eq_pos = strchr(rest, '=');
       if (!eq_pos) {
-        printf("script: bad let syntax (no '='): %s\n", rest);
+        printf("script:%d: bad let syntax (no '='): %s\n", i, rest);
         continue;
       }
-     
+      
       int namelen = (int)(eq_pos - rest);
       if (namelen <= 0 || namelen >= SCRIPT_VAR_NAME_LEN) {
-        printf("script: bad let syntax (name): %s\n", rest);
+        printf("script:%d: bad let syntax (name): %s\n", i, rest);
         continue;
       }
       strncpy(vname, rest, (size_t)namelen);
@@ -1101,7 +1270,7 @@ static int run_lines(script_ctx_t * ctx,
       trim_inplace(valexpr);
 
       if (!vname[0]) {
-        printf("script: bad let syntax (empty name): %s\n", rest);
+        printf("script:%d: bad let syntax (empty name): %s\n", i, rest);
         continue;
       }
 
@@ -1114,14 +1283,19 @@ static int run_lines(script_ctx_t * ctx,
       expand_vars(ctx, valexpr, expanded, sizeof(expanded));
       trim_inplace(expanded);
 
-     
-      long arith_result;
-      if (eval_arith(ctx, expanded, &arith_result)) {
+      double arith_result;
+      char arith_str[SCRIPT_LINE_LEN] = {0};
+      int arith_type = eval_arith(ctx, expanded, &arith_result, arith_str, sizeof(arith_str));
+      if (arith_type == 1) {
         char numbuf[32];
-        snprintf(numbuf, sizeof(numbuf), "%ld", arith_result);
+        if (arith_result == (long)arith_result)
+          snprintf(numbuf, sizeof(numbuf), "%ld", (long)arith_result);
+        else
+          snprintf(numbuf, sizeof(numbuf), "%g", arith_result);
         var_set(ctx, vname, numbuf);
+      } else if (arith_type == 2) {
+        var_set(ctx, vname, arith_str);
       } else {
-       
         var_set(ctx, vname, expanded);
       }
       continue;
@@ -1228,6 +1402,29 @@ static int run_lines(script_ctx_t * ctx,
       continue;
     }
 
+    if (!strncmp(raw, "foreach ", 8)) {
+      char fvar[SCRIPT_VAR_NAME_LEN]={0}, keyword[8]={0}, source[SCRIPT_VAR_NAME_LEN]={0};
+      sscanf(raw + 8, "%31s %7s %31s", fvar, keyword, source);
+      int fi = find_end(lines, total, i, "foreach", "endfor");
+      if (fi < 0) { printf("script:%d: missing endfor\n", i); return RC_ERROR; }
+      if (!strcmp(keyword, "in")) {
+        char aname[SCRIPT_VAR_NAME_LEN]={0}; expand_vars(ctx,source,aname,sizeof(aname)); trim_inplace(aname);
+        int alen = arr_get_len(ctx, aname);
+        for (int ai = 0; ai < alen; ai++) {
+          char key[SCRIPT_VAR_NAME_LEN]; arr_key(key,sizeof(key),aname,ai);
+          var_set(ctx, fvar, var_get(ctx, key));
+          int rc = run_lines(ctx, lines, total, i, fi);
+          if (rc == RC_BREAK) break;
+          if (rc == RC_CONTINUE) continue;
+          if (rc >= -38 && rc <= -32) { int d = -rc - 30; return (d > 2) ? rc + 1 : RC_BREAK; }
+          if (rc >= -48 && rc <= -42) { int d = -rc - 40; return (d > 2) ? rc + 1 : RC_CONTINUE; }
+          if (rc < 0) return rc;
+        }
+      }
+      i = fi + 1;
+      continue;
+    }
+
     if (!strncmp(raw, "for ", 4)) {
       char fvar[SCRIPT_VAR_NAME_LEN] = {
         0
@@ -1242,12 +1439,12 @@ static int run_lines(script_ctx_t * ctx,
 
       int fi = find_end(lines, total, i, "for", "endfor");
       if (fi < 0) {
-        printf("script: missing endfor\n");
+        printf("script:%d: missing endfor\n", i);
         return RC_ERROR;
       }
 
       if (!strcmp(keyword, "in")) {
-       
+        
         char aname[SCRIPT_VAR_NAME_LEN] = { 0 };
         expand_vars(ctx, source, aname, sizeof(aname));
         trim_inplace(aname);
@@ -1259,6 +1456,8 @@ static int run_lines(script_ctx_t * ctx,
           int rc = run_lines(ctx, lines, total, i, fi);
           if (rc == RC_BREAK) break;
           if (rc == RC_CONTINUE) continue;
+          if (rc >= -38 && rc <= -32) { int d = -rc - 30; return (d > 2) ? rc + 1 : RC_BREAK; }
+          if (rc >= -48 && rc <= -42) { int d = -rc - 40; return (d > 2) ? rc + 1 : RC_CONTINUE; }
           if (rc < 0) return rc;
         }
       } else if (!strcmp(keyword, "from")) {
@@ -1281,6 +1480,8 @@ static int run_lines(script_ctx_t * ctx,
           int rc = run_lines(ctx, lines, total, i, fi);
           if (rc == RC_BREAK) break;
           if (rc == RC_CONTINUE) continue;
+          if (rc >= -38 && rc <= -32) { int d = -rc - 30; return (d > 2) ? rc + 1 : RC_BREAK; }
+          if (rc >= -48 && rc <= -42) { int d = -rc - 40; return (d > 2) ? rc + 1 : RC_CONTINUE; }
           if (rc < 0) return rc;
         }
       }
@@ -1367,7 +1568,7 @@ static int run_lines(script_ctx_t * ctx,
 
       int sw_end = find_end(lines, total, i, "switch", "endswitch");
       if (sw_end < 0) {
-        printf("script: missing endswitch\n");
+        printf("script:%d: missing endswitch\n", i);
         return RC_ERROR;
       }
 
@@ -1428,23 +1629,25 @@ static int run_lines(script_ctx_t * ctx,
 
       int wi = find_end(lines, total, i, "while", "endwhile");
       if (wi < 0) {
-        printf("script: missing endwhile\n");
+        printf("script:%d: missing endwhile\n", i);
         return RC_ERROR;
       }
 
-     
+      
       int iter = 0;
       while (true) {
         char ce[SCRIPT_LINE_LEN];
         expand_vars(ctx, cond_expr, ce, sizeof(ce));
         if (!eval_cond(ctx, ce)) break;
         if (++iter > 100000) {
-          printf("script: while iteration limit reached (100000)\n");
+          printf("script:%d: while iteration limit reached (100000)\n", i);
           break;
         }
         int rc = run_lines(ctx, lines, total, i, wi);
         if (rc == RC_BREAK) break;
         if (rc == RC_CONTINUE) continue;
+        if (rc >= -38 && rc <= -32) { int d = -rc - 30; return (d > 2) ? rc + 1 : RC_BREAK; }
+        if (rc >= -48 && rc <= -42) { int d = -rc - 40; return (d > 2) ? rc + 1 : RC_CONTINUE; }
         if (rc < 0) return rc;
       }
       i = wi + 1;
@@ -1455,10 +1658,10 @@ static int run_lines(script_ctx_t * ctx,
       int n = eval_int(ctx, line + 7);
       int ri = find_end(lines, total, i, "repeat", "endrepeat");
       if (ri < 0) {
-        printf("script: missing endrepeat\n");
+        printf("script:%d: missing endrepeat\n", i);
         return RC_ERROR;
       }
-     
+      
       for (int r = 0; r < n && r < 10000; r++) {
         char buf[8];
         snprintf(buf, sizeof(buf), "%d", r);
@@ -1466,6 +1669,8 @@ static int run_lines(script_ctx_t * ctx,
         int rc = run_lines(ctx, lines, total, i, ri);
         if (rc == RC_BREAK) break;
         if (rc == RC_CONTINUE) continue;
+        if (rc >= -38 && rc <= -32) { int d = -rc - 30; return (d > 2) ? rc + 1 : RC_BREAK; }
+        if (rc >= -48 && rc <= -42) { int d = -rc - 40; return (d > 2) ? rc + 1 : RC_CONTINUE; }
         if (rc < 0) return rc;
       }
       i = ri + 1;

@@ -83,7 +83,7 @@ void kernel_init(void) {
     print_lock_init(); 
     heap_track_init();
     syslog_init();
-    LOG_I("kernel", "booting DeckOS v7.0");
+    LOG_I("kernel", "booting DeckOS v8.0");
 
     bootloader_run();
     vfs_load();
