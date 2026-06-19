@@ -9,82 +9,118 @@ A bare metal shell OS, currently compatible for RP2040.
 
 ## Table of Contents
 
-- [What you need](#what-you-need)
-- [How it's structured](#how-its-structured)
-- [Getting started](#getting-started)
-- [Using the shell](#using-the-shell)
-- [Commands](#commands)
-  - [Core / Info](#core--info)
-  - [Hardware](#hardware)
-  - [Probes & Analysis](#probes--analysis)
-  - [OLED / SSD1306](#oled--ssd1306)
-  - [Servo](#servo)
-  - [Audio & Signalling](#audio--signalling)
+- [DeckOS](#deckos)
+  - [Table of Contents](#table-of-contents)
+  - [What you need](#what-you-need)
+  - [How it's structured](#how-its-structured)
+  - [Getting started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Build and flash](#build-and-flash)
+    - [Connect](#connect)
+  - [Using the shell](#using-the-shell)
+    - [Keyboard shortcuts](#keyboard-shortcuts)
+  - [Commands](#commands)
+    - [Core / Info](#core--info)
+    - [Hardware](#hardware)
+      - [Stack inspection](#stack-inspection)
+      - [Power / VSYS](#power--vsys)
+      - [Live GPIO monitoring](#live-gpio-monitoring)
+      - [I²C bus](#ic-bus)
+      - [SPI bus](#spi-bus)
+      - [UART passthrough](#uart-passthrough)
+      - [Flash access](#flash-access)
+    - [Probes \& Analysis](#probes--analysis)
+      - [Logic analyser](#logic-analyser)
+      - [Scope](#scope)
+      - [Device detection](#device-detection)
+    - [OLED / SSD1306](#oled--ssd1306)
+    - [Servo](#servo)
+    - [Audio \& Signalling](#audio--signalling)
+      - [Piano keyboard layout](#piano-keyboard-layout)
+    - [Scripting \& Automation](#scripting--automation)
+      - [Aliases](#aliases)
+    - [System](#system)
+      - [Real-time clock (`date`)](#real-time-clock-date)
+      - [Random numbers (`rand`)](#random-numbers-rand)
+      - [System identity (`uname`)](#system-identity-uname)
+    - [Subsystems](#subsystems)
+  - [WiFi / ESP8266](#wifi--esp8266)
+    - [What WiFi lets you do](#what-wifi-lets-you-do)
+    - [Wiring](#wiring)
+    - [Bridge firmware setup](#bridge-firmware-setup)
+    - [WiFi commands](#wifi-commands)
+    - [Typical workflow](#typical-workflow)
+  - [MQTT](#mqtt)
+  - [Swarm / ESP-NOW](#swarm--esp-now)
+  - [Bluetooth / HC-05](#bluetooth--hc-05)
+    - [What Bluetooth lets you do](#what-bluetooth-lets-you-do)
+    - [Wiring](#wiring-1)
+    - [Bluetooth commands](#bluetooth-commands)
+    - [Typical workflow](#typical-workflow-1)
+  - [Filesystem](#filesystem)
+    - [Text editor (`edit`)](#text-editor-edit)
+  - [Module \& Plugin System](#module--plugin-system)
+    - [Commands](#commands-1)
+    - [Usage](#usage)
+    - [Plugin API (for community code)](#plugin-api-for-community-code)
+    - [Event System](#event-system)
+    - [Architecture](#architecture)
+  - [USB portable OS](#usb-portable-os)
+    - [USB mass storage (portable disk)](#usb-mass-storage-portable-disk)
+    - [USB keyboard (HID)](#usb-keyboard-hid)
+    - [Standalone handheld (OLED console)](#standalone-handheld-oled-console)
+  - [DeckScript](#deckscript)
+    - [Running scripts](#running-scripts)
+    - [Variables](#variables)
+    - [Arithmetic](#arithmetic)
+    - [String functions](#string-functions)
+    - [Math functions](#math-functions)
+    - [Control flow](#control-flow)
+      - [Switch](#switch)
+      - [Assert](#assert)
+    - [Loops](#loops)
+      - [repeat](#repeat)
+      - [while](#while)
+      - [for (range)](#for-range)
+      - [for (array)](#for-array)
+      - [break and continue](#break-and-continue)
+    - [Arrays](#arrays)
+    - [Functions](#functions)
+      - [Recursion example](#recursion-example)
+    - [Hardware access from scripts](#hardware-access-from-scripts)
+    - [I/O](#io)
+    - [Logging and assertions](#logging-and-assertions)
+    - [Includes](#includes)
+    - [Example scripts](#example-scripts)
+      - [Blink the LED](#blink-the-led)
+      - [Read ADC and classify](#read-adc-and-classify)
+      - [Servo sweep with timing](#servo-sweep-with-timing)
+      - [Simple function library](#simple-function-library)
+  - [Buzzer setup](#buzzer-setup)
   - [Audio Player](#audio-player)
+    - [DeckScript API](#deckscript-api)
   - [PPM Remote Control Decoder](#ppm-remote-control-decoder)
+    - [DeckScript API](#deckscript-api-1)
   - [RC Command System](#rc-command-system)
+    - [Available actions per command](#available-actions-per-command)
+    - [DeckScript integration](#deckscript-integration)
+    - [ESP-NOW RC Bridge](#esp-now-rc-bridge)
   - [Python Companion Dashboard](#python-companion-dashboard)
-  - [Scripting & Automation](#scripting--automation)
-  - [System](#system)
-  - [Subsystems](#subsystems)
-- [WiFi / ESP8266](#wifi--esp8266)
-  - [What WiFi lets you do](#what-wifi-lets-you-do)
-  - [Wiring](#wiring)
-  - [Bridge firmware setup](#bridge-firmware-setup)
-  - [WiFi commands](#wifi-commands)
-  - [Typical workflow](#typical-workflow)
-- [MQTT](#mqtt)
-- [Swarm / ESP-NOW](#swarm--esp-now)
-- [Bluetooth / HC-05](#bluetooth--hc-05)
-  - [What Bluetooth lets you do](#what-bluetooth-lets-you-do)
-  - [Wiring](#wiring-1)
-  - [Bluetooth commands](#bluetooth-commands)
-  - [Typical workflow](#typical-workflow-1)
-- [Filesystem](#filesystem)
-  - [Text editor (`edit`)](#text-editor-edit)
-- [Modules (on-demand RAM)](#modules-on-demand-ram)
-- [USB portable OS](#usb-portable-os)
-  - [USB mass storage (portable disk)](#usb-mass-storage-portable-disk)
-  - [USB keyboard (HID)](#usb-keyboard-hid)
-  - [Standalone handheld (OLED console)](#standalone-handheld-oled-console)
-- [DeckScript](#deckscript)
-  - [Running scripts](#running-scripts)
-  - [Variables](#variables)
-  - [Arithmetic](#arithmetic)
-  - [String functions](#string-functions)
-  - [Math functions](#math-functions)
-  - [Control flow](#control-flow)
-    - [Switch](#switch)
-    - [Assert](#assert)
-  - [Loops](#loops)
-    - [repeat](#repeat)
-    - [while](#while)
-    - [for (range)](#for-range)
-    - [for (array)](#for-array)
-    - [break and continue](#break-and-continue)
-  - [Arrays](#arrays)
-  - [Functions](#functions)
-    - [Recursion example](#recursion-example)
-  - [Hardware access from scripts](#hardware-access-from-scripts)
-  - [I/O](#io)
-  - [Logging and assertions](#logging-and-assertions)
-  - [Includes](#includes)
-  - [Example scripts](#example-scripts)
-    - [Blink the LED](#blink-the-led)
-    - [Read ADC and classify](#read-adc-and-classify)
-    - [Servo sweep with timing](#servo-sweep-with-timing)
-    - [Simple function library](#simple-function-library)
-- [Buzzer setup](#buzzer-setup)
-- [Config system](#config-system)
-- [Syslog](#syslog)
-- [Scheduler](#scheduler)
-- [Boot modes](#boot-modes)
-- [Drivers](#drivers)
-- [ESP32 Port](#esp32-port)
-  - [What's different in the ESP32 port](#whats-different-in-the-esp32-port)
-  - [New features in the ESP32 port](#new-features-in-the-esp32-port)
-  - [Building the ESP32 port](#building-the-esp32-port)
-- [Demo](#demo)
+  - [Config system](#config-system)
+  - [Syslog](#syslog)
+  - [Scheduler](#scheduler)
+  - [AutoRun](#autorun)
+    - [How it works](#how-it-works)
+    - [MSC Drag-and-Drop Payloads](#msc-drag-and-drop-payloads)
+    - [Customization](#customization)
+    - [Typical use cases](#typical-use-cases)
+  - [Boot modes](#boot-modes)
+  - [Drivers](#drivers)
+  - [ESP32 Port](#esp32-port)
+    - [What's different in the ESP32 port](#whats-different-in-the-esp32-port)
+    - [New features in the ESP32 port](#new-features-in-the-esp32-port)
+    - [Building the ESP32 port](#building-the-esp32-port)
+  - [Demo](#demo)
 
 ---
 
@@ -1032,12 +1068,15 @@ The board can act as a USB keyboard and type into the connected host -- handy fo
 automation, kiosk setup, or sending a fixed string on demand.
 
 | Command | What it does |
-|---|---|
+|---|---|---|
 | `hid` / `hid status` | Show connection and ready state |
 | `hid type <text...>` | Type the text into the host |
 | `hid line <text...>` | Type the text, then press Enter |
 | `hid key <COMBO...>` | Send one or more key combinations |
 | `hid enter` | Press Enter |
+| `hid move <x> <y>` | Move mouse by x,y pixels (relative) |
+| `hid click [left\|right\|middle\|both]` | Click a mouse button |
+| `hid scroll <n>` | Scroll wheel by n steps |
 
 `hid key` understands modifiers (`CTRL`, `ALT`, `SHIFT`, `GUI`/`WIN`/`CMD`) and
 named keys (`ENTER`, `TAB`, `ESC`, `SPACE`, `BACKSPACE`, `DEL`, `UP`, `DOWN`,
@@ -1050,10 +1089,10 @@ with `+`.
 > hid key WIN+r                    # open the Windows Run dialog
 > hid key CTRL+ALT+DEL
 > hid key F5                       # refresh
+> hid move 200 0                   # move mouse right 200px
+> hid click left                   # left click
+> hid scroll -5                    # scroll down 5 steps
 ```
-
-> A device that can inject keystrokes is powerful -- only plug it into machines
-> you trust, and remember it will start typing the moment a command runs.
 
 ### Standalone handheld (OLED console)
 
@@ -1748,6 +1787,81 @@ Background tasks run on **Core 1**, completely separate from your shell. Each ta
 > top                   # watch live CPU usage per task
 > jobs                  # list active background Core 1 jobs
 ```
+
+---
+
+## AutoRun
+
+DeckOS can automatically execute DeckScripts at boot, turning the Pico into a
+**plug-and-play USB device** that types, moves a mouse, clicks, blinks LEDs,
+or controls GPIO the instant it connects.
+
+### How it works
+
+If the file `/home/autorun.ds` exists in the VFS, DeckOS runs it automatically
+on every boot — before the shell prompt appears. The script has full access to
+all shell commands, USB HID mouse (`hid move`, `hid click`, `hid scroll`), and
+the full DeckScript language.
+
+On first boot, a default demo script is injected into the VFS. You can
+customize or delete it at any time.
+
+### MSC Drag-and-Drop Payloads
+
+Drop a `.ds` script file onto the `DECKOS` mass storage drive. On the next boot,
+DeckOS automatically imports it into VFS and executes it. No serial terminal
+needed:
+
+```
+1. Write your .ds payload on your computer
+2. Copy it to the DECKOS drive (16 KB FAT12 volume)
+3. Unplug and re-plug the Pico
+4. Script runs automatically
+```
+
+If both `/home/autorun.ds` and an MSC-dropped `.ds` exist, `autorun.ds` takes
+priority. Delete `autorun.ds` from VFS (`rm /home/autorun.ds`) to let the MSC
+payload run instead.
+
+### Customization
+
+```bash
+# Disable autorun
+rm /home/autorun.ds
+
+# Edit the autorun script (requires editor module)
+module load editor
+edit /home/autorun.ds
+
+# See the current script
+cat /home/autorun.ds
+
+# Write your own (example: blink LED 5 times at boot)
+write /home/autorun.ds "repeat 5
+  gpio_write 25 1
+  sleep 200
+  gpio_write 25 0
+  sleep 200
+endrepeat"
+
+# Mouse automation demo
+write /home/autorun.ds "sleep 3000
+hid move 200 0
+hid click left
+hid move 0 100
+hid scroll -3"
+```
+
+### Typical use cases
+
+- **USB demo kiosk** — plug into any computer, auto-type a presentation
+- **GUI automation** — type + mouse click combo for software demos
+- **LED beacon** — blink an SOS pattern on boot
+- **Sensor logger** — read temperature and save to VFS on every boot
+- **Headless automation** — set pins, configure hardware, then lock vault
+
+> Remember: changes to `/home/autorun.ds` only persist across reboots if you
+> run the `save` command after editing.
 
 ---
 

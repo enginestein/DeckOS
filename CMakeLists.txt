@@ -40,7 +40,11 @@ system/print_lock.c
 system/board_detect.c
 system/oled_console.c
 system/ota.c
-scripting/dscript.c
+scripting/dscript_core.c
+scripting/dscript_vars.c
+scripting/dscript_expr.c
+scripting/dscript_builtin.c
+scripting/dscript_flow.c
 usb/usb_descriptors.c
 usb/fat_disk.c
 usb/msc_disk.c

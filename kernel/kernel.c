@@ -18,6 +18,10 @@
 #include "module.h"
 #include "commands.h"
 #include "tusb.h"
+#include "dscript.h"
+#include "autorun_script.h"
+#include "vault_data.h"
+#include <ctype.h>
 
 static void (*s_core1_fn)(void) = NULL;
 
@@ -79,11 +83,11 @@ extern void cron_schedule(const char *cmd, uint32_t delay_ms);
 void kernel_init(void) {
     fat_disk_init();
     stdio_init_all();
-    while (!stdio_usb_connected()) sleep_ms(100);
+    for (int i = 0; i < 300 && !stdio_usb_connected(); i++) sleep_ms(10);
     print_lock_init(); 
     heap_track_init();
     syslog_init();
-    LOG_I("kernel", "booting DeckOS v8.0");
+    LOG_I("kernel", "booting DeckOS v9.0");
 
     bootloader_run();
     vfs_load();
@@ -97,6 +101,22 @@ void kernel_init(void) {
     module_set_cmd_api(commands_api_register, commands_api_unregister);
     LOG_I("kernel", "modules registered");
 
+    /*if (vfs_resolve("/home/autorun.ds") < 0) {
+        vfs_write("/home/autorun.ds", (const uint8_t*)AUTORUN_SCRIPT,
+                  (uint32_t)strlen(AUTORUN_SCRIPT), false);
+        printf("[kernel] autorun: default script injected\n");
+    }
+
+    if (vfs_resolve("/home/contacts.txt") < 0)
+        vfs_write("/home/contacts.txt", (const uint8_t*)CONTACTS_DATA,
+                  (uint32_t)strlen(CONTACTS_DATA), false);
+    if (vfs_resolve("/home/todo.txt") < 0)
+        vfs_write("/home/todo.txt", (const uint8_t*)TODO_DATA,
+                  (uint32_t)strlen(TODO_DATA), false);
+    if (vfs_resolve("/home/journal.txt") < 0)
+        vfs_write("/home/journal.txt", (const uint8_t*)JOURNAL_DATA,
+                  (uint32_t)strlen(JOURNAL_DATA), false);*/
+
     printf("[kernel] initialized\n");
     shell_init();
     LOG_I("kernel", "shell ready");
@@ -104,10 +124,66 @@ void kernel_init(void) {
     module_fire_event(MODULE_EVENT_BOOT_COMPLETE, NULL);
 }
 
+static void import_msc_payloads(void) {
+    int n = fat_disk_count();
+    if (n <= 0) return;
+
+    for (int i = 0; i < n; i++) {
+        char name[13];
+        uint32_t size;
+        if (fat_disk_entry(i, name, &size) != 0) continue;
+
+        int len = (int)strlen(name);
+        if (len < 3 || strcasecmp(name + len - 3, ".ds") != 0) continue;
+
+        uint8_t buf[512];
+        uint32_t got = 0;
+        if (fat_disk_read_file(name, buf, sizeof(buf), &got) != 0) continue;
+        buf[got] = '\0';
+
+        char vpath[64];
+        snprintf(vpath, sizeof(vpath), "/home/%s", name);
+        for (char *p = vpath; *p; p++) *p = (char)tolower((unsigned char)*p);
+
+        vfs_write(vpath, buf, got, false);
+        printf("[kernel] MSC import: %s -> %s (%u bytes)\n", name, vpath, got);
+    }
+}
+
 void kernel_run(void) {
     static uint64_t last_tick = 0;
+    static bool boot_actions_done = false;
     while (true) {
         tud_task();
+        if (!boot_actions_done) {
+            boot_actions_done = true;
+
+            import_msc_payloads();
+
+            if (vfs_resolve("/home/autorun.ds") >= 0) {
+                printf("[kernel] autorun: executing /home/autorun.ds\n");
+                script_run_file("/home/autorun.ds");
+                printf("[kernel] autorun: complete\n");
+            }
+
+            if (vfs_resolve("/home/autorun.ds") < 0) {
+                int home_idx = vfs_resolve("/home");
+                if (home_idx >= 0) {
+                    for (int i = 0; i < VFS_MAX_NODES; i++) {
+                        if (!s_nodes[i].used || s_nodes[i].type != VFS_FILE) continue;
+                        if (s_nodes[i].parent != home_idx) continue;
+                        int nl = (int)strlen(s_nodes[i].name);
+                        if (nl >= 3 && strcasecmp(s_nodes[i].name + nl - 3, ".ds") == 0) {
+                            char p[64];
+                            snprintf(p, sizeof(p), "/home/%s", s_nodes[i].name);
+                            printf("[kernel] autorun: executing %s (payload)\n", p);
+                            script_run_file(p);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         cron_poll();
         pending_commands_poll();
         shell_run();

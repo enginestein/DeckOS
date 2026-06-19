@@ -123,24 +123,8 @@ void loop() {
   handleHttpServer();
   handleTelnetServer();
 
-  if (telnetPassthroughActive) {
+    if (telnetPassthroughActive) {
     forwardPicoOutputToTelnet();
-
-    // After forwarding output, if telnet client is connected and
-    // Serial has been quiet for a moment, send the prompt
-    static uint32_t lastSerialActivity = 0;
-    static bool promptPending = false;
-
-    if (Serial.available()) {
-      lastSerialActivity = millis();
-      promptPending = true;
-    }
-    if (promptPending && (millis() - lastSerialActivity) > 150) {
-      if (telnetClient && telnetClient.connected()) {
-        telnetClient.print("> ");
-      }
-      promptPending = false;
-    }
     return;
   }
 
@@ -152,7 +136,7 @@ void loop() {
     }
   }
 
-  delay(10);
+  delay(1);
 }
 
 void handleTelnetServer() {
@@ -213,6 +197,8 @@ void handleTelnetServer() {
   }
 }
 
+#define TELNET_BUF_SIZE 256
+
 void forwardPicoOutputToTelnet() {
   if (!telnetRunning) return;
   if (!telnetClient || !telnetClient.connected()) {
@@ -221,19 +207,22 @@ void forwardPicoOutputToTelnet() {
     return;
   }
 
-  // Forward Pico output to telnet client, char by char, non-blocking
-  static String stopCheckBuf = "";
+  // Buffer serial chars and write to TCP in chunks (massive speedup)
+  static char buf[TELNET_BUF_SIZE];
+  static int  buf_len = 0;
+  static char stopCheck[13] = "";
 
-  while (Serial.available()) {
+  while (Serial.available() && buf_len < TELNET_BUF_SIZE - 1) {
     char c = (char) Serial.read();
+    buf[buf_len++] = c;
 
     // Check for @stoptelnet escape sequence
-    stopCheckBuf += c;
-    if (stopCheckBuf.length() > 12)
-      stopCheckBuf = stopCheckBuf.substring(stopCheckBuf.length() - 12);
-
-    if (stopCheckBuf.indexOf("@stoptelnet") >= 0) {
-      stopCheckBuf = "";
+    memmove(stopCheck, stopCheck + 1, 11);
+    stopCheck[11] = c;
+    stopCheck[12] = '\0';
+    if (strstr(stopCheck, "@stoptelnet")) {
+      memset(stopCheck, 0, sizeof(stopCheck));
+      buf_len = 0;
       telnetPassthroughActive = false;
       currentMode = MODE_RAW_COMMANDS;
       if (telnetClient) {
@@ -244,8 +233,11 @@ void forwardPicoOutputToTelnet() {
       telnetRunning = false;
       return;
     }
+  }
 
-    telnetClient.write(c);
+  if (buf_len > 0) {
+    telnetClient.write((uint8_t*)buf, buf_len);
+    buf_len = 0;
   }
 }
 

@@ -27,6 +27,7 @@
 #include "print_lock.h"
 
 #include "hardware/adc.h"
+#include "tusb.h"
 
 #include "hardware/gpio.h"
 
@@ -714,7 +715,7 @@ static void cmd_help(int argc, char * argv[]) {
     return;
   }
 
-  printf("DeckOS v8.0  --  command groups\n");
+  printf("DeckOS v9.0  --  command groups\n");
   printf("====================================================\n\n");
   fflush(stdout);
   for (int g = 0; g < group_count; g++) {
@@ -727,7 +728,7 @@ static void cmd_help(int argc, char * argv[]) {
 
 static void cmd_version(int argc, char * argv[]) {
   board_info_t b = board_detect();
-  printf("DeckOS v8.0  |  %s\n", b.name);
+  printf("DeckOS v9.0  |  %s\n", b.name);
   printf("CPU: RP2040 dual-core Cortex-M0+ @ %lu MHz\n", b.cpu_mhz);
   printf("Build: %s %s\n", __DATE__, __TIME__);
 }
@@ -1758,7 +1759,7 @@ static void cmd_sysinfo(int argc, char * argv[]) {
   (void) argv;
   board_info_t b = board_detect();
   printf("=================================\n");
-  printf("  DeckOS v8.0  -  system info  \n");
+  printf("  DeckOS v9.0  -  system info  \n");
   printf("=================================\n");
   printf("board   : %s\n", b.name);
   printf("cpu     : RP2040  dual-core Cortex-M0+  %lu MHz\n", b.cpu_mhz);
@@ -3500,8 +3501,17 @@ static void cmd_sleep(int argc, char * argv[]) {
     printf("range: 1-30000 ms\n");
     return;
   }
-  printf("sleeping %d ms...\n", ms);
-  sleep_ms((uint32_t) ms);
+    printf("sleeping %d ms...\n", ms);
+    {
+        uint32_t step = 10;
+        uint32_t remaining = (uint32_t) ms;
+        while (remaining > 0) {
+            uint32_t chunk = remaining < step ? remaining : step;
+            sleep_ms(chunk);
+            remaining -= chunk;
+            tud_task();
+        }
+    }
 }
 
 static void cmd_repeat(int argc, char * argv[]) {

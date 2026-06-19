@@ -174,12 +174,21 @@ static bool hid_tap_combo(const char *token) {
     return usb_hid_tap(modifier, keycode);
 }
 
+static int mouse_button_from_name(const char *name) {
+    if (strcasecmp(name, "left") == 0) return MOUSE_BUTTON_LEFT;
+    if (strcasecmp(name, "right") == 0) return MOUSE_BUTTON_RIGHT;
+    if (strcasecmp(name, "middle") == 0) return MOUSE_BUTTON_MIDDLE;
+    if (strcasecmp(name, "both") == 0) return MOUSE_BUTTON_LEFT | MOUSE_BUTTON_RIGHT;
+    return atoi(name);
+}
+
 void cmd_hid(int argc, char *argv[]) {
     if (argc < 2 || strcmp(argv[1], "status") == 0) {
-        printf("USB HID keyboard\n");
+        printf("USB HID\n");
         printf("  host link : %s\n", tud_mounted() ? "mounted" : "not mounted");
         printf("  ready     : %s\n", usb_hid_ready() ? "yes" : "no");
-        printf("  usage     : hid type <text> | hid line <text> | hid key <COMBO...> | hid enter\n");
+        printf("  KB: type <text> | line <text> | key <COMBO...> | enter\n");
+        printf("  MS: move <x> <y> | click <left|right|middle|both> | scroll <n>\n");
         return;
     }
 
@@ -187,7 +196,6 @@ void cmd_hid(int argc, char *argv[]) {
 
     if (strcmp(argv[1], "type") == 0 || strcmp(argv[1], "line") == 0) {
         if (argc < 3) { printf("usage: hid %s <text...>\n", argv[1]); return; }
-        /* Rejoin argv[2..] with single spaces. */
         char text[INPUT_SIZE];
         int n = 0;
         for (int i = 2; i < argc && n < (int)sizeof(text) - 1; i++) {
@@ -207,8 +215,22 @@ void cmd_hid(int argc, char *argv[]) {
         int ok = 0;
         for (int i = 2; i < argc; i++) if (hid_tap_combo(argv[i])) ok++;
         printf("hid: sent %d key(s)\n", ok);
+    } else if (strcmp(argv[1], "move") == 0) {
+        if (argc < 4) { printf("usage: hid move <x> <y>\n"); return; }
+        int8_t x = (int8_t)atoi(argv[2]);
+        int8_t y = (int8_t)atoi(argv[3]);
+        if (usb_hid_mouse_move(x, y)) printf("hid: mouse moved (%d,%d)\n", x, y);
+        else printf("hid: mouse move failed\n");
+    } else if (strcmp(argv[1], "click") == 0) {
+        int btn = argc >= 3 ? mouse_button_from_name(argv[2]) : MOUSE_BUTTON_LEFT;
+        if (usb_hid_mouse_click((uint8_t)btn)) printf("hid: mouse click (0x%x)\n", btn);
+        else printf("hid: mouse click failed\n");
+    } else if (strcmp(argv[1], "scroll") == 0) {
+        int8_t n = (int8_t)(argc >= 3 ? atoi(argv[2]) : 1);
+        if (usb_hid_mouse_scroll(n)) printf("hid: mouse scroll %d\n", n);
+        else printf("hid: mouse scroll failed\n");
     } else {
-        printf("hid: status | type <text> | line <text> | key <COMBO...> | enter\n");
+        printf("hid: status | type | line | key | enter | move | click | scroll\n");
     }
 }
 
