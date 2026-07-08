@@ -87,7 +87,7 @@ void kernel_init(void) {
     print_lock_init(); 
     heap_track_init();
     syslog_init();
-    LOG_I("kernel", "booting DeckOS v9.0");
+    LOG_I("kernel", "booting DeckOS v10");
 
     bootloader_run();
     vfs_load();
@@ -157,6 +157,12 @@ void kernel_run(void) {
         tud_task();
         if (!boot_actions_done) {
             boot_actions_done = true;
+
+            /* Let USB enumerate before autorun so host sees the device */
+            for (int i = 0; i < 50; i++) {
+                tud_task();
+                sleep_ms(10);
+            }
 
             import_msc_payloads();
 

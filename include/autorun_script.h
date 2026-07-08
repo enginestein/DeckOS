@@ -7,7 +7,7 @@ static const char AUTORUN_SCRIPT[] =
     "gpio_write 25 0\n"
     "print Focus any text window!\n"
     "sleep 5000\n"
-    "hid line DeckOS v9.0 - USB Automation\n"
+    "hid line DeckOS v10 - USB Automation\n"
     "hid line\n"
     "hid line Typed automatically by a $4\n"
     "hid line Raspberry Pi Pico running DeckOS.\n"

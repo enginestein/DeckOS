@@ -15,6 +15,7 @@
 #include "commands.h"
 #include "module.h"
 #include "esp.h"
+#include "tusb.h"
 
 static void builtin_upper(script_ctx_t *ctx, const char *dest, const char *args) {
     char s[SCRIPT_VAR_VAL_LEN];
@@ -265,7 +266,15 @@ static void builtin_format(script_ctx_t *ctx, const char *dest, const char *args
 
 static void builtin_usleep(script_ctx_t *ctx, const char *dest, const char *args) {
     int us = eval_int(ctx, args);
-    if (us > 0 && us <= 1000000) sleep_us((uint32_t)us);
+    if (us > 0 && us <= 1000000) {
+        uint32_t remaining = (uint32_t)us;
+        while (remaining > 0) {
+            uint32_t chunk = remaining < 1000 ? remaining : 1000;
+            sleep_us(chunk);
+            tud_task();
+            remaining -= chunk;
+        }
+    }
     var_set(ctx, dest, "1");
 }
 

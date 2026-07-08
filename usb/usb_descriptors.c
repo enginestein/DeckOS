@@ -26,7 +26,7 @@ const tusb_desc_device_t desc_device = {
     .bcdUSB = 0x0200,
     .bDeviceClass = TUSB_CLASS_MISC,
     .bDeviceSubClass = MISC_SUBCLASS_COMMON,
-    .bDeviceProtocol = 0,
+    .bDeviceProtocol = MISC_PROTOCOL_IAD,
     .bMaxPacketSize0 = CFG_TUD_ENDPOINT0_SIZE,
     .idVendor = USBD_VID,
     .idProduct = USBD_PID,
@@ -120,7 +120,7 @@ static char serial_str[2 * PICO_UNIQUE_BOARD_ID_SIZE_BYTES + 1];
 static const char *const string_desc[] = {
     [USBD_STR_LANG] = (const char[]){0x09, 0x04},
     [USBD_STR_MANUF] = "DeckOS",
-    [USBD_STR_PRODUCT] = "DeckOS Portable",
+    [USBD_STR_PRODUCT] = "RP2040 Portable",
     [USBD_STR_SERIAL] = serial_str,
     [USBD_STR_CDC] = "DeckOS Shell",
     [USBD_STR_MSC] = "DeckOS Disk",

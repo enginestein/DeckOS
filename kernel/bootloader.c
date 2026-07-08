@@ -127,9 +127,9 @@ static void print_mem_summary(void) {
 static void print_banner(boot_mode_t mode) {
     printf("\n");
     printf("  ╔══════════════════════════════════════════════╗\n");
-    printf("  ║              DeckOS  v8.0                    ║\n");
+    printf("  ║              DeckOS  v10                    ║\n");
     printf("  ║          RP2040 Port  (Pico SDK)             ║\n");
-    printf("  ║          Built %s %s              ║\n", __DATE__, __TIME__);
+    printf("  ║            Author: Enginestein               ║\n");
     printf("  ╚══════════════════════════════════════════════╝\n");
     printf("\n");
     printf("  hostname  : %s\n", g_config.hostname[0] ? g_config.hostname : "(none set)");

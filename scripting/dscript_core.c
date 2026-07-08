@@ -15,6 +15,7 @@
 #include "syslog.h"
 #include "module.h"
 #include "esp.h"
+#include "tusb.h"
 
 void script_ctx_init(script_ctx_t *ctx) {
     memset(ctx, 0, sizeof(*ctx));
@@ -425,7 +426,15 @@ int run_lines(script_ctx_t *ctx, char lines[][SCRIPT_LINE_LEN], int total,
 
         if (!strncmp(line, "sleep ", 6)) {
             int ms = eval_int(ctx, line + 6);
-            if (ms > 0 && ms <= 60000) sleep_ms((uint32_t)ms);
+            if (ms > 0 && ms <= 60000) {
+                uint32_t remaining = (uint32_t)ms;
+                while (remaining > 0) {
+                    uint32_t chunk = remaining < 10 ? remaining : 10;
+                    sleep_ms(chunk);
+                    tud_task();
+                    remaining -= chunk;
+                }
+            }
             continue;
         }
 
