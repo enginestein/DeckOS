@@ -54,6 +54,8 @@ class DeckOSSerial:
 
     def cmd(self, c: str, timeout: float = 2.0) -> str:
         with self.lock:
+            # Drain any leftover data from previous timed-out commands
+            self.conn.reset_input_buffer()
             self.conn.write((c + "\n").encode())
             self.conn.flush()
             out = ""
@@ -61,12 +63,25 @@ class DeckOSSerial:
             while time.time() < deadline:
                 try:
                     data = self.conn.read(256).decode(errors="replace")
+                    if not data:
+                        continue
                     out += data
                     if "> " in out:
                         break
                 except:
                     break
-            return out.strip("> ").strip()
+            # Strip command echo and shell prompt, keep only the actual output
+            # Remove echo lines: the command itself echoed back
+            lines = out.split("\n")
+            result_lines = []
+            for line in lines:
+                stripped = line.strip()
+                if stripped == c.strip() or stripped == "> " or stripped == "":
+                    continue
+                if stripped.endswith("> "):
+                    stripped = stripped[:-2].strip()
+                result_lines.append(stripped)
+            return "\n".join(result_lines).strip("> ").strip()
 
     def close(self):
         if self.conn:
@@ -96,13 +111,16 @@ def run_curses(deck: DeckOSSerial):
     curses.init_pair(4, curses.COLOR_CYAN, -1)
     curses.curs_set(0)
     stdscr.nodelay(1)
-    stdscr.timeout(500)
+    stdscr.timeout(200)
 
     refresh_count = 0
+    info_cmds = ["uptime", "version", "temperature", "free"]
+    info_cache = {k: "" for k in info_cmds}
+    files_cache = ""
 
-    def safe_cmd(c):
+    def safe_cmd(c, t=1.0):
         try:
-            return deck.cmd(c, timeout=1.5)
+            return deck.cmd(c, timeout=t)
         except:
             return ""
 
@@ -116,28 +134,34 @@ def run_curses(deck: DeckOSSerial):
         stdscr.addstr(0, 0, "DeckOS Dashboard", curses.A_BOLD | curses.color_pair(4))
         stdscr.addstr(0, w - len(deck.port) - 2, f"[{deck.port}]", curses.color_pair(1))
 
-        # System info
+        # Rotate through info commands: only 1 per refresh cycle
         try:
-            uptime = safe_cmd("uptime")
-            stdscr.addstr(2, 2, f"Uptime: {uptime}", curses.color_pair(1))
-
-            vers = safe_cmd("version")
-            stdscr.addstr(3, 2, f"Version: {vers[:w-20]}")
-
-            temp = safe_cmd("temperature")
-            stdscr.addstr(4, 2, f"Temp: {temp}")
-
-            free = safe_cmd("free")
-            stdscr.addstr(5, 2, f"Memory: {free}")
+            cmd = info_cmds[refresh_count % len(info_cmds)]
+            result = safe_cmd(cmd)
+            if result:
+                info_cache[cmd] = result
+            y = 2
+            for k in info_cmds:
+                val = info_cache.get(k, "")
+                if k == "version":
+                    stdscr.addstr(y, 2, f"{k.capitalize()}: {val[:w-20]}")
+                else:
+                    stdscr.addstr(y, 2, f"{k.capitalize()}: {val}")
+                y += 1
         except:
             pass
 
-        # File listing
+        # File listing: refresh every 5 cycles
         stdscr.addstr(7, 2, "── Files ──", curses.A_BOLD | curses.color_pair(4))
         try:
-            ls = safe_cmd("ls")
+            if refresh_count % 5 == 1:
+                files_cache = safe_cmd("ls", t=1.5)
+            lines = files_cache.split("\n")
+            # Remove empty first lines from echo
+            while lines and (lines[0].strip() == "" or lines[0].strip() == "ls"):
+                lines = lines[1:]
             y = 8
-            for line in ls.split("\n"):
+            for line in lines:
                 if y >= h - 2:
                     break
                 stdscr.addstr(y, 4, line[:w-8])
@@ -167,14 +191,14 @@ def run_curses(deck: DeckOSSerial):
             cmd_str = stdscr.getstr(h - 1, 12, 120)
             curses.noecho()
             if cmd_str:
-                result = safe_cmd(cmd_str.decode())
+                result = deck.cmd(cmd_str.decode(), timeout=5.0)
                 curses.curs_set(0)
                 stdscr.nodelay(1)
-                stdscr.timeout(500)
+                stdscr.timeout(200)
             else:
                 curses.curs_set(0)
                 stdscr.nodelay(1)
-                stdscr.timeout(500)
+                stdscr.timeout(200)
 
     curses.endwin()
     print("deckos-dashboard: disconnected")

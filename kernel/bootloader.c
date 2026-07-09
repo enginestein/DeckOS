@@ -127,7 +127,7 @@ static void print_mem_summary(void) {
 static void print_banner(boot_mode_t mode) {
     printf("\n");
     printf("  ╔══════════════════════════════════════════════╗\n");
-    printf("  ║              DeckOS  v10                    ║\n");
+    printf("  ║              DeckOS  v10.1                   ║\n");
     printf("  ║          RP2040 Port  (Pico SDK)             ║\n");
     printf("  ║            Author: Enginestein               ║\n");
     printf("  ╚══════════════════════════════════════════════╝\n");

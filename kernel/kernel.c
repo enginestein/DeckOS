@@ -87,7 +87,7 @@ void kernel_init(void) {
     print_lock_init(); 
     heap_track_init();
     syslog_init();
-    LOG_I("kernel", "booting DeckOS v10");
+    LOG_I("kernel", "booting DeckOS v10.1");
 
     bootloader_run();
     vfs_load();
@@ -150,8 +150,11 @@ static void import_msc_payloads(void) {
     }
 }
 
+static bool s_autorun_fired = false;
+
 void kernel_run(void) {
     static uint64_t last_tick = 0;
+    static uint64_t last_msc_poll = 0;
     static bool boot_actions_done = false;
     while (true) {
         tud_task();
@@ -169,10 +172,11 @@ void kernel_run(void) {
             if (vfs_resolve("/home/autorun.ds") >= 0) {
                 printf("[kernel] autorun: executing /home/autorun.ds\n");
                 script_run_file("/home/autorun.ds");
+                s_autorun_fired = true;
                 printf("[kernel] autorun: complete\n");
             }
 
-            if (vfs_resolve("/home/autorun.ds") < 0) {
+            if (!s_autorun_fired) {
                 int home_idx = vfs_resolve("/home");
                 if (home_idx >= 0) {
                     for (int i = 0; i < VFS_MAX_NODES; i++) {
@@ -190,6 +194,45 @@ void kernel_run(void) {
                 }
             }
         }
+
+        /* Periodically re-check MSC for autorun.ds dropped during runtime */
+        uint64_t now_ms = time_us_64() / 1000;
+        if (boot_actions_done && !s_autorun_fired && (now_ms - last_msc_poll >= 3000)) {
+            last_msc_poll = now_ms;
+            /* Only import if autorun.ds exists on MSC and not yet in VFS */
+            if (vfs_resolve("/home/autorun.ds") < 0) {
+                for (int i = 0; i < fat_disk_count(); i++) {
+                    char name[13];
+                    uint32_t size;
+                    if (fat_disk_entry(i, name, &size) != 0) continue;
+                    int len = (int)strlen(name);
+                    if (len < 3 || strcasecmp(name + len - 3, ".ds") != 0) continue;
+
+                    uint8_t buf[512];
+                    uint32_t got = 0;
+                    if (fat_disk_read_file(name, buf, sizeof(buf), &got) != 0) continue;
+                    buf[got] = '\0';
+
+                    char vpath[64];
+                    snprintf(vpath, sizeof(vpath), "/home/%s", name);
+                    for (char *p = vpath; *p; p++) *p = (char)tolower((unsigned char)*p);
+
+                    if (vfs_resolve(vpath) >= 0) continue; /* already imported */
+
+                    vfs_write(vpath, buf, got, false);
+                    printf("[kernel] MSC runtime import: %s -> %s (%u bytes)\n", name, vpath, got);
+
+                    /* If this is autorun.ds, execute it now */
+                    if (strcasecmp(name, "autorun.ds") == 0) {
+                        printf("[kernel] autorun: executing %s (runtime)\n", vpath);
+                        script_run_file(vpath);
+                        s_autorun_fired = true;
+                        printf("[kernel] autorun: complete\n");
+                    }
+                }
+            }
+        }
+
         cron_poll();
         pending_commands_poll();
         shell_run();

@@ -502,7 +502,7 @@ void oled_animate_boot(void) {
     oled_clear();
 
     
-    oled_text(3, 1, "  DeckOS v10", false);
+    oled_text(3, 1, "  DeckOS v10.1", false);
     oled_hline(0, 127, 10, true);
     oled_hline(0, 127, 11, true);
     oled_flush(); sleep_ms(120);
